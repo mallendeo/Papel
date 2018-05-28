@@ -8,11 +8,11 @@ cache:
 
 branches:
   only:
-  - master
+    - master
 
 install:
-  - npm install
-  - npm run generate
+  - yarn
+  - yarn generate
 
 script:
   - echo "Skipping tests"
