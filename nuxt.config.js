@@ -1,4 +1,11 @@
+const routerBase = process.env.DEPLOY_ENV === 'GH_PAGES' ? {
+  router: {
+    base: '/papel/'
+  }
+} : {}
+
 module.exports = {
+  ...routerBase,
   mode: 'spa',
   env: {
     contractDev: 'n1nquzBQ1kmkDbR9ChKJvdnPzD87kjLq33H',
