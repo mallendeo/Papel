@@ -1,0 +1,18 @@
+.btn {
+  display: flex;
+  align-items: center;
+  height: 100%;
+
+  color: var(--btn-text-color);
+  padding: 0 1rem;
+  font-size: .8rem;
+  z-index: 5;
+  transition: all .1s ease;
+
+  outline: none;
+
+  &:hover {
+    background: var(--btn-bg);
+    color: var(--btn-text-color-hover);
+  }
+}

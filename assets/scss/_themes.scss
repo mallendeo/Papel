@@ -1,0 +1,44 @@
+html[data-theme='dark'] {
+  --red-hue: 344;
+  --blue-hue: 203;
+
+  --logo-stroke: white;
+  --logo-fill: var(--header-bg);
+  --logo-text: white;
+
+  --header-bg: hsl(var(--blue-hue), 19%, 14%);
+  --btn-bg: hsl(var(--blue-hue), 100%, 50%);
+  --btn-text-color: white;
+
+  --text-light: hsl(var(--blue-hue), 50%, 90%);
+  --text-lighter: hsl(var(--blue-hue), 10%, 50%);
+
+  --editor-bg: hsl(var(--blue-hue), 18%, 19%);
+  --editor-bg-dark: hsl(var(--blue-hue), 18%, 15%);
+
+  --error-color: hsl(var(--red-hue), 78%, 55%);
+  --error-color-light: hsl(var(--red-hue), 78%, 60%);
+}
+
+html[data-theme='light'] {
+  --red-hue: 344;
+  --blue-hue: 203;
+
+  --logo-stroke: hsl(var(--blue-hue), 100%, 50%);
+  --logo-fill: var(--header-bg);
+  --logo-text: var(--logo-stroke);
+
+  --header-bg: hsl(var(--blue-hue), 0%, 98%);
+  --btn-bg: hsl(var(--blue-hue), 100%, 50%);
+  --btn-text-color: #333;
+  --btn-text-color-hover: white;
+
+  --text-light: hsl(var(--blue-hue), 50%, 90%);
+  --text-lighter: hsl(var(--blue-hue), 10%, 50%);
+
+  --editor-bg: hsl(var(--blue-hue), 0%, 95%);
+  --editor-bg-dark: hsl(var(--blue-hue), 0%, 92%);
+
+  --error-color: hsl(var(--red-hue), 78%, 55%);
+  --error-color-light: hsl(var(--red-hue), 78%, 60%);
+}
