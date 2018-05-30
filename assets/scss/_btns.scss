@@ -3,7 +3,8 @@
   align-items: center;
   height: 100%;
 
-  color: var(--btn-text-color);
+  color: var(--btn-color);
+  background: var(--btn-bg);
   padding: 0 1rem;
   font-size: .8rem;
   z-index: 5;
@@ -11,8 +12,25 @@
 
   outline: none;
 
+  img, svg {
+    width: 1rem;
+    flex: 1;
+  }
+
   &:hover {
-    background: var(--btn-bg);
-    color: var(--btn-text-color-hover);
+    color: var(--btn-color-hover);
+    --icon-color: var(--btn-color-hover);
+    opacity: 1;
+  }
+
+  &--fade {
+    opacity: .5;
+  }
+
+  &--active {
+    opacity: 1;
+    background: var(--btn-bg-active);
+    color: var(--btn-color-active);
+    --icon-color: var(--btn-color-active);
   }
 }
