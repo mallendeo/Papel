@@ -17,7 +17,10 @@ module.exports = {
     ]
   },
   loading: { color: '#3B8070' },
-  plugins: [{ src: '~/plugins/vue-codemirror' }],
+  plugins: [
+    '~/plugins/vue-codemirror',
+    '~/plugins/vue-observe-visibility'
+  ],
 
   build: {
     vendor: ['vue-codemirror', 'split.js'],
