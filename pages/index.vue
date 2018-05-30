@@ -6,16 +6,56 @@
           <paper-logo class="brand__logo"></paper-logo> Papel
         </h1>
 
-        <button @click="() => pay()" class="btn">Save</button>
+        <button
+          v-for="tab of tabs"
+          :key="`nav-${tab.component}`"
+          :title="tab.title"
+          class="btn btn--fade"
+          :class="{ 'btn--active': currTab === tab }"
+          @click="showTab(tab)"
+        >
+          <i
+            v-if="tab.icon"
+            class="material-icons"
+          >{{ tab.icon }}</i>
+
+          <component
+            v-else-if="tab.iconComponent"
+            :is="tab.iconComponent"
+          />
+        </button>
+
+        <button
+          title="Save"
+          @click="() => pay()"
+          class="btn btn--fade"
+        >
+          <i class="material-icons">save</i>
+        </button>
       </header>
 
-      <app-editors />
+      <transition-group
+        name="slide"
+        :class="{ 'slide-right': slideRight }"
+        tag="div"
+        class="content__wrapper"
+      >
+        <app-editors
+          key="tab-1"
+          v-show="currTab.component === 'app-editors'" />
+        <smart-contract-editor
+          key="tab-2"
+          v-show="currTab.component === 'smart-contract-editor'" />
+        <editor-settings
+          key="tab-3"
+          v-show="currTab.component === 'editor-settings'" />
+      </transition-group>
     </div>
 
     <div id="preview" class="preview">
       <!-- Disable allow-popups (prevent alerts) when showing the showcase -->
       <iframe
-        sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts"
+        sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin"
         ref="preview"
         frameborder="0"
         class="preview__iframe"
@@ -35,16 +75,57 @@ import shortid from 'shortid'
 import Split from 'split.js'
 import { mapState, mapActions } from 'vuex'
 
-import PaperLogo from '../components/PaperLogo'
-import AppEditors from '../components/AppEditors'
+import PaperLogo from '@/components/icons/PaperLogo'
+import NebulasLogo from '@/components/icons/NebulasLogo'
+
+import AppEditors from '@/components/editor/AppEditors'
+import SmartContractEditor from '@/components/editor/SmartContractEditor'
+import EditorSettings from '@/components/editor/EditorSettings'
 
 export default {
-  components: { PaperLogo, AppEditors },
-  data: () => ({
-    iframeDoc: null
-  }),
+  components: {
+    PaperLogo,
+    AppEditors,
+    NebulasLogo,
+    SmartContractEditor,
+    EditorSettings
+  },
+  data: () => {
+    const tabs = [{
+      index: 0,
+      component: 'app-editors',
+      title: 'Editor',
+      icon: 'code'
+    }, {
+      index: 1,
+      component: 'smart-contract-editor',
+      title: 'Smart contract editor',
+      iconComponent: 'nebulas-logo'
+    }, {
+      index: 2,
+      component: 'app-info',
+      title: 'Details',
+      icon: 'info'
+    }, {
+      index: 3,
+      component: 'editor-settings',
+      title: 'Editor settings',
+      icon: 'settings'
+    }]
+
+    return {
+      iframeDoc: null,
+      tabs,
+      currTab: tabs[0],
+      slideRight: false
+    }
+  },
   methods: {
-    ...mapActions('neb', ['pay'])
+    ...mapActions('neb', ['pay']),
+    showTab(tab) {
+      this.slideRight = tab.index > this.currTab.index
+      this.currTab = tab
+    }
   },
   computed: {
     ...mapState('editor', ['compiled']),
@@ -61,16 +142,14 @@ export default {
       cursor: 'col-resize',
       elementStyle: (dimension, size, gutterSize) => ({
         'flex-basis': `calc(${size}% - ${gutterSize}px)`
-      }),
-      gutterStyle: (dimension, gutterSize) => ({
-        'flex-basis': `${gutterSize}px`
       })
     })
 
-    const doc = this.$refs.preview.contentWindow.document
+    const doc = this.$refs.preview.contentDocument
     const style = doc.createElement('style')
     style.id = 'preview-style'
     doc.head.appendChild(style)
+    console.log({head: doc.head})
 
     this.iframeDoc = doc
   },
@@ -100,10 +179,33 @@ export default {
 </script>
 
 <style scoped lang="scss">
+$dist: 1rem;
+.slide-enter-active {
+  transition: all .2s;
+  transform: translateX(0rem);
+}
+.slide-enter, .slide-leave-to {
+  transition: all .2s;
+  transform: translateX(-$dist);
+  opacity: 0;
+}
+.slide-leave-to {
+  transform: translateX($dist);
+}
+.slide-right {
+  .slide-leave-to {
+    transform: translateX(-$dist);
+  }
+  .slide-enter {
+    transform: translateX($dist);
+  }
+}
+
 .brand {
   font-family: 'Comfortaa', sans-serif;
   font-size: .8rem;
   margin-left: 1rem;
+  margin-right: 2rem;
   font-weight: 400;
   color: var(--logo-text);
 
@@ -131,14 +233,14 @@ export default {
       z-index: 10;
 
       &:hover, &:active {
-        background: var(--btn-bg);
+        background: var(--blue);
       }
     }
   }
 }
 
 .header {
-  height: 3rem;
+  flex: 0 0 3rem;
   background: var(--header-bg);
   color: white;
   align-items: center;
@@ -146,7 +248,19 @@ export default {
 
 .content {
   flex: 2;
-  background: #222d32;
+  min-width: 24rem;
+  background: var(--editor-bg);
+  overflow: hidden;
+
+  &__wrapper {
+    height: 100%;
+    position: relative;
+
+    /deep/ section {
+      position: absolute;
+      width: 100%; height: 100%;
+    }
+  }
 }
 
 .preview {
@@ -179,7 +293,10 @@ export default {
   }
 }
 
-.btn { margin-left: auto; }
+.btn {
+  &:nth-of-type(4) { margin-left: auto; }
+  i { font-size: .9rem; }
+}
 
 @keyframes slide-in {
   to { transform: translateY(0%); }

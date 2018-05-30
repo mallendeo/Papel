@@ -30,11 +30,10 @@ export default {
   flex: 1;
   transition: all .2s ease;
   will-change: flex, height;
-  height: 100%;
 
   /deep/ .CodeMirror {
-    flex: 1;
     height: 100%;
+    flex: 1;
   }
 }
 </style>

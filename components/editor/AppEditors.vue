@@ -1,42 +1,45 @@
 <template>
-  <div class="editors col">
+  <section class="editors col">
     <editor-panel v-if="showSearch">
       <app-search />
     </editor-panel>
+    <div
+      class="editor__toolbar row"
+      :class="{ 'editor__toolbar--danger': editors['html'].error }"
+    >
+      <span>{{ getPrepros('html').title }}</span>
+    </div>
 
     <div
-      v-for="lang of langs"
+      v-for="(lang, index) of langs"
       class="editor__wrapper col"
       :key="`${lang}-editor`"
       :id="`${lang}-editor`"
     >
       <div
+        v-if="index"
         class="editor__toolbar row"
         :class="{ 'editor__toolbar--danger': editors[lang].error }"
       >
-        <span>{{ editors[lang].prepros[editors[lang].lang].title }}</span>
+        <span>{{ getPrepros(lang).title }}</span>
       </div>
-
-      <button class="on-top btn editor__btn">
-        <i class="material-icons">settings</i>
-      </button>
 
       <cm-editor
         :code="editors[lang].code"
-        :options="{ mode: editors[lang].prepros[editors[lang].lang].mime }"
+        :options="{ mode: getPrepros(lang).mime }"
         @change="code => update(editors[lang].lang, code, lang)"
       />
     </div>
-  </div>
+  </section>
 </template>
 
 <script>
 import Split from 'split.js'
 import { mapState, mapActions } from 'vuex'
 
-import AppToggle from './ui/AppToggle'
-import AppSearch from './ui/AppSearch'
-import EditorPanel from './ui/EditorPanel'
+import AppToggle from '../ui/AppToggle'
+import AppSearch from '../ui/AppSearch'
+import EditorPanel from '../ui/EditorPanel'
 import CmEditor from './CmEditor'
 
 const worker = new Worker('transform-worker.js')
@@ -48,16 +51,23 @@ export default {
     CmEditor,
     EditorPanel
   },
+
+  beforeDestroy () {
+    worker.removeEventListener('message', this.onMessage, false)
+  },
+
   data: () => ({
     split: null,
     showSearch: false
   }),
+
   computed: {
     ...mapState('editor', ['editors']),
     langs () {
       return Object.keys(this.editors)
     }
   },
+
   mounted () {
     const editors = this.langs.map(l => `#${l}-editor`)
     this.split = Split(editors, {
@@ -72,23 +82,29 @@ export default {
       }
     })
 
-    worker.addEventListener('message', event => {
-      const { data } = event
-
-      if (data.error) {
-        this.setError({ lang: data.lang, error: data.error })
-        console.log('ERROR', data)
-        return
-      }
-      this.setOutput({ lang: data.lang, output: data.output })
-      console.log(data)
-    }, false)
+    worker.addEventListener('message', this.onMessage, false)
   },
   methods: {
     ...mapActions('editor', ['updateCode', 'setError', 'setOutput']),
+    getPrepros (lang) {
+      const editor = this.editors[lang]
+      return editor.prepros[editor.lang]
+    },
     update (type, code, lang) {
       this.updateCode({ type: lang, code })
       worker.postMessage({ code, type, lang })
+    },
+
+    onMessage (event) {
+      const { data } = event
+      const { lang } = data
+
+      if (data.error) {
+        this.setError({ lang, error: data.error })
+        return
+      }
+
+      this.setOutput({ lang, output: data.output })
     }
   }
 }
@@ -96,43 +112,43 @@ export default {
 
 <style lang="scss" scoped>
 .editors {
-  flex: 1;
+  height: 100%;
   position: relative;
-  padding-top: 2rem;
   background: #273238;
 }
 
 .editor {
   &__btn {
     height: 2rem;
-    opacity: .5;
     padding: 0 .75rem;
-    color: white;
+    color: rgb(26, 21, 21);
 
     i { font-size: .8rem; }
-    &:hover { opacity: 1; }
   }
 
-  &__wrapper:first-of-type .editor__toolbar {
-    margin-top: -2rem;
-    height: 2rem;
-    cursor: default;
+  &__wrapper {
+    z-index: 4;
+    overflow: auto;
   }
 
   &__toolbar {
     justify-content: space-between;
     align-items: center;
+    flex: 0 1 2rem;
 
     position: relative;
     padding: 0 1rem;
 
     background: darken(#263238, 2);
     transition: all .2s ease;
-    color: white;
+    color: rgba(255,255,255,.75);
 
     font-size: .75rem;
     z-index: 4;
-    cursor: row-resize;
+
+    &:not(:first-of-type) {
+      cursor: row-resize;
+    }
 
     &--danger {
       box-shadow: inset .125rem 0 0 var(--error-color);
