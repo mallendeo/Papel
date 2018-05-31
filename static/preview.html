@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style id="__papel-preview-style"></style>
+</head>
+<body>
+  <script id="__papel-init-script">
+    'use strict'
+    const acceptedOrigins = [
+      'http://localhost:3000',
+      'https://papel.app'
+    ]
+
+    let jsCode = ''
+
+    const styleElem = document.querySelector('#__papel-preview-style')
+
+    const createScript = code => {
+      const jsEl = document.querySelector('#__papel-preview-script')
+      if (jsEl) jsEl.parentNode.removeChild(jsEl)
+
+      const script = document.createElement('script')
+      const inlineScript = document.createTextNode(code)
+      script.appendChild(inlineScript)
+      script.id = '__papel-preview-script'
+      document.body.appendChild(script)
+      return code
+    }
+
+    const updateHtml = code => {
+      const ignore = 'body *:not(#__papel-preview-script):not(#__papel-init-script)'
+      const elems = document.querySelectorAll(ignore)
+      elems.forEach(el => el.parentNode.removeChild(el))
+
+      const fakeElem = document.createElement('div')
+      fakeElem.innerHTML = code
+
+      Array.from(fakeElem.childNodes).reverse().forEach(node => {
+        let elem = node
+
+        // Needed in order to execute the script
+        if (node.nodeName === 'SCRIPT') {
+          elem = document.createElement('script')
+          elem.appendChild(document.createTextNode(node.innerHTML))
+        }
+        document.body.insertBefore(elem, document.body.firstChild)
+      })
+    }
+
+    window.addEventListener('message', event => {
+      const { data, origin } = event
+      if (acceptedOrigins.indexOf(origin) < 0) return
+
+      if (!data && !data.type) return
+
+      if (data.type === 'papel:codeupdate') {
+        const { output, error, lang, opts = {} } = data.event
+        if (error) return
+
+        document.title = opts.title || 'Papel Preview'
+        console.log(lang)
+        switch (lang) {
+          case 'html':
+            if (opts.forceRefresh) {
+              document.body.innerHTML = output
+              createScript(state.js)
+              return
+            }
+
+            updateHtml(output)
+            break
+          case 'css':
+            styleElem.innerHTML = output
+            break
+          case 'js':
+            jsCode = output
+            createScript(output)
+            break
+        }
+      }
+    }, false)
+  </script>
+</body>
+</html>
