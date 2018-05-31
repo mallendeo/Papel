@@ -63,6 +63,7 @@ export default {
 
   computed: {
     ...mapState('editor', ['editors']),
+
     langs () {
       return Object.keys(this.editors)
     }
@@ -70,6 +71,7 @@ export default {
 
   mounted () {
     const editors = this.langs.map(l => `#${l}-editor`)
+
     this.split = Split(editors, {
       snapOffset: 0,
       minSize: 0,
@@ -86,10 +88,12 @@ export default {
   },
   methods: {
     ...mapActions('editor', ['updateCode', 'setError', 'setOutput']),
+
     getPrepros (lang) {
       const editor = this.editors[lang]
       return editor.prepros[editor.lang]
     },
+
     update (type, code, lang) {
       this.updateCode({ type: lang, code })
       worker.postMessage({ code, type, lang })
@@ -97,14 +101,14 @@ export default {
 
     onMessage (event) {
       const { data } = event
-      const { lang } = data
+      const { lang, output, error } = data
 
-      if (data.error) {
+      if (error) {
         this.setError({ lang, error: data.error })
         return
       }
 
-      this.setOutput({ lang, output: data.output })
+      this.setOutput({ lang, output })
     }
   }
 }

@@ -2,7 +2,7 @@
   <codemirror
     class="editor row"
     :options="editorOpts"
-    @input="val => $emit('change', val)"
+    @input="val => loaded && $emit('change', val)"
     @ready="cm => cm.setValue(code)"
   ></codemirror>
 </template>
@@ -15,6 +15,12 @@ export default {
     change: { type: Function, default: () => {} },
     code: { type: String },
     options: { type: Object }
+  },
+  data: () => ({ loaded: false }),
+  mounted () {
+    this.$emit('change', this.code)
+    // TODO: Get a better way to emit the code once
+    this.loaded = true
   },
   computed: {
     ...mapState('editor', ['opts']),
