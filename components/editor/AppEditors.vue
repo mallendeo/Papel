@@ -27,6 +27,7 @@
       <cm-editor
         :code="editors[lang].code"
         :options="{ mode: getPrepros(lang).mime }"
+        ref="editor"
         @change="code => update(editors[lang].lang, code, lang)"
       />
     </div>
@@ -81,8 +82,18 @@ export default {
       gutter: index => {
         const elem = this.$el.querySelectorAll('.editor__toolbar')
         return elem[index]
+      },
+
+      onDragEnd: () => {
+        const editors = this.$refs['editor']
+        editors.forEach(editor => {
+          const cm = editor.codemirror || editor.$children[0].codemirror
+          cm.refresh()
+        })
       }
     })
+
+
 
     worker.addEventListener('message', this.onMessage, false)
   },
