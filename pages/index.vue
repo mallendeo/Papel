@@ -41,6 +41,7 @@
         class="content__wrapper"
       >
         <app-editors
+          @codeupdate="updateIframe"
           key="tab-1"
           v-show="currTab.component === 'app-editors'" />
         <smart-contract-editor
@@ -55,7 +56,8 @@
     <div id="preview" class="preview">
       <!-- Disable allow-popups (prevent alerts) when showing the showcase -->
       <iframe
-        sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin"
+        src="/preview.html"
+        sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts"
         ref="preview"
         frameborder="0"
         class="preview__iframe"
@@ -70,10 +72,10 @@
 </template>
 
 <script>
-import shortid from 'shortid'
-
-import Split from 'split.js'
 import { mapState, mapActions } from 'vuex'
+
+import shortid from 'shortid'
+import Split from 'split.js'
 
 import PaperLogo from '@/components/icons/PaperLogo'
 import NebulasLogo from '@/components/icons/NebulasLogo'
@@ -114,7 +116,6 @@ export default {
     }]
 
     return {
-      iframeDoc: null,
       tabs,
       currTab: tabs[0],
       slideRight: false
@@ -122,16 +123,19 @@ export default {
   },
   methods: {
     ...mapActions('neb', ['pay']),
-    showTab(tab) {
+    showTab (tab) {
       this.slideRight = tab.index > this.currTab.index
       this.currTab = tab
+    },
+    updateIframe (event) {
+      const remote = this.$refs.preview.contentWindow
+      // FIXME: change final production URL
+      // const prod = process.env.NODE_ENV === 'production'
+      remote.postMessage(
+        { type: 'papel:codeupdate', event },
+        window.location
+      )
     }
-  },
-  computed: {
-    ...mapState('editor', ['compiled']),
-    html () { return this.compiled.html },
-    css () { return this.compiled.css },
-    js () { return this.compiled.js }
   },
   mounted () {
     Split(['#content', '#preview'], {
@@ -144,36 +148,6 @@ export default {
         'flex-basis': `calc(${size}% - ${gutterSize}px)`
       })
     })
-
-    const doc = this.$refs.preview.contentDocument
-    const style = doc.createElement('style')
-    style.id = 'preview-style'
-    doc.head.appendChild(style)
-    console.log({head: doc.head})
-
-    this.iframeDoc = doc
-  },
-  watch: {
-    html (code) {
-      this.iframeDoc.body.innerHTML = code
-    },
-
-    css (code) {
-      const styleElem = this.iframeDoc.querySelector('#preview-style')
-      styleElem.innerHTML = code
-    },
-
-    js (code) {
-      // this.$refs.preview.src = 'about:blank'
-      const jsEl = this.iframeDoc.querySelector('#preview-script')
-      if (jsEl) jsEl.parentNode.removeChild(jsEl)
-
-      const script = this.iframeDoc.createElement('script')
-      const inlineScript = this.iframeDoc.createTextNode(code)
-      script.appendChild(inlineScript)
-      script.id = 'preview-script'
-      this.iframeDoc.body.appendChild(script)
-    }
   }
 }
 </script>
