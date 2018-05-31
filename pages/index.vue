@@ -131,6 +131,7 @@ export default {
       const remote = this.$refs.preview.contentWindow
       // FIXME: change final production URL
       // const prod = process.env.NODE_ENV === 'production'
+
       remote.postMessage(
         { type: 'papel:codeupdate', event },
         window.location

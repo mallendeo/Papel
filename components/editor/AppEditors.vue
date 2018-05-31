@@ -108,6 +108,8 @@ export default {
         return
       }
 
+      this.$emit('codeupdate', data)
+
       this.setOutput({ lang, output })
     }
   }
