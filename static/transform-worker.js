@@ -38,7 +38,8 @@ const transform = async (code, type) =>
 self.addEventListener('message', async event => {
   // lang can be html, css or js
   const { type, code, lang } = event.data
-  if (!type || !code) return
+  if (!type) return
+
   try {
     const output = await transform(code, type)
 
