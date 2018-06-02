@@ -53,12 +53,12 @@
       <template v-if="currTab === 'editor'">
         <div>
           Editor theme
-          <select name="update">
+          <select @change="onThemeChange" :value="currTheme" name="update">
             <option
-              v-for="theme of themeNames"
-              :value="theme"
-              :key="`opt-theme-${theme}`"
-            >{{ theme }}</option>
+              v-for="theme of allThemes"
+              :value="theme.slug"
+              :key="`opt-theme-${theme.slug}`"
+            >{{ theme.name }}</option>
           </select>
         </div>
 
@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState, mapActions } from 'vuex'
 
 export default {
   data () {
@@ -96,7 +96,15 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('editor', ['themeNames'])
+    ...mapGetters('editor', ['allThemes', 'currTheme'])
+  },
+  methods: {
+    ...mapActions('editor', ['setTheme']),
+    ...mapActions('ui', ['setThemeTransition']),
+    onThemeChange (event) {
+      this.setThemeTransition()
+      this.setTheme(event.target.value)
+    }
   }
 }
 </script>
@@ -112,21 +120,10 @@ h1 {
 }
 h1, h2 {
   font-weight: 400;
-  color: white;
+  color: var(--text-light);
 }
 h2 {
   font-weight: 400;
-  color: rgba(255,255,255,.5);
-}
-.group {
-  padding-top: 1rem;
-  padding-left: 1.5rem;
-  height: 10rem;
-  transition: all .1s ease;
-
-  &:hover {
-    background: rgba(0,0,0,.1);
-  }
 }
 
 .tabs {
@@ -134,6 +131,7 @@ h2 {
   width: 100%;
   position: absolute;
   top: 0;
+  background: var(--editor-color-dark);
 }
 
 .tab {
@@ -144,23 +142,22 @@ h2 {
   justify-content: center;
   position: relative;
   padding: .5rem 1rem;
-  background: var(--editor-color-dark);
 
-  --h: var(--editor-hue);
-  --c: hsl(var(--h), 20%, 60%);
+  --c: var(--editor-color-accent);
+  opacity: .75;
   border-bottom: $b solid var(--c);
   color: var(--c);
-  cursor: pointer;
   transition: all .2s ease;
+  will-change: opacity, box-shadow;
+  cursor: pointer;
 
   &--active {
-    --c: hsl(var(--h), 80%, 60%);
+    opacity: 1;
     box-shadow: inset 0 -1px 0 0 var(--c);
   }
 }
 
 .tab-content {
-  color: white;
+  color: var(--text-light);
 }
-
 </style>

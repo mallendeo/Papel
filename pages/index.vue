@@ -217,7 +217,7 @@ $dist: 1rem;
 .header {
   flex: 0 0 3rem;
   background: var(--editor-color-dark);
-  color: white;
+  color: var(--text-light);
   align-items: center;
 }
 

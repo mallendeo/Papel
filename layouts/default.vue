@@ -5,11 +5,18 @@
 </template>
 
 <script>
+import { mapGetters, mapState } from 'vuex'
+
 export default {
-  head() {
+  computed: {
+    ...mapGetters('editor', ['currTheme', 'themeTransition']),
+    ...mapState('ui', ['themeTransition'])
+  },
+  head () {
     return {
       htmlAttrs: {
-        'data-theme': 'dark'
+        'data-theme': this.currTheme,
+        class: this.themeTransition ? 'theme-transition' : ''
       }
     }
   }

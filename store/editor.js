@@ -11,7 +11,7 @@ const themes = [
   'oceanic-next',
   'dracula',
   'panda-syntax',
-  'solarized',
+  'solarized light',
   'solarized dark',
   'mdn-like'
 ]
@@ -81,12 +81,14 @@ export const state = () => ({
 })
 
 export const getters = {
-  themeNames (state) {
+  allThemes (state) {
     return state.opts.themes
-      .map(theme =>
-        words(theme).map(capitalize).join(' ')
-      )
-  }
+      .map(theme => ({
+        slug: theme,
+        name: words(theme).map(capitalize).join(' ')
+      }))
+  },
+  currTheme: state => state.opts.theme
 }
 
 export const mutations = {
@@ -99,6 +101,9 @@ export const mutations = {
   },
   [types.EDITOR_SET_CODE] (state, { lang, code }) {
     state.code[lang] = code
+  },
+  [types.EDITOR_SET_THEME] (state, theme) {
+    state.opts.theme = theme
   }
 }
 
@@ -111,5 +116,8 @@ export const actions = {
   },
   updateCode ({ commit }, { lang, code }) {
     commit(types.EDITOR_SET_CODE, { lang, code })
+  },
+  setTheme ({ commit }, theme) {
+    commit(types.EDITOR_SET_THEME, theme)
   }
 }
