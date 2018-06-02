@@ -1,3 +1,6 @@
+import words from 'lodash/words'
+import capitalize from 'lodash/capitalize'
+
 import * as types from './mutation-types'
 import * as demo from '../assets/demo'
 
@@ -76,6 +79,15 @@ export const state = () => ({
     }
   }
 })
+
+export const getters = {
+  themeNames (state) {
+    return state.opts.themes
+      .map(theme =>
+        words(theme).map(capitalize).join(' ')
+      )
+  }
+}
 
 export const mutations = {
   [types.EDITOR_SET_COMPILED] (state, { lang, output }) {

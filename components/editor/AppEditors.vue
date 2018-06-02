@@ -1,5 +1,5 @@
 <template>
-  <section class="editors col">
+  <section class="section editors col">
     <editor-panel v-if="showSearch">
       <app-search />
     </editor-panel>
@@ -93,8 +93,6 @@ export default {
       }
     })
 
-
-
     worker.addEventListener('message', this.onMessage, false)
   },
   methods: {
@@ -131,7 +129,7 @@ export default {
 .editors {
   height: 100%;
   position: relative;
-  background: #273238;
+  background: var(--editor-color);
 }
 
 .editor {

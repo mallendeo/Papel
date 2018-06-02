@@ -12,7 +12,7 @@ export default {
 
 <style lang="scss" scoped>
 .panel {
-  background: var(--editor-bg-dark);
+  background: var(--editor-color-dark);
   width: 100%;
   height: 100%;
   position: absolute;

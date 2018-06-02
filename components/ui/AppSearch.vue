@@ -96,7 +96,7 @@ export default {
   appearance: none;
   border: none;
   color: var(--text-light);
-  background: var(--editor-bg);
+  background: var(--editor-color);
   font-size: 1rem;
   transition: all .2s ease;
 
@@ -117,7 +117,7 @@ export default {
 
   &:focus {
     outline: none;
-    box-shadow: 0 2px 0 hsl(var(--blue-hue), 50%, 40%);
+    box-shadow: 0 2px 0 hsl(var(--editor-hue), 50%, 40%);
   }
 }
 

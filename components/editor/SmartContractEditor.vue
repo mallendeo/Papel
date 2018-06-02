@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="section col">
     <cm-editor
       v-observe-visibility="visibilityChanged"
       ref="sc-editor"

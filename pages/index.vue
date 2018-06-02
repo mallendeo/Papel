@@ -208,7 +208,7 @@ $dist: 1rem;
       z-index: 10;
 
       &:hover, &:active {
-        background: var(--blue);
+        background: var(--editor-color-accent);
       }
     }
   }
@@ -216,7 +216,7 @@ $dist: 1rem;
 
 .header {
   flex: 0 0 3rem;
-  background: var(--header-bg);
+  background: var(--editor-color-dark);
   color: white;
   align-items: center;
 }
@@ -224,14 +224,14 @@ $dist: 1rem;
 .content {
   flex: 2;
   min-width: 24rem;
-  background: var(--editor-bg);
+  background: var(--editor-color);
   overflow: hidden;
 
   &__wrapper {
     height: 100%;
     position: relative;
 
-    /deep/ section {
+    /deep/ .section {
       position: absolute;
       width: 100%; height: 100%;
     }
