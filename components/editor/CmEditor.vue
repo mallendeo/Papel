@@ -1,9 +1,11 @@
 <template>
   <codemirror
+    v-observe-visibility="visibilityChanged"
     class="editor row"
     :options="editorOpts"
     @input="val => loaded && $emit('change', val)"
     @ready="cm => cm.setValue(code)"
+    ref="editor"
   ></codemirror>
 </template>
 
@@ -14,7 +16,9 @@ export default {
   props: {
     change: { type: Function, default: () => {} },
     code: { type: String },
-    options: { type: Object }
+    options: { type: Object },
+    updateWhenVisible: { type: Boolean, default: true },
+    updateDelay: { type: Number, default: 0 }
   },
   data: () => ({ loaded: false }),
   mounted () {
@@ -26,6 +30,17 @@ export default {
     ...mapState('editor', ['opts']),
     editorOpts () {
       return { ...this.opts, ...this.options }
+    }
+  },
+  methods: {
+    visibilityChanged (isVisible) {
+      if (this.updateWhenVisible && isVisible) {
+        const ref = this.$refs['editor']
+        const cm = ref.codemirror || ref.$children[0].codemirror
+        if (!cm) return
+
+        setTimeout(() => cm.refresh(), this.updateDelay)
+      }
     }
   }
 }

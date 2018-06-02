@@ -25,6 +25,8 @@
       </div>
 
       <cm-editor
+        :updateWhenVisible="true"
+        :updateDelay="100"
         :code="editors[lang].code"
         :options="{ mode: getPrepros(lang).mime }"
         ref="editor"
@@ -154,9 +156,9 @@ export default {
     position: relative;
     padding: 0 1rem;
 
-    background: darken(#263238, 2);
+    background: var(--editor-color-dark);
     transition: all .2s ease;
-    color: rgba(255,255,255,.75);
+    color: var(--text-lighter);
 
     font-size: .75rem;
     z-index: 4;
