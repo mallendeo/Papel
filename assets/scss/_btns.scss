@@ -15,6 +15,10 @@
   img, svg {
     width: .8rem;
     flex: 1;
+
+    path {
+      fill: currentColor;
+    }
   }
 
   &:hover {
