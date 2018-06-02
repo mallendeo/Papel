@@ -1,7 +1,7 @@
 <template>
   <section class="section col">
     <cm-editor
-      code="class SmartContract {}"
+      :code="code"
       :options="{ mode: 'text/jsx' }"
     />
   </section>
@@ -13,6 +13,11 @@ import { mapState } from 'vuex'
 import CmEditor from './CmEditor'
 
 export default {
-  components: { CmEditor }
+  components: { CmEditor },
+  computed: {
+    ...mapState('editor', {
+      code: state => state.code.contract
+    })
+  }
 }
 </script>

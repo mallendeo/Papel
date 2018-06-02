@@ -156,11 +156,11 @@ export default {
 <style scoped lang="scss">
 $dist: 1rem;
 .slide-enter-active {
-  transition: all .2s;
+  transition: all .2s ease;
   transform: translateX(0rem);
 }
 .slide-enter, .slide-leave-to {
-  transition: all .2s;
+  transition: all .2s ease;
   transform: translateX(-$dist);
   opacity: 0;
 }

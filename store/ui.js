@@ -1,6 +1,6 @@
 import * as types from './mutation-types'
 
-const TRANSITION_DURATION = 0.4
+const TRANSITION_DURATION = 0.2
 
 export const state = () => ({
   themeTransition: false

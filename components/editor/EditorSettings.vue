@@ -114,14 +114,16 @@ export default {
   padding-top: 2.25rem;
 }
 
-h1 {
-  padding: 1rem;
-  font-size: 1rem;
-}
 h1, h2 {
   font-weight: 400;
   color: var(--text-light);
 }
+
+h1 {
+  padding: 1rem;
+  font-size: 1rem;
+}
+
 h2 {
   font-weight: 400;
 }
@@ -135,18 +137,20 @@ h2 {
 }
 
 .tab {
-  $b: 1px;
+  --c: var(--editor-color-accent);
+
   display: flex;
   flex: 1;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: .5rem 1rem;
-
-  --c: var(--editor-color-accent);
-  opacity: .75;
-  border-bottom: $b solid var(--c);
+  padding: .5rem;
+  font-size: .75rem;
+  font-weight: bold;
   color: var(--c);
+
+  border-bottom: 1px solid var(--c);
+  opacity: .75;
   transition: all .2s ease;
   will-change: opacity, box-shadow;
   cursor: pointer;

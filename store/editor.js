@@ -36,13 +36,15 @@ export const state = () => ({
   code: {
     html: demo.pug,
     css: demo.styl,
-    js: demo.babel
+    js: demo.babel,
+    contract: demo.contract
   },
 
   compiled: {
     html: '',
     css: '',
-    js: ''
+    js: '',
+    contract: ''
   },
 
   editors: {
