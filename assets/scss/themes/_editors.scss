@@ -1,0 +1,99 @@
+/**
+ * Editor Themes
+ */
+
+// Dark Themes
+//--------------------------------
+html {
+  --red-hue: 344;
+
+  --editor-hue: 200;
+  --editor-color-accent: hsl(var(--editor-hue), 100%, 50%);
+  --editor-color: hsl(var(--editor-hue), 18%, 19%);
+  --editor-color-dark: hsl(var(--editor-hue), 18%, 15%);
+
+  --logo-stroke: white;
+  --logo-fill: var(--editor-color-dark);
+  --logo-text: white;
+
+  --btn-color: white;
+  --btn-color-hover: white;
+  --btn-color-active: var(--editor-color-accent);
+
+  --text-light: hsl(var(--editor-hue), 50%, 90%);
+  --text-lighter: hsl(var(--editor-hue), 10%, 50%);
+
+  --error-color: hsl(var(--red-hue), 78%, 55%);
+  --error-color-light: hsl(var(--red-hue), 78%, 60%);
+}
+
+html[data-theme='dracula'] {
+  --editor-hue: 231;
+  --editor-color-accent: hsl(var(--editor-hue), 100%, 80%);
+}
+
+html[data-theme='monokai'] {
+  --editor-hue: 70;
+  --editor-color: hsl(var(--editor-hue), 5%, 10%);
+  --editor-color-accent: hsl(var(--editor-hue), 30%, 70%);
+  --editor-color-dark: hsl(var(--editor-hue), 10%, 10%);
+}
+
+html[data-theme='oceanic-next'] {
+  --editor-hue: 198;
+}
+
+html[data-theme='panda-syntax'] {
+  --editor-hue: 210;
+  --editor-color-accent: hsl(var(--editor-hue), 90%, 75%);
+  --editor-color-dark: hsl(var(--editor-hue), 10%, 10%);
+}
+
+html[data-theme='solarized dark'] {
+  --editor-hue: 192;
+  --editor-color: hsl(var(--editor-hue), 100%, 11%);
+  --editor-color-accent: hsl(var(--editor-hue), 100%, 50%);
+  --editor-color-dark: hsl(var(--editor-hue), 100%, 7%);
+}
+
+// Light Themes
+//--------------------------------
+html[data-theme='default'],
+html[data-theme='mdn-like'] {
+  --editor-color: hsl(0, 0%, 95%);
+  --editor-color-accent: hsl(0, 0%, 25%);
+  --editor-color-dark: hsl(0, 0%, 97%);
+
+  --logo-stroke: #222;
+  --logo-fill: var(--editor-color-dark);
+  --logo-text: #222;
+
+  --text-light: hsl(0, 0%, 20%);
+  --text-lighter: hsl(0, 0%, 20%);
+
+  --btn-bg-active: hsl(var(--editor-hue), 0%, 90%);
+  --btn-color: hsl(var(--editor-hue), 20%, 20%);
+  --btn-color-hover: hsl(var(--editor-hue), 90%, 20%);
+  --btn-color-active: hsl(var(--editor-hue), 90%, 20%);
+}
+
+html[data-theme='solarized light'] {
+  --editor-hue: 44;
+  --editor-color-accent: hsl(var(--editor-hue), 90%, 20%);
+  --editor-color: hsl(var(--editor-hue), 40%, 95%);
+  --editor-color-dark: hsl(var(--editor-hue), 40%, 90%);
+
+  --logo-stroke: #222;
+  --logo-fill: var(--editor-color-dark);
+  --logo-text: #222;
+
+  --btn-bg: transparent;
+  --btn-bg-hover: transparent;
+  --btn-bg-active: hsl(var(--editor-hue), 40%, 85%);
+  --btn-color: hsl(var(--editor-hue), 20%, 20%);
+  --btn-color-hover: hsl(var(--editor-hue), 90%, 20%);
+  --btn-color-active: hsl(var(--editor-hue), 90%, 20%);
+
+  --text-light: hsl(0, 0%, 20%);
+  --text-lighter: hsl(0, 0%, 20%);
+}
