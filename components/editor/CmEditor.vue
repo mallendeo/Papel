@@ -40,6 +40,7 @@ export default {
   /deep/ .CodeMirror {
     height: 100%;
     flex: 1;
+    font-size: 14px; // FIXME: make it a setting
   }
 }
 </style>
