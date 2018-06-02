@@ -58,6 +58,8 @@ button {
 }
 
 .theme-transition {
+  pointer-events: none;
+
   *, *:after, *:before {
     transition: all .2s ease;
   }
