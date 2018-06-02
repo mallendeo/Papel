@@ -51,3 +51,20 @@ svg {
 `
 
 export const babel = ``
+
+export const contract = `class SmartContract {
+  init () {
+
+  }
+
+  constructor () {
+
+  }
+
+  withdraw () {
+
+  }
+}
+
+export default SmartContract
+`
