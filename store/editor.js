@@ -94,15 +94,15 @@ export const getters = {
 }
 
 export const mutations = {
-  [types.EDITOR_SET_COMPILED] (state, { lang, output }) {
-    state.compiled[lang] = output
-    state.editors[lang].error = null
+  [types.EDITOR_SET_COMPILED] (state, { type, output }) {
+    state.compiled[type] = output
+    state.editors[type].error = null
   },
-  [types.EDITOR_SET_ERROR] (state, { lang, error }) {
-    state.editors[lang].error = error
+  [types.EDITOR_SET_ERROR] (state, { type, error }) {
+    state.editors[type].error = error
   },
-  [types.EDITOR_SET_CODE] (state, { lang, code }) {
-    state.code[lang] = code
+  [types.EDITOR_SET_CODE] (state, { type, code }) {
+    state.code[type] = code
   },
   [types.EDITOR_SET_THEME] (state, theme) {
     state.opts.theme = theme
@@ -110,14 +110,14 @@ export const mutations = {
 }
 
 export const actions = {
-  setOutput ({ commit }, { lang, output }) {
-    commit(types.EDITOR_SET_COMPILED, { lang, output })
+  setOutput ({ commit }, { type, output }) {
+    commit(types.EDITOR_SET_COMPILED, { type, output })
   },
-  setError({ commit }, { lang, error }) {
-    commit(types.EDITOR_SET_ERROR, { lang, error })
+  setError({ commit }, { type, error }) {
+    commit(types.EDITOR_SET_ERROR, { type, error })
   },
-  updateCode ({ commit }, { lang, code }) {
-    commit(types.EDITOR_SET_CODE, { lang, code })
+  updateCode ({ commit }, { type, code }) {
+    commit(types.EDITOR_SET_CODE, { type, code })
   },
   setTheme ({ commit }, theme) {
     commit(types.EDITOR_SET_THEME, theme)

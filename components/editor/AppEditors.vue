@@ -11,26 +11,26 @@
     </div>
 
     <div
-      v-for="(lang, index) of langs"
+      v-for="(type, index) of types"
       class="editor__wrapper col"
-      :key="`${lang}-editor`"
-      :id="`${lang}-editor`"
+      :key="`${type}-editor`"
+      :id="`${type}-editor`"
     >
       <div
         v-if="index"
         class="editor__toolbar row"
-        :class="{ 'editor__toolbar--danger': editors[lang].error }"
+        :class="{ 'editor__toolbar--danger': editors[type].error }"
       >
-        <span>{{ getPrepros(lang).title }}</span>
+        <span>{{ getPrepros(type).title }}</span>
       </div>
 
       <cm-editor
         :updateWhenVisible="true"
         :updateDelay="100"
-        :code="editors[lang].code"
-        :options="{ mode: getPrepros(lang).mime }"
+        :code="editors[type].code"
+        :options="{ mode: getPrepros(type).mime }"
         ref="editor"
-        @change="code => update(editors[lang].lang, code, lang)"
+        @change="code => update(editors[type].lang, code, type)"
       />
     </div>
   </section>
@@ -67,13 +67,13 @@ export default {
   computed: {
     ...mapState('editor', ['editors']),
 
-    langs () {
+    types () {
       return Object.keys(this.editors)
     }
   },
 
   mounted () {
-    const editors = this.langs.map(l => `#${l}-editor`)
+    const editors = this.types.map(l => `#${l}-editor`)
 
     this.split = Split(editors, {
       snapOffset: 0,
@@ -100,28 +100,28 @@ export default {
   methods: {
     ...mapActions('editor', ['updateCode', 'setError', 'setOutput']),
 
-    getPrepros (lang) {
-      const editor = this.editors[lang]
+    getPrepros (type) {
+      const editor = this.editors[type]
       return editor.prepros[editor.lang]
     },
 
-    update (type, code, lang) {
-      this.updateCode({ type: lang, code })
+    update (lang, code, type) {
+      this.updateCode({ type, code })
       worker.postMessage({ code, type, lang })
     },
 
     onMessage (event) {
       const { data } = event
-      const { lang, output, error } = data
+      const { type, output, error } = data
 
       if (error) {
-        this.setError({ lang, error: data.error })
+        this.setError({ type, error: data.error })
         return
       }
 
       this.$emit('codeupdate', data)
 
-      this.setOutput({ lang, output })
+      this.setOutput({ type, output })
     }
   }
 }

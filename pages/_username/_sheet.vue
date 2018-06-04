@@ -30,7 +30,14 @@
           @click="() => pay()"
           class="btn btn--fade"
         >
-          <i class="material-icons">save</i>
+          <i class="material-icons">cloud_upload</i>
+          <!--
+            call_split -> fork
+            cloud_upload -> save
+            cloud_off -> no extension
+            cloud + loading -> saving
+            cloud_done -> saved
+          -->
         </button>
       </header>
 
@@ -117,27 +124,31 @@ export default {
 
     const previewUrl = process.env.NODE_ENV === 'production'
       ? 'https://a.papel.app/preview/'
-      : 'http://localhost:3001/'
+      : 'http://localhost:3001/preview.html'
 
     return {
       tabs,
       currTab: tabs[0],
       slideRight: false,
-      previewUrl
+      previewUrl,
+      remote: null
     }
   },
+
+  computed: {
+    ...mapState('editor', ['editors', 'compiled'])
+  },
+
   methods: {
     ...mapActions('neb', ['pay']),
+
     showTab (tab) {
       this.slideRight = tab.index > this.currTab.index
       this.currTab = tab
     },
-    updateIframe (event) {
-      const remote = this.$refs.preview.contentWindow
-      // FIXME: change final production URL
-      // const prod = process.env.NODE_ENV === 'production'
 
-      remote.postMessage({
+    updateIframe (event) {
+      this.remote.postMessage({
         type: 'papel:codeupdate',
         event
       }, this.previewUrl)
@@ -152,6 +163,21 @@ export default {
       cursor: 'col-resize',
       elementStyle: (dimension, size, gutterSize) => ({
         'flex-basis': `calc(${size}% - ${gutterSize}px)`
+      })
+    })
+
+    this.remote = this.$refs.preview.contentWindow
+
+    document.addEventListener('papel:load', () => {
+      Object.keys(this.editors).forEach(type => {
+        remote.postMessage({
+          type: 'papel:codeupdate',
+          event: {
+            type,
+            output: this.compiled[type],
+            error: this.editors[type].error
+          }
+        }, this.previewUrl)
       })
     })
   }

@@ -2,10 +2,10 @@ importScripts('./vendor/stylus.min.js')
 importScripts('./vendor/pug.min.js')
 importScripts('./vendor/babel.min.js' )
 
-const transform = async (code, type) =>
+const transform = async (code, lang) =>
   new Promise((resolve, reject) => {
     try {
-      switch (type) {
+      switch (lang) {
         case 'html':
         case 'css':
         case 'js':
@@ -28,7 +28,7 @@ const transform = async (code, type) =>
           resolve(out.code)
           break
         default:
-          throw Error(`Invalid type: ${type}`)
+          throw Error(`Invalid lang: ${lang}`)
       }
     } catch (err) {
       reject(err)
@@ -36,12 +36,12 @@ const transform = async (code, type) =>
   })
 
 self.addEventListener('message', async event => {
-  // lang can be html, css or js
+  // type can be html, css or js
   const { type, code, lang } = event.data
-  if (!type) return
+  if (!lang) return
 
   try {
-    const output = await transform(code, type)
+    const output = await transform(code, lang)
 
     self.postMessage({ type, output, lang })
   } catch (err) {
