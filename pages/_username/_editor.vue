@@ -174,7 +174,6 @@ export default {
       }
 
       this.updateIframe(data)
-
       this.setOutput({ type, output })
     }
   },
