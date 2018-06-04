@@ -56,7 +56,7 @@
     <div id="preview" class="preview">
       <!-- Disable allow-popups (prevent alerts) when showing the showcase -->
       <iframe
-        src="/preview.html"
+        :src="previewUrl"
         sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts"
         ref="preview"
         frameborder="0"
@@ -115,10 +115,15 @@ export default {
       icon: 'settings'
     }]
 
+    const previewUrl = process.env.NODE_ENV === 'production'
+      ? 'https://a.papel.app/preview/'
+      : 'http://localhost:3001/'
+
     return {
       tabs,
       currTab: tabs[0],
-      slideRight: false
+      slideRight: false,
+      previewUrl
     }
   },
   methods: {
@@ -134,7 +139,7 @@ export default {
 
       remote.postMessage(
         { type: 'papel:codeupdate', event },
-        window.location
+        previewUrl
       )
     }
   },
