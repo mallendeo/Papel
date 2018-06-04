@@ -1,61 +1,23 @@
 <template>
   <section class="container row">
     <div id="content" class="content col">
-      <header class="header row">
-        <h1 class="brand row row--center">
-          <paper-logo class="brand__logo"></paper-logo> Papel
-        </h1>
-
-        <button
-          v-for="tab of tabs"
-          :key="`nav-${tab.component}`"
-          :title="tab.title"
-          class="btn btn--fade"
-          :class="{ 'btn--active': currTab === tab }"
-          @click="showTab(tab)"
-        >
-          <i
-            v-if="tab.icon"
-            class="material-icons"
-          >{{ tab.icon }}</i>
-
-          <component
-            v-else-if="tab.iconComponent"
-            :is="tab.iconComponent"
-          />
-        </button>
-
-        <button
-          title="Save"
-          @click="() => pay()"
-          class="btn btn--fade"
-        >
-          <i class="material-icons">cloud_upload</i>
-          <!--
-            call_split -> fork
-            cloud_upload -> save
-            cloud_off -> no extension
-            cloud + loading -> saving
-            cloud_done -> saved
-          -->
-        </button>
-      </header>
+      <editor-header />
 
       <transition-group
         name="slide"
-        :class="{ 'slide-right': slideRight }"
+        :class="{ 'slide-right': ui.slideRight }"
         tag="div"
         class="content__wrapper"
       >
         <app-editors
           key="tab-1"
-          v-show="currTab.component === 'app-editors'" />
+          v-show="ui.currTab.component === 'app-editors'" />
         <smart-contract-editor
           key="tab-2"
-          v-show="currTab.component === 'smart-contract-editor'" />
+          v-show="ui.currTab.component === 'smart-contract-editor'" />
         <editor-settings
           key="tab-3"
-          v-show="currTab.component === 'editor-settings'" />
+          v-show="ui.currTab.component === 'editor-settings'" />
       </transition-group>
     </div>
 
@@ -83,22 +45,19 @@ import { mapState, mapActions } from 'vuex'
 import shortid from 'shortid'
 import Split from 'split.js'
 
-import PaperLogo from '@/components/icons/PaperLogo'
-import NebulasLogo from '@/components/icons/NebulasLogo'
-
 import AppEditors from '@/components/editor/AppEditors'
 import SmartContractEditor from '@/components/editor/SmartContractEditor'
 import EditorSettings from '@/components/editor/EditorSettings'
+import EditorHeader from '@/components/editor/EditorHeader'
 
 const worker = new Worker('/transform-worker.js')
 
 export default {
   components: {
-    PaperLogo,
     AppEditors,
-    NebulasLogo,
     SmartContractEditor,
-    EditorSettings
+    EditorSettings,
+    EditorHeader
   },
 
   beforeDestroy () {
@@ -107,53 +66,21 @@ export default {
   },
 
   data: () => {
-    const tabs = [{
-      index: 0,
-      component: 'app-editors',
-      title: 'Editor',
-      icon: 'code'
-    }, {
-      index: 1,
-      component: 'smart-contract-editor',
-      title: 'Smart contract editor',
-      iconComponent: 'nebulas-logo'
-    }, {
-      index: 2,
-      component: 'app-info',
-      title: 'Details',
-      icon: 'info'
-    }, {
-      index: 3,
-      component: 'editor-settings',
-      title: 'Editor settings',
-      icon: 'settings'
-    }]
-
     const previewUrl = process.env.NODE_ENV === 'production'
       ? 'https://a.papel.app/preview/'
       : 'http://localhost:3001/preview.html'
 
     return {
-      tabs,
-      currTab: tabs[0],
-      slideRight: false,
       previewUrl,
       unsubscribeStore: null
     }
   },
 
-  computed: {
-    ...mapState('editor', ['editors', 'code'])
-  },
+  computed: mapState('editor', ['editors', 'code', 'ui']),
 
   methods: {
     ...mapActions('neb', ['pay']),
     ...mapActions('editor', ['setOutput', 'setError']),
-
-    showTab (tab) {
-      this.slideRight = tab.index > this.currTab.index
-      this.currTab = tab
-    },
 
     updateIframe (event) {
       const remote = this.$refs.preview.contentWindow
@@ -221,37 +148,10 @@ $dist: 1rem;
   transform: translateX(-$dist);
   opacity: 0;
 }
-.slide-leave-to {
-  transform: translateX($dist);
-}
+.slide-leave-to { transform: translateX($dist) }
 .slide-right {
-  .slide-leave-to {
-    transform: translateX(-$dist);
-  }
-  .slide-enter {
-    transform: translateX($dist);
-  }
-}
-
-.brand {
-  font-family: 'Comfortaa', sans-serif;
-  font-size: .8rem;
-  margin-left: 1rem;
-  margin-right: 2rem;
-  font-weight: 400;
-  color: var(--logo-text);
-
-  &__logo {
-    margin-right: .5rem;
-    width: 1.25rem;
-    /deep/ {
-      path, rect {
-        fill: var(--logo-fill);
-        stroke-width: 4px;
-        stroke: var(--logo-stroke);
-      }
-    }
-  }
+  .slide-leave-to { transform: translateX(-$dist) }
+  .slide-enter { transform: translateX($dist) }
 }
 
 .container {
@@ -269,13 +169,6 @@ $dist: 1rem;
       }
     }
   }
-}
-
-.header {
-  flex: 0 0 3rem;
-  background: var(--editor-color-dark);
-  color: var(--text-light);
-  align-items: center;
 }
 
 .content {
@@ -323,11 +216,6 @@ $dist: 1rem;
       padding-top: 0;
     }
   }
-}
-
-.btn {
-  &:nth-of-type(4) { margin-left: auto; }
-  i { font-size: .9rem; }
 }
 
 @keyframes slide-in {

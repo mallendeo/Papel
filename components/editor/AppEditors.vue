@@ -28,7 +28,10 @@
         :updateWhenVisible="true"
         :updateDelay="100"
         :code="editors[type].code"
-        :options="{ mode: getPrepros(type).mime }"
+        :options="{
+          mode: getPrepros(type).mime,
+          readOnly: editors[type].showProcessed
+        }"
         ref="editor"
         @change="code => onCodeChange(code, type)"
       />

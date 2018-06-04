@@ -16,6 +16,28 @@ const themes = [
   'mdn-like'
 ]
 
+const tabs = [{
+  index: 0,
+  component: 'app-editors',
+  title: 'Editor',
+  icon: 'code'
+}, {
+  index: 1,
+  component: 'smart-contract-editor',
+  title: 'Smart contract editor',
+  iconComponent: 'nebulas-logo'
+}, {
+  index: 2,
+  component: 'app-info',
+  title: 'Details',
+  icon: 'info'
+}, {
+  index: 3,
+  component: 'editor-settings',
+  title: 'Editor settings',
+  icon: 'settings'
+}]
+
 export const state = () => ({
   opts: {
     tabSize: 2,
@@ -31,6 +53,12 @@ export const state = () => ({
         cm.replaceSelection(spaces)
       }
     }
+  },
+
+  ui: {
+    tabs,
+    currTab: tabs[0],
+    slideRight: false
   },
 
   code: {
@@ -107,6 +135,10 @@ export const mutations = {
   },
   [types.EDITOR_SET_THEME] (state, theme) {
     state.opts.theme = theme
+  },
+  [types.EDITOR_NAV_TO] (state, tab) {
+    state.ui.slideRight = tab.index > state.ui.currTab.index
+    state.ui.currTab = tab
   }
 }
 
@@ -122,5 +154,8 @@ export const actions = {
   },
   setTheme ({ commit }, theme) {
     commit(types.EDITOR_SET_THEME, theme)
+  },
+  navTo ({ commit }, tab) {
+    commit(types.EDITOR_NAV_TO, tab)
   }
 }
