@@ -45,7 +45,7 @@ import AppSearch from '../ui/AppSearch'
 import EditorPanel from '../ui/EditorPanel'
 import CmEditor from './CmEditor'
 
-const worker = new Worker('transform-worker.js')
+const worker = new Worker('/transform-worker.js')
 
 export default {
   components: {
