@@ -137,10 +137,10 @@ export default {
       // FIXME: change final production URL
       // const prod = process.env.NODE_ENV === 'production'
 
-      remote.postMessage(
-        { type: 'papel:codeupdate', event },
-        previewUrl
-      )
+      remote.postMessage({
+        type: 'papel:codeupdate',
+        event
+      }, this.previewUrl)
     }
   },
   mounted () {
