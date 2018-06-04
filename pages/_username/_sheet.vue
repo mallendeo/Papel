@@ -48,7 +48,6 @@
         class="content__wrapper"
       >
         <app-editors
-          @codeupdate="updateIframe"
           key="tab-1"
           v-show="currTab.component === 'app-editors'" />
         <smart-contract-editor
@@ -91,6 +90,8 @@ import AppEditors from '@/components/editor/AppEditors'
 import SmartContractEditor from '@/components/editor/SmartContractEditor'
 import EditorSettings from '@/components/editor/EditorSettings'
 
+const worker = new Worker('/transform-worker.js')
+
 export default {
   components: {
     PaperLogo,
@@ -99,6 +100,12 @@ export default {
     SmartContractEditor,
     EditorSettings
   },
+
+  beforeDestroy () {
+    this.unsubscribeStore()
+    worker.removeEventListener('message', this.onMessage, false)
+  },
+
   data: () => {
     const tabs = [{
       index: 0,
@@ -131,16 +138,17 @@ export default {
       currTab: tabs[0],
       slideRight: false,
       previewUrl,
-      remote: null
+      unsubscribeStore: null
     }
   },
 
   computed: {
-    ...mapState('editor', ['editors', 'compiled'])
+    ...mapState('editor', ['editors', 'code'])
   },
 
   methods: {
     ...mapActions('neb', ['pay']),
+    ...mapActions('editor', ['setOutput', 'setError']),
 
     showTab (tab) {
       this.slideRight = tab.index > this.currTab.index
@@ -148,10 +156,26 @@ export default {
     },
 
     updateIframe (event) {
-      this.remote.postMessage({
+      const remote = this.$refs.preview.contentWindow
+
+      remote.postMessage({
         type: 'papel:codeupdate',
         event
       }, this.previewUrl)
+    },
+
+    onMessage (event) {
+      const { data } = event
+      const { type, output, error } = data
+
+      if (error) {
+        this.setError({ type, error: data.error })
+        return
+      }
+
+      this.updateIframe(data)
+
+      this.setOutput({ type, output })
     }
   },
   mounted () {
@@ -166,18 +190,21 @@ export default {
       })
     })
 
-    this.remote = this.$refs.preview.contentWindow
+    this.unsubscribeStore = this.$store.subscribeAction((action, state) => {
+      if (action.type === 'editor/updateCode') {
+        worker.postMessage(action.payload)
+      }
+    })
 
-    document.addEventListener('papel:load', () => {
+    worker.addEventListener('message', this.onMessage, false)
+
+    this.$refs.preview.addEventListener('load', () => {
       Object.keys(this.editors).forEach(type => {
-        remote.postMessage({
-          type: 'papel:codeupdate',
-          event: {
-            type,
-            output: this.compiled[type],
-            error: this.editors[type].error
-          }
-        }, this.previewUrl)
+        this.$store.dispatch('editor/updateCode', {
+          type,
+          code: this.code[type],
+          lang: this.editors[type].lang
+        })
       })
     })
   }

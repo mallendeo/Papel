@@ -4,7 +4,7 @@
     class="editor row"
     :options="editorOpts"
     @input="val => loaded && $emit('change', val)"
-    @ready="cm => cm.setValue(code)"
+    @ready="onReady"
     ref="editor"
   ></codemirror>
 </template>
@@ -21,11 +21,6 @@ export default {
     updateDelay: { type: Number, default: 0 }
   },
   data: () => ({ loaded: false }),
-  mounted () {
-    this.$emit('change', this.code)
-    // TODO: Get a better way to emit the code once
-    this.loaded = true
-  },
   computed: {
     ...mapState('editor', ['opts']),
     editorOpts () {
@@ -41,6 +36,11 @@ export default {
 
         setTimeout(() => cm.refresh(), this.updateDelay)
       }
+    },
+
+    onReady (cm) {
+      cm.setValue(this.code)
+      this.loaded = true
     }
   }
 }

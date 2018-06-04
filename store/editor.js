@@ -90,7 +90,8 @@ export const getters = {
         name: words(theme).map(capitalize).join(' ')
       }))
   },
-  currTheme: state => state.opts.theme
+  currTheme: state => state.opts.theme,
+  types: state => Object.keys(state.editors)
 }
 
 export const mutations = {

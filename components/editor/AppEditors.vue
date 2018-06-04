@@ -30,7 +30,7 @@
         :code="editors[type].code"
         :options="{ mode: getPrepros(type).mime }"
         ref="editor"
-        @change="code => update(editors[type].lang, code, type)"
+        @change="code => onCodeChange(code, type)"
       />
     </div>
   </section>
@@ -38,14 +38,12 @@
 
 <script>
 import Split from 'split.js'
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 
 import AppToggle from '../ui/AppToggle'
 import AppSearch from '../ui/AppSearch'
 import EditorPanel from '../ui/EditorPanel'
 import CmEditor from './CmEditor'
-
-const worker = new Worker('/transform-worker.js')
 
 export default {
   components: {
@@ -55,21 +53,14 @@ export default {
     EditorPanel
   },
 
-  beforeDestroy () {
-    worker.removeEventListener('message', this.onMessage, false)
-  },
-
   data: () => ({
     split: null,
     showSearch: false
   }),
 
   computed: {
-    ...mapState('editor', ['editors']),
-
-    types () {
-      return Object.keys(this.editors)
-    }
+    ...mapState('editor', ['editors', 'code']),
+    ...mapGetters('editor', ['types'])
   },
 
   mounted () {
@@ -94,34 +85,23 @@ export default {
         })
       }
     })
-
-    worker.addEventListener('message', this.onMessage, false)
   },
   methods: {
-    ...mapActions('editor', ['updateCode', 'setError', 'setOutput']),
+    ...mapActions('editor', ['updateCode']),
+
+    // FIXME: Find some way to trigger the update
+    // event only once after the editor is ready
+    onCodeChange (code, type) {
+      this.updateCode({
+        lang: this.editors[type].lang,
+        code,
+        type
+      })
+    },
 
     getPrepros (type) {
       const editor = this.editors[type]
       return editor.prepros[editor.lang]
-    },
-
-    update (lang, code, type) {
-      this.updateCode({ type, code })
-      worker.postMessage({ code, type, lang })
-    },
-
-    onMessage (event) {
-      const { data } = event
-      const { type, output, error } = data
-
-      if (error) {
-        this.setError({ type, error: data.error })
-        return
-      }
-
-      this.$emit('codeupdate', data)
-
-      this.setOutput({ type, output })
     }
   }
 }
