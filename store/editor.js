@@ -81,9 +81,10 @@ export const state = () => ({
       error: null,
       head: '',
       lang: 'pug',
+      showProcessed: false,
       prepros: {
         html: { mime: 'text/html', title: 'HTML' },
-        pug: { mime: 'text/x-pug', title: 'HTML (Pug)' }
+        pug: { mime: 'text/x-pug', title: 'Pug' }
       }
     },
     css: {
@@ -92,9 +93,10 @@ export const state = () => ({
       autoprefix: false,
       libs: [],
       lang: 'stylus',
+      showProcessed: false,
       prepros: {
         css: { mime: 'text/css', title: 'CSS' },
-        stylus: { mime: 'text/x-styl', title: 'CSS (Stylus)' }
+        stylus: { mime: 'text/x-styl', title: 'Stylus' }
       }
     },
     js: {
@@ -102,9 +104,10 @@ export const state = () => ({
       error: null,
       libs: [],
       lang: 'babel',
+      showProcessed: false,
       prepros: {
         js: { mime: 'text/javascript', title: 'JS' },
-        babel: { mime: 'text/jsx', title: 'JS (Babel)' }
+        babel: { mime: 'text/jsx', title: 'Babel' }
       }
     }
   }
@@ -119,7 +122,9 @@ export const getters = {
       }))
   },
   currTheme: state => state.opts.theme,
-  types: state => Object.keys(state.editors)
+  types: state => Object.keys(state.editors),
+  preprosList: state => type => Object.keys(state.editors[type].prepros),
+  prepros: state => type => state.editors[type].prepros[state.editors[type].lang]
 }
 
 export const mutations = {
@@ -139,6 +144,13 @@ export const mutations = {
   [types.EDITOR_NAV_TO] (state, tab) {
     state.ui.slideRight = tab.index > state.ui.currTab.index
     state.ui.currTab = tab
+  },
+  [types.EDITOR_TOGGLE_PROCESSED] (state, type) {
+    const { showProcessed } = state.editors[type]
+    state.editors[type].showProcessed = !showProcessed
+  },
+  [types.EDITOR_SET_LANG] (state, { type, lang }) {
+    state.editors[type].lang = lang
   }
 }
 
@@ -154,6 +166,9 @@ export const actions = {
   },
   setTheme ({ commit }, theme) {
     commit(types.EDITOR_SET_THEME, theme)
+  },
+  setLang ({ commit }, lang) {
+    commit(types.EDITOR_SET_LANG, lang)
   },
   navTo ({ commit }, tab) {
     commit(types.EDITOR_NAV_TO, tab)

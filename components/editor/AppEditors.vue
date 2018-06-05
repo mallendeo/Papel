@@ -7,7 +7,12 @@
       class="editor__toolbar row"
       :class="{ 'editor__toolbar--danger': editors['html'].error }"
     >
-      <span>{{ getPrepros('html').title }}</span>
+      <app-select
+        :currTitle="makeTitle('html', editors['html'].lang)"
+        :options="makeOptions('html')"
+        :value="editors['html'].lang"
+        @change="lang => setEditorLang('html', lang)"
+      />
     </div>
 
     <div
@@ -21,7 +26,12 @@
         class="editor__toolbar row"
         :class="{ 'editor__toolbar--danger': editors[type].error }"
       >
-        <span>{{ getPrepros(type).title }}</span>
+        <app-select
+          :currTitle="makeTitle(type, editors[type].lang)"
+          :options="makeOptions(type)"
+          :value="editors[type].lang"
+          @change="lang => setEditorLang(type, lang)"
+        />
       </div>
 
       <cm-editor
@@ -48,10 +58,13 @@ import AppSearch from '../ui/AppSearch'
 import EditorPanel from '../ui/EditorPanel'
 import CmEditor from './CmEditor'
 
+import AppSelect from '../ui/AppSelect'
+
 export default {
   components: {
     AppToggle,
     AppSearch,
+    AppSelect,
     CmEditor,
     EditorPanel
   },
@@ -63,7 +76,7 @@ export default {
 
   computed: {
     ...mapState('editor', ['editors', 'code']),
-    ...mapGetters('editor', ['types'])
+    ...mapGetters('editor', ['types', 'preprosList', 'prepros'])
   },
 
   mounted () {
@@ -80,6 +93,10 @@ export default {
         return elem[index]
       },
 
+      elementStyle: (dimension, size, gutterSize) => ({
+        'flex-basis': `calc(${size}% - ${gutterSize}px)`
+      }),
+
       onDragEnd: () => {
         const editors = this.$refs['editor']
         editors.forEach(editor => {
@@ -90,7 +107,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions('editor', ['updateCode']),
+    ...mapActions('editor', ['updateCode', 'setLang']),
 
     // FIXME: Find some way to trigger the update
     // event only once after the editor is ready
@@ -105,12 +122,32 @@ export default {
     getPrepros (type) {
       const editor = this.editors[type]
       return editor.prepros[editor.lang]
+    },
+
+    makeOptions (type) {
+      return this.preprosList(type).map(lang => ({
+        value: lang,
+        title: this.editors[type].prepros[lang].title
+      }))
+    },
+
+    makeTitle (type, lang) {
+      const prepros = this.prepros(type)
+      return type === lang
+        ? prepros.title
+        : `${type.toUpperCase()} (${prepros.title})`
+    },
+
+    setEditorLang (type, lang) {
+      this.setLang({ type, lang })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+$toolbar-size: 2rem;
+
 .editors {
   height: 100%;
   position: relative;
@@ -129,22 +166,22 @@ export default {
   &__wrapper {
     z-index: 4;
     overflow: auto;
+    position: relative;
   }
 
   &__toolbar {
     justify-content: space-between;
     align-items: center;
-    flex: 0 1 2rem;
+    flex: 0 0 $toolbar-size;
 
     position: relative;
-    padding: 0 1rem;
 
     background: var(--editor-color-dark);
     transition: all .2s ease;
     color: var(--text-lighter);
 
     font-size: .75rem;
-    z-index: 4;
+    z-index: 5;
 
     &:not(:first-of-type) {
       cursor: row-resize;
@@ -157,9 +194,8 @@ export default {
 }
 
 .on-top {
-  position: relative;
-  z-index: 9;
-  align-self: flex-end;
   margin-top: -2rem;
+  position: absolute;
+  z-index: 999;
 }
 </style>

@@ -41,7 +41,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import Worker from '~/assets/transform.worker.js'
+import TransformWorker from '~/assets/transform.worker.js'
 
 import shortid from 'shortid'
 import Split from 'split.js'
@@ -51,7 +51,7 @@ import SmartContractEditor from '@/components/editor/SmartContractEditor'
 import EditorSettings from '@/components/editor/EditorSettings'
 import EditorHeader from '@/components/editor/EditorHeader'
 
-const worker = new Worker()
+const worker = new TransformWorker()
 
 export default {
   components: {
@@ -94,12 +94,16 @@ export default {
 
     onMessage (event) {
       const { data } = event
-      const { type, output, error } = data
+      const { kind, type, output, error } = data
+
+      if (kind !== 'prepros') return
 
       if (error) {
         this.setError({ type, error: data.error })
         return
       }
+
+      if (!type || typeof output === 'undefined') return
 
       this.updateIframe(data)
       this.setOutput({ type, output })
