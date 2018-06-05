@@ -14,6 +14,10 @@ const LANG_MAP = {
 }
 
 const transform = async (code, lang) => {
+  if (['html', 'css', 'js'].indexOf(lang) > -1) {
+    return Promise.resolve(code)
+  }
+
   const prepros = LANG_MAP[lang]
 
   let loadedLib = self[prepros.global]
@@ -28,12 +32,8 @@ const transform = async (code, lang) => {
   }
 
   return new Promise((resolve, reject) => {
-    if (['html', 'css', 'js'].indexOf(lang) > -1) {
-      resolve(code)
-      return
-    }
-
     if (!prepros) return reject('Preprocessor not supported.')
+
     try {
       switch (lang) {
         case 'pug':
@@ -67,12 +67,19 @@ self.addEventListener('message', async event => {
   if (!lang) return
 
   try {
-    const output = await transform(code, lang)
-
-    self.postMessage({ type, output, lang })
+    self.postMessage({
+      kind: 'prepros',
+      output: await transform(code, lang),
+      type,
+      lang
+    })
   } catch (err) {
-    console.error(err)
-    self.postMessage({ type, error: err.message, lang })
+    self.postMessage({
+      kind: 'prepros',
+      error: err.message,
+      type,
+      lang
+    })
   }
 }, false)
 
