@@ -28,4 +28,6 @@ import 'codemirror/mode/stylus/stylus'
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/jsx/jsx'
 
+import 'codemirror/addon/selection/active-line'
+
 Vue.use(VueCodemirror)

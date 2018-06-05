@@ -41,6 +41,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import Worker from '~/assets/transform.worker.js'
 
 import shortid from 'shortid'
 import Split from 'split.js'
@@ -50,7 +51,7 @@ import SmartContractEditor from '@/components/editor/SmartContractEditor'
 import EditorSettings from '@/components/editor/EditorSettings'
 import EditorHeader from '@/components/editor/EditorHeader'
 
-const worker = new Worker('/transform-worker.js')
+const worker = new Worker()
 
 export default {
   components: {
