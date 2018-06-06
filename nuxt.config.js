@@ -19,7 +19,8 @@ module.exports = {
   loading: { color: '#3B8070' },
   plugins: [
     '~/plugins/vue-codemirror',
-    '~/plugins/vue-observe-visibility'
+    '~/plugins/vue-observe-visibility',
+    '~/plugins/v-click-outside'
   ],
 
   build: {

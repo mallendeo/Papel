@@ -1,6 +1,10 @@
 <template>
   <div class="select-wrapper">
-    <button @click="toggle" class="select">
+    <button
+      v-click-outside="onClickOutside"
+      @click="toggle"
+      class="select"
+    >
       <span>{{ currTitle || title }}</span>
       <i class="material-icons">arrow_drop_down</i>
     </button>
@@ -42,17 +46,22 @@ export default {
     open: { type: Boolean, default: false },
     value: ''
   },
-  data: () => ({ isOpen: this.open, pos: { x: 0, y: 0 } }),
+  data: () => ({
+    isOpen: this.open,
+    pos: { x: 0, y: 0 }
+  }),
   methods: {
     setValue (val) {
       this.$emit('change', val)
       this.isOpen = !this.isOpen
     },
     toggle (event) {
-      console.log(event.target.getBoundingClientRect())
       const { x, y, height } = event.target.getBoundingClientRect()
       this.pos = { x, y: y + height }
       this.isOpen = !this.isOpen
+    },
+    onClickOutside (event) {
+      if (this.isOpen) this.isOpen = false
     }
   },
   computed: {
