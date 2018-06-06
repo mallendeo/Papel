@@ -130,7 +130,7 @@ export default {
     transition: all .1s ease;
     display: flex;
 
-    &:hover { background: var(--editor-color-accent) }
+    &:hover { background: var(--editor-color) }
     &--active { border-left-color: var(--editor-color-accent) }
   }
 }
