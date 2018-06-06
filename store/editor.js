@@ -82,8 +82,9 @@ export const state = () => ({
       lang: 'pug',
       showCompiled: false,
       prepros: {
-        html: { mime: 'text/html', title: 'HTML' },
-        pug: { mime: 'text/x-pug', title: 'Pug' }
+        html: { icon: 'html', mime: 'text/html', title: 'HTML', enabled: true },
+        pug: { icon: 'pug', mime: 'text/x-pug', title: 'Pug', enabled: true },
+        md: { icon: 'markdown', mime: 'text/x-markdown', title: 'Markdown' }
       }
     },
     css: {
@@ -93,8 +94,10 @@ export const state = () => ({
       lang: 'stylus',
       showCompiled: false,
       prepros: {
-        css: { mime: 'text/css', title: 'CSS' },
-        stylus: { mime: 'text/x-styl', title: 'Stylus' }
+        css: { icon: 'css', mime: 'text/css', title: 'CSS', enabled: true },
+        stylus: { icon: 'stylus', mime: 'text/x-styl', title: 'Stylus', enabled: true },
+        sass: { icon: 'sass', mime: 'text/x-sass', title: 'SASS' },
+        scss: { icon: 'sass', mime: 'text/x-scss', title: 'SCSS' }
       }
     },
     js: {
@@ -103,8 +106,10 @@ export const state = () => ({
       lang: 'babel',
       showCompiled: false,
       prepros: {
-        js: { mime: 'text/javascript', title: 'JS' },
-        babel: { mime: 'text/jsx', title: 'Babel' }
+        js: { icon: 'javascript', mime: 'text/javascript', title: 'JS', enabled: true },
+        babel: { icon: 'babel', mime: 'text/jsx', title: 'Babel', enabled: true },
+        ts: { icon: 'typescript', mime: 'text/typescript', title: 'TypeScript' },
+        coffee: { icon: 'coffeescript', mime: 'text/coffeescript', title: 'CoffeeScript' }
       }
     }
   }
