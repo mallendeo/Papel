@@ -15,7 +15,7 @@ import { mapState } from 'vuex'
 export default {
   props: {
     change: { type: Function, default: () => {} },
-    code: { type: String },
+    code: { type: String, default: '' },
     options: { type: Object },
     updateWhenVisible: { type: Boolean, default: true },
     updateDelay: { type: Number, default: 0 }
@@ -39,6 +39,7 @@ export default {
     },
 
     onReady (cm) {
+      this.cm = cm
       cm.setValue(this.code)
       this.loaded = true
     },
