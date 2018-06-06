@@ -21,7 +21,10 @@
         @click="setValue(opt.value)"
         :key="`select-opt-${opt.value}`"
         class="list__item"
-        :class="{ 'list__item--active': opt.value === value }"
+        :class="{
+          'list__item--active': opt.value === value,
+          'list__item--disabled': opt.disabled
+        }"
         v-for="opt of options"
       >
         <img class="list__icon" v-if="opt.icon" :src="opt.icon">
@@ -56,11 +59,12 @@ export default {
       this.isOpen = !this.isOpen
     },
     toggle (event) {
-      const { x, y, height } = event.target.getBoundingClientRect()
+      const closest = event.target.closest('.select-wrapper')
+      const { x, y, height } = closest.getBoundingClientRect()
       this.pos = { x, y: y + height }
       this.isOpen = !this.isOpen
     },
-    onClickOutside (event) {
+    onClickOutside () {
       if (this.isOpen) this.isOpen = false
     }
   },
@@ -91,8 +95,6 @@ export default {
   &:hover {
     background: rgba(0,0,0,.1);
   }
-
-  * { pointer-events: none }
 
   span {
     color: white;
@@ -141,6 +143,10 @@ export default {
 
     &:hover { background: var(--editor-color) }
     &--active { border-left-color: var(--editor-color-accent) }
+    &--disabled {
+      opacity: .5;
+      pointer-events: none;
+    }
   }
 }
 </style>
