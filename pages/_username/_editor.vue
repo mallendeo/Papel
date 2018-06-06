@@ -125,6 +125,13 @@ export default {
       if (action.type === 'editor/updateCode') {
         worker.postMessage(action.payload)
       }
+
+      if (action.type === 'editor/setLang') {
+        worker.postMessage({
+          ...action.payload,
+          code: this.code[action.payload.type]
+        })
+      }
     })
 
     worker.addEventListener('message', this.onMessage, false)

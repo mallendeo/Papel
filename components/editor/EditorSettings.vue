@@ -146,7 +146,6 @@ h2 {
   position: relative;
   padding: .5rem;
   font-size: .75rem;
-  font-weight: bold;
   color: var(--c);
 
   border-bottom: 1px solid var(--c);

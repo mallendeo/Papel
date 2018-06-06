@@ -8,6 +8,7 @@
       :class="{ 'editor__toolbar--danger': editors['html'].error }"
     >
       <app-select
+        class="select-wrapper"
         :currTitle="makeTitle('html', editors['html'].lang)"
         :options="makeOptions('html')"
         :value="editors['html'].lang"
@@ -84,7 +85,7 @@ export default {
 
     this.split = Split(editors, {
       snapOffset: 0,
-      minSize: 0,
+      minSize: -1, // FIXME: Workaround for zero gap gutter
       gutterSize: 32,
       direction: 'vertical',
       cursor: 'row-resize',
@@ -127,6 +128,7 @@ export default {
     makeOptions (type) {
       return this.preprosList(type).map(lang => ({
         value: lang,
+        icon: require(`~/assets/icons/${lang}.svg`),
         title: this.editors[type].prepros[lang].title
       }))
     },
@@ -147,6 +149,10 @@ export default {
 
 <style lang="scss" scoped>
 $toolbar-size: 2rem;
+
+.select-wrapper {
+  min-width: 8rem;
+}
 
 .editors {
   height: 100%;
@@ -181,7 +187,6 @@ $toolbar-size: 2rem;
     color: var(--text-lighter);
 
     font-size: .75rem;
-    z-index: 5;
 
     &:not(:first-of-type) {
       cursor: row-resize;

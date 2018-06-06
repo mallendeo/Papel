@@ -1,12 +1,17 @@
 <template>
-  <div @click="toggle" class="select">
-    <span>{{ currTitle || title }}</span>
-
-    <i class="material-icons">arrow_drop_down</i>
+  <div class="select-wrapper">
+    <button @click="toggle" class="select">
+      <span>{{ currTitle || title }}</span>
+      <i class="material-icons">arrow_drop_down</i>
+    </button>
 
     <ul
       class="list"
       :class="{ 'list--open': isOpen }"
+      :style="{
+        left: `${pos.x}px`,
+        top: `${pos.y}px`
+      }"
     >
       <li
         @click="setValue(opt.value)"
@@ -14,7 +19,10 @@
         class="list__item"
         :class="{ 'list__item--active': opt.value === value }"
         v-for="opt of options"
-      >{{ opt.title }}</li>
+      >
+        <img class="list__icon" v-if="opt.icon" :src="opt.icon">
+        {{ opt.title }}
+      </li>
     </ul>
   </div>
 </template>
@@ -34,12 +42,16 @@ export default {
     open: { type: Boolean, default: false },
     value: ''
   },
-  data: () => ({ isOpen: this.open }),
+  data: () => ({ isOpen: this.open, pos: { x: 0, y: 0 } }),
   methods: {
     setValue (val) {
       this.$emit('change', val)
+      this.isOpen = !this.isOpen
     },
-    toggle () {
+    toggle (event) {
+      console.log(event.target.getBoundingClientRect())
+      const { x, y, height } = event.target.getBoundingClientRect()
+      this.pos = { x, y: y + height }
       this.isOpen = !this.isOpen
     }
   },
@@ -54,44 +66,72 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.select {
-  min-width: 5rem;
-  position: relative;
+.select-wrapper, .select {
+  cursor: pointer;
+  height: 100%;
   display: flex;
   align-items: center;
-  height: 100%;
-  cursor: pointer;
+}
+
+.select {
+  width: 100%;
+  position: relative;
+  outline: none;
+  padding: 0 .5rem 0 1rem;
+
+  &:hover {
+    background: rgba(0,0,0,.1);
+  }
+
+  * { pointer-events: none }
 
   span {
-    display: block;
-    padding: 0 1rem;
     color: white;
+    padding-left: none;
+  }
+
+  .material-icons {
+    color: hsl(var(--editor-hue), 10%, 30%);
+    margin-left: auto;
   }
 }
 
 .list {
-  position: absolute;
-  top: 100%;
-  width: 100%;
+  position: fixed;
+  top: 0; left: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 8rem;
   background: var(--editor-color-dark);
   color: white;
-  display: none;
+  z-index: 10;
+
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s ease, transform .2s ease;
+  transform: translateY(-.5rem);
 
   &--open {
-    display: flex;
-    flex-direction: column;
+    opacity: 1;
+    transform: translateY(0rem);
+    pointer-events: all;
+  }
+
+  &__icon {
+    width: 1rem;
+    max-height: 1rem;
+    margin-right: .5rem;
   }
 
   &__item {
+    $r: .25rem;
     padding: .5rem 1rem;
+    border-left: .125rem solid transparent;
+    transition: all .1s ease;
+    display: flex;
 
-    &:hover {
-      background: var(--editor-color-accent);
-    }
-
-    &--active {
-      background: rgba(255,255,255,.2);
-    }
+    &:hover { background: var(--editor-color-accent) }
+    &--active { border-left-color: var(--editor-color-accent) }
   }
 }
 </style>
