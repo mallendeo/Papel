@@ -37,7 +37,7 @@ const transform = async (code, lang) => {
     try {
       switch (lang) {
         case 'pug':
-          resolve(loadedLib.render(code))
+          resolve(loadedLib.render(code, { pretty: true }))
           break
         case 'stylus':
           loadedLib(code)
