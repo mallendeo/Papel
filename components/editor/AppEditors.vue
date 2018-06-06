@@ -24,7 +24,7 @@
       v-for="(type, index) of types"
       class="editor__wrapper col"
       :key="`${type}-editor`"
-      :id="`${type}-editor`"
+      :id="`${type}-editor-wrapper`"
     >
       <div
         v-if="index"
@@ -46,9 +46,10 @@
       <cm-editor
         :updateWhenVisible="true"
         :updateDelay="100"
-        :code="editorCode(type)"
+        :code="initCode[type]"
         :options="makeEditorOptions(type)"
         ref="editor"
+        :id="`${type}-editor`"
         :class="{ 'cm-editor--opaque': editors[type].showCompiled }"
         @change="code => onCodeChange(code, type)"
       />
@@ -78,24 +79,21 @@ export default {
 
   data: () => ({
     split: null,
-    showSearch: false
+    showSearch: false,
+    initCode: {}
   }),
 
   computed: {
     ...mapState('editor', ['editors', 'code', 'compiled']),
-    ...mapGetters('editor', ['types', 'preprosList', 'prepros']),
-
-    editorCode () {
-      return type => this.editors[type].showCompiled
-        ? this.compiled[type]
-        : this.editors[type].code
-    }
+    ...mapGetters('editor', ['types', 'preprosList', 'prepros'])
   },
 
   mounted () {
-    const editors = this.types.map(l => `#${l}-editor`)
+    const wrappers = this.types.map(l => `#${l}-editor-wrapper`)
+    this.initCode = { ...this.code } // make a copy of the state
+    this.$nextTick(() => this.refreshEditors(true))
 
-    this.split = Split(editors, {
+    this.split = Split(wrappers, {
       snapOffset: 0,
       minSize: -1, // FIXME: Workaround for zero gap gutter
       gutterSize: 32,
@@ -119,6 +117,9 @@ export default {
     // FIXME: Find some way to trigger the update
     // event only once after the editor is ready
     onCodeChange (code, type) {
+      // Don't update when showing the compiled output
+      if (this.editors[type].showCompiled) return
+
       this.updateCode({
         lang: this.editors[type].lang,
         code,
@@ -170,7 +171,11 @@ export default {
 
     onToggleCompiledClick (type) {
       this.toggleCompiled(type)
-      this.$nextTick(() => this.refreshEditors(true))
+      const editor = this.$refs['editor'].find(editor => editor.$el.id === `${type}-editor`)
+      const code = this.editors[type].showCompiled
+        ? this.compiled[type]
+        : this.code[type]
+      editor.updateCode(code)
     },
 
     setEditorLang (type, lang) {
