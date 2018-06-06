@@ -10,10 +10,14 @@
       <app-select
         class="select-wrapper"
         :currTitle="makeTitle('html', editors['html'].lang)"
-        :options="makeOptions('html')"
+        :options="makeSelectOptions('html')"
         :value="editors['html'].lang"
         @change="lang => setEditorLang('html', lang)"
       />
+
+      <i @click="onToggleCompiledClick('html')" class="toolbar-icon material-icons">
+        {{ !editors['html'].showCompiled ? 'visibility' : 'visibility_off' }}
+      </i>
     </div>
 
     <div
@@ -29,21 +33,23 @@
       >
         <app-select
           :currTitle="makeTitle(type, editors[type].lang)"
-          :options="makeOptions(type)"
+          :options="makeSelectOptions(type)"
           :value="editors[type].lang"
           @change="lang => setEditorLang(type, lang)"
         />
+
+        <i @click="onToggleCompiledClick(type)" class="toolbar-icon material-icons">
+          {{ !editors[type].showCompiled ? 'visibility' : 'visibility_off' }}
+        </i>
       </div>
 
       <cm-editor
         :updateWhenVisible="true"
         :updateDelay="100"
-        :code="editors[type].code"
-        :options="{
-          mode: getPrepros(type).mime,
-          readOnly: editors[type].showProcessed
-        }"
+        :code="editorCode(type)"
+        :options="makeEditorOptions(type)"
         ref="editor"
+        :class="{ 'cm-editor--opaque': editors[type].showCompiled }"
         @change="code => onCodeChange(code, type)"
       />
     </div>
@@ -76,8 +82,14 @@ export default {
   }),
 
   computed: {
-    ...mapState('editor', ['editors', 'code']),
-    ...mapGetters('editor', ['types', 'preprosList', 'prepros'])
+    ...mapState('editor', ['editors', 'code', 'compiled']),
+    ...mapGetters('editor', ['types', 'preprosList', 'prepros']),
+
+    editorCode () {
+      return type => this.editors[type].showCompiled
+        ? this.compiled[type]
+        : this.editors[type].code
+    }
   },
 
   mounted () {
@@ -98,17 +110,11 @@ export default {
         'flex-basis': `calc(${size}% - ${gutterSize}px)`
       }),
 
-      onDragEnd: () => {
-        const editors = this.$refs['editor']
-        editors.forEach(editor => {
-          const cm = editor.codemirror || editor.$children[0].codemirror
-          cm.refresh()
-        })
-      }
+      onDragEnd: () => this.refreshEditors()
     })
   },
   methods: {
-    ...mapActions('editor', ['updateCode', 'setLang']),
+    ...mapActions('editor', ['updateCode', 'setLang', 'toggleCompiled']),
 
     // FIXME: Find some way to trigger the update
     // event only once after the editor is ready
@@ -125,7 +131,7 @@ export default {
       return editor.prepros[editor.lang]
     },
 
-    makeOptions (type) {
+    makeSelectOptions (type) {
       return this.preprosList(type).map(lang => ({
         value: lang,
         icon: require(`~/assets/icons/${lang}.svg`),
@@ -138,6 +144,33 @@ export default {
       return type === lang
         ? prepros.title
         : `${type.toUpperCase()} (${prepros.title})`
+    },
+
+    makeEditorOptions (type) {
+      const compiled = this.editors[type].showCompiled
+      const mode = compiled
+        ? this.editors[type].prepros[type].mime // the first element is the main lang
+        : this.getPrepros(type).mime
+      const readOnly = this.editors[type].showCompiled
+
+      return { mode, readOnly }
+    },
+
+    refreshEditors (updateCode) {
+      const editors = this.$refs['editor']
+      if (!editors) return
+
+      editors.forEach(editor => {
+        if (updateCode) editor.updateCode()
+
+        const cm = editor.codemirror || editor.$children[0].codemirror
+        cm.refresh()
+      })
+    },
+
+    onToggleCompiledClick (type) {
+      this.toggleCompiled(type)
+      this.$nextTick(() => this.refreshEditors(true))
     },
 
     setEditorLang (type, lang) {
@@ -158,6 +191,13 @@ $toolbar-size: 2rem;
   height: 100%;
   position: relative;
   background: var(--editor-color);
+}
+
+.cm-editor--opaque { opacity: .5 }
+.toolbar-icon {
+  font-size: 1rem;
+  padding: .5rem;
+  cursor: pointer;
 }
 
 .editor {

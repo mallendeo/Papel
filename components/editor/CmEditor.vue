@@ -20,7 +20,7 @@ export default {
     updateWhenVisible: { type: Boolean, default: true },
     updateDelay: { type: Number, default: 0 }
   },
-  data: () => ({ loaded: false }),
+  data: () => ({ loaded: false, cm: null }),
   computed: {
     ...mapState('editor', ['opts']),
     editorOpts () {
@@ -31,16 +31,20 @@ export default {
     visibilityChanged (isVisible) {
       if (this.updateWhenVisible && isVisible) {
         const ref = this.$refs['editor']
-        const cm = ref.codemirror || ref.$children[0].codemirror
-        if (!cm) return
+        this.cm = ref.codemirror || ref.$children[0].codemirror
+        if (!this.cm) return
 
-        setTimeout(() => cm.refresh(), this.updateDelay)
+        setTimeout(() => this.cm.refresh(), this.updateDelay)
       }
     },
 
     onReady (cm) {
       cm.setValue(this.code)
       this.loaded = true
+    },
+
+    updateCode (code) {
+      this.cm.setValue(code || this.code)
     }
   }
 }

@@ -81,7 +81,7 @@ export const state = () => ({
       error: null,
       head: '',
       lang: 'pug',
-      showProcessed: false,
+      showCompiled: false,
       prepros: {
         html: { mime: 'text/html', title: 'HTML' },
         pug: { mime: 'text/x-pug', title: 'Pug' }
@@ -93,7 +93,7 @@ export const state = () => ({
       autoprefix: false,
       libs: [],
       lang: 'stylus',
-      showProcessed: false,
+      showCompiled: false,
       prepros: {
         css: { mime: 'text/css', title: 'CSS' },
         stylus: { mime: 'text/x-styl', title: 'Stylus' }
@@ -104,7 +104,7 @@ export const state = () => ({
       error: null,
       libs: [],
       lang: 'babel',
-      showProcessed: false,
+      showCompiled: false,
       prepros: {
         js: { mime: 'text/javascript', title: 'JS' },
         babel: { mime: 'text/jsx', title: 'Babel' }
@@ -145,9 +145,9 @@ export const mutations = {
     state.ui.slideRight = tab.index > state.ui.currTab.index
     state.ui.currTab = tab
   },
-  [types.EDITOR_TOGGLE_PROCESSED] (state, type) {
-    const { showProcessed } = state.editors[type]
-    state.editors[type].showProcessed = !showProcessed
+  [types.EDITOR_TOGGLE_COMPILED] (state, type) {
+    const { showCompiled } = state.editors[type]
+    state.editors[type].showCompiled = !showCompiled
   },
   [types.EDITOR_SET_LANG] (state, { type, lang }) {
     state.editors[type].lang = lang
@@ -172,5 +172,8 @@ export const actions = {
   },
   navTo ({ commit }, tab) {
     commit(types.EDITOR_NAV_TO, tab)
+  },
+  toggleCompiled ({ commit }, type) {
+    commit(types.EDITOR_TOGGLE_COMPILED, type)
   }
 }
