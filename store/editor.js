@@ -77,7 +77,6 @@ export const state = () => ({
 
   editors: {
     html: {
-      code: demo.pug,
       error: null,
       head: '',
       lang: 'pug',
@@ -88,7 +87,6 @@ export const state = () => ({
       }
     },
     css: {
-      code: demo.styl,
       error: null,
       autoprefix: false,
       libs: [],
@@ -100,7 +98,6 @@ export const state = () => ({
       }
     },
     js: {
-      code: demo.babel,
       error: null,
       libs: [],
       lang: 'babel',
