@@ -1,82 +1,28 @@
 <template>
   <section class="section">
-    <nav class="tabs">
-      <div
-        v-for="tab of tabs"
-        :key="`tab-sel-${tab.to}`"
-        class="tab"
-        :class="{ 'tab--active': currTab === tab.to }"
-        @click="currTab = tab.to"
-      >{{ tab.title }}</div>
-    </nav>
-
-    <div class="tab-content">
-      <template v-if="currTab === 'html'">
-        <h2>HTML</h2>
-
-        <select name="preprocessor">
-          <option value="html">None</option>
-          <option value="pug">Pug</option>
-          <option disabled value="markdown">Markdown (Soon)</option>
-        </select>
-
-        <input placeholder="HTML classes" type="text">
-        <textarea placeholder="Head content" type="text"></textarea>
-      </template>
-
-      <template v-if="currTab === 'css'">
-        <h2>CSS</h2>
-
-        <select name="preprocessor">
-          <option value="css">None</option>
-          <option value="stylus">Stylus</option>
-          <option disabled value="scss">SCSS (Soon)</option>
-          <option disabled value="sass">SASS (Soon)</option>
-          <option disabled value="less">LESS (Soon)</option>
-        </select>
-
-        Use normalizer <input type="checkbox">
-        Use autoprefixer <input type="checkbox">
-      </template>
-
-      <template v-if="currTab === 'js'">
-        <h2>JS</h2>
-
-        <select name="preprocessor">
-          <option value="js">None</option>
-          <option value="babel">Babel</option>
-          <option disabled value="typescript">Typescript (Soon)</option>
-          <option disabled value="coffeescript">Coffeescript (Soon)</option>
-        </select>
-      </template>
-
-      <template v-if="currTab === 'editor'">
-        <div>
-          Editor theme
-          <select @change="onThemeChange" :value="currTheme" name="update">
-            <option
-              v-for="theme of allThemes"
-              :value="theme.slug"
-              :key="`opt-theme-${theme.slug}`"
-            >{{ theme.name }}</option>
-          </select>
-        </div>
-
-        <div>
-          <h2>Update frequency</h2>
-          Apply only to JS <input type="checkbox">
-          <select name="update">
-            <option value="0">Instant</option>
-            <option value="1">One second</option>
-            <option value="2">Two seconds</option>
-          </select>
-        </div>
-
-        <div>Use spaces <input type="checkbox"></div>
-        <div>Indent width <input type="number"></div>
-      </template>
-
+    <div>
+      Editor theme
+      <select @change="onThemeChange" :value="currTheme" name="update">
+        <option
+          v-for="theme of allThemes"
+          :value="theme.slug"
+          :key="`opt-theme-${theme.slug}`"
+        >{{ theme.name }}</option>
+      </select>
     </div>
+
+    <div>
+      <h2>Update frequency</h2>
+      Apply only to JS <input type="checkbox">
+      <select name="update">
+        <option value="0">Instant</option>
+        <option value="1">One second</option>
+        <option value="2">Two seconds</option>
+      </select>
+    </div>
+
+    <div>Use spaces <input type="checkbox"></div>
+    <div>Indent width <input type="number"></div>
   </section>
 </template>
 
@@ -111,7 +57,8 @@ export default {
 
 <style lang="scss" scoped>
 .section {
-  padding-top: 2.25rem;
+  padding: 1rem;
+  color: white;
 }
 
 h1, h2 {

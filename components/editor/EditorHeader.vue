@@ -29,6 +29,7 @@
       class="btn btn--fade"
     >
       <i class="material-icons">cloud_upload</i>
+      <span>Save</span>
       <!--
         call_split -> fork
         cloud_upload -> save
@@ -85,7 +86,9 @@ export default {
 }
 
 .btn {
-  &:nth-of-type(4) { margin-left: auto; }
+  &:nth-of-type(5) { margin-left: auto; }
   i { font-size: .9rem; }
+  span { padding-left: .5rem;}
+  &--active { box-shadow: inset 0 -2px 0 var(--btn-color-active) }
 }
 </style>

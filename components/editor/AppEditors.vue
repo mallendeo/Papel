@@ -15,6 +15,10 @@
         @change="lang => setEditorLang('html', lang)"
       />
 
+      <app-dropdown icon="settings">
+        <lang-settings lang="html" />
+      </app-dropdown>
+
       <i @click="onToggleCompiledClick('html')" class="toolbar-icon material-icons">
         {{ !editors['html'].showCompiled ? 'visibility' : 'visibility_off' }}
       </i>
@@ -37,6 +41,10 @@
           :value="editors[type].lang"
           @change="lang => setEditorLang(type, lang)"
         />
+
+        <app-dropdown icon="settings">
+          <lang-settings :lang="type" />
+        </app-dropdown>
 
         <i @click="onToggleCompiledClick(type)" class="toolbar-icon material-icons">
           {{ !editors[type].showCompiled ? 'visibility' : 'visibility_off' }}
@@ -62,19 +70,22 @@ import Split from 'split.js'
 import { mapState, mapActions, mapGetters } from 'vuex'
 
 import AppToggle from '../ui/AppToggle'
+import AppDropdown from '../ui/AppDropdown'
 import AppSearch from '../ui/AppSearch'
+import AppSelect from '../ui/AppSelect'
 import EditorPanel from '../ui/EditorPanel'
 import CmEditor from './CmEditor'
-
-import AppSelect from '../ui/AppSelect'
+import LangSettings from './LangSettings'
 
 export default {
   components: {
     AppToggle,
+    AppDropdown,
     AppSearch,
     AppSelect,
     CmEditor,
-    EditorPanel
+    EditorPanel,
+    LangSettings
   },
 
   data: () => ({
@@ -133,10 +144,12 @@ export default {
     },
 
     makeSelectOptions (type) {
+      const { prepros } = this.editors[type]
       return this.preprosList(type).map(lang => ({
         value: lang,
-        icon: require(`~/assets/icons/${lang}.svg`),
-        title: this.editors[type].prepros[lang].title
+        icon: require(`~/assets/icons/${prepros[lang].icon}.svg`),
+        title: `${prepros[lang].title}${!prepros[lang].enabled ? ' (Soon)' : ''}`,
+        disabled: !prepros[lang].enabled
       }))
     },
 
@@ -202,6 +215,7 @@ $toolbar-size: 2rem;
 .toolbar-icon {
   font-size: 1rem;
   padding: .5rem;
+  padding-right: 1rem;
   cursor: pointer;
 }
 
