@@ -9,8 +9,8 @@ html {
 
   --editor-hue: 200;
   --editor-color-accent: hsl(var(--editor-hue), 100%, 50%);
-  --editor-color: hsl(var(--editor-hue), 18%, 19%);
-  --editor-color-dark: hsl(var(--editor-hue), 18%, 15%);
+  --editor-color: hsl(var(--editor-hue), 19%, 18%);
+  --editor-color-dark: hsl(var(--editor-hue), 19%, 15%);
 
   --logo-stroke: white;
   --logo-fill: var(--editor-color-dark);
@@ -34,23 +34,25 @@ html[data-theme='dracula'] {
 
 html[data-theme='monokai'] {
   --editor-hue: 70;
-  --editor-color: hsl(var(--editor-hue), 5%, 10%);
+  --editor-color: hsl(var(--editor-hue), 8%, 15%);
   --editor-color-accent: hsl(var(--editor-hue), 30%, 70%);
   --editor-color-dark: hsl(var(--editor-hue), 10%, 10%);
 }
 
 html[data-theme='oceanic-next'] {
   --editor-hue: 198;
+  --editor-color: hsl(var(--editor-hue), 19%, 24%);
 }
 
 html[data-theme='panda-syntax'] {
   --editor-hue: 210;
+  --editor-color: hsl(var(--editor-hue), 2%, 16%);
   --editor-color-accent: hsl(var(--editor-hue), 90%, 75%);
   --editor-color-dark: hsl(var(--editor-hue), 10%, 10%);
 }
 
 html[data-theme='solarized dark'] {
-  --editor-hue: 192;
+  --editor-hue: 193;
   --editor-color: hsl(var(--editor-hue), 100%, 11%);
   --editor-color-accent: hsl(var(--editor-hue), 100%, 50%);
   --editor-color-dark: hsl(var(--editor-hue), 100%, 7%);
@@ -60,7 +62,7 @@ html[data-theme='solarized dark'] {
 //--------------------------------
 html[data-theme='default'],
 html[data-theme='mdn-like'] {
-  --editor-color: hsl(0, 0%, 95%);
+  --editor-color: hsl(0, 0%, 100%);
   --editor-color-accent: hsl(0, 0%, 25%);
   --editor-color-dark: hsl(0, 0%, 97%);
 
@@ -80,7 +82,7 @@ html[data-theme='mdn-like'] {
 html[data-theme='solarized light'] {
   --editor-hue: 44;
   --editor-color-accent: hsl(var(--editor-hue), 90%, 20%);
-  --editor-color: hsl(var(--editor-hue), 40%, 95%);
+  --editor-color: hsl(var(--editor-hue), 87%, 94%);
   --editor-color-dark: hsl(var(--editor-hue), 40%, 90%);
 
   --logo-stroke: #222;

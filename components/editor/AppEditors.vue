@@ -241,7 +241,9 @@ $toolbar-size: 2rem;
 
     position: relative;
 
-    background: var(--editor-color-dark);
+    //background: var(--editor-color-dark);
+    background: var(--editor-color);
+
     transition: all .2s ease;
     color: var(--text-lighter);
 
@@ -249,6 +251,7 @@ $toolbar-size: 2rem;
 
     &:not(:first-of-type) {
       cursor: row-resize;
+      border-top: 1px solid rgba(0,0,0,.3);
     }
 
     &--danger {

@@ -109,7 +109,7 @@ export default {
 
   &--open {
     opacity: 1;
-    transform: translateY(.25rem);
+    transform: translateY(0rem);
     pointer-events: all;
   }
 }

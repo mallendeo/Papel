@@ -25,7 +25,7 @@
 
     <button
       title="Save"
-      @click="() => pay()"
+      @click="save"
       class="btn btn--fade"
     >
       <i class="material-icons">cloud_upload</i>
@@ -51,7 +51,32 @@ export default {
   components: { PapelLogo, NebulasLogo },
   computed: mapState('editor', ['ui']),
   methods: {
-    ...mapActions('editor', ['navTo'])
+    ...mapActions('editor', ['navTo']),
+    ...mapActions('nebpay', ['callFunction']),
+    async save () {
+      const args = [null, {
+        title: 'Example dapp',
+        description: 'Some example dapp',
+        src: {
+          html: {
+            code: '<h1>test</h1>'
+          },
+          css: {
+            type: 'stylus',
+            code: 'h1 { color: red; }'
+          }
+        }
+      }]
+      console.log('SAVING')
+      try {
+        const tx = this.callFunction({ fn: 'saveSheet', args })
+        console.info({ tx })
+        const saved = await tx
+        console.info({ saved })
+      } catch (e) {
+        console.error('ERROR', e)
+      }
+    }
   }
 }
 </script>
