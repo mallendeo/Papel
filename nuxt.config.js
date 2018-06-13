@@ -1,8 +1,8 @@
 module.exports = {
   mode: 'spa',
   env: {
-    contractDev: 'n1nquzBQ1kmkDbR9ChKJvdnPzD87kjLq33H',
-    contractProd: 'DO_NOT_SEND'
+    contractDev: process.env.CONTRACT_DEV || 'n1wTbrMK62W9EnmeKRJmbFeXpJFpxS7xWYA',
+    contractProd: process.env.CONTRACT_PROD || 'DO_NOT_SEND'
   },
   head: {
     title: 'Code Playground on the Blockchain - Papel',
@@ -24,7 +24,17 @@ module.exports = {
   ],
 
   build: {
-    vendor: ['vue-codemirror', 'split.js'],
+    vendor: [
+      'vue-codemirror',
+      'vue-observe-visibility',
+      'v-click-outside',
+      'split.js',
+      'ipfs-api',
+      'axios',
+      'nebpay.js',
+      'nebulas',
+      'shortid'
+    ],
 
     extend (config, { isDev, isClient }) {
       if (isDev && isClient) {
