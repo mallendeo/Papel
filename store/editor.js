@@ -10,7 +10,6 @@ const themes = [
   'monokai',
   'oceanic-next',
   'dracula',
-  'panda-syntax',
   'solarized light',
   'solarized dark',
   'mdn-like'

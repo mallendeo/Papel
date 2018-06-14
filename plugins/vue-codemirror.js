@@ -9,7 +9,6 @@ import 'codemirror/theme/material.css'
 import 'codemirror/theme/monokai.css'
 import 'codemirror/theme/oceanic-next.css'
 import 'codemirror/theme/dracula.css'
-import 'codemirror/theme/panda-syntax.css'
 
 import 'codemirror/theme/solarized.css'
 import 'codemirror/theme/mdn-like.css'
