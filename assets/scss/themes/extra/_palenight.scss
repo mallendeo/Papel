@@ -1,0 +1,61 @@
+.cm-s-palenight {
+  &.CodeMirror {
+    background-color: #292D3E;
+    color: rgba(233, 237, 237, 1);
+  }
+
+
+  .CodeMirror-gutters {
+    background: #292D3E;
+    color: #4c5374; // TODO:
+    border: none;
+  }
+
+  .CodeMirror-guttermarker,
+  .CodeMirror-guttermarker-subtle,
+  .CodeMirror-linenumber { color: #4c5374; }
+
+  .CodeMirror-cursor { border-left: 1px solid #7e57c2; }
+
+  div.CodeMirror-selected { background: #3C435E }
+
+  &.CodeMirror-focused div.CodeMirror-selected { background: #7580B850; }
+
+  .CodeMirror-line::selection,
+  .CodeMirror-line > span::selection,
+  .CodeMirror-line > span > span::selection { background: rgba(255, 255, 255, 0.10); }
+
+  .CodeMirror-activeline-background { background: rgba(0, 0, 0, 0); }
+  .cm-keyword { color: rgba(199, 146, 234, 1); }
+  .cm-operator { color: rgba(233, 237, 237, 1); }
+  .cm-variable-2 { color: #ff5572; }
+  .cm-variable-3, .cm-type { color: #82B1FF; }
+  .cm-builtin { color: #DECB6B; }
+  .cm-atom { color: #89DDFF; }
+  .cm-number { color: #F78C6C; }
+  .cm-def { color: rgba(233, 237, 237, 1); }
+  .cm-string { color: #C3E88D; }
+  .cm-string-2 { color: #C3E88D; }
+  .cm-comment { color: #697098; }
+  .cm-variable { color: #ffcb6b; }
+  .cm-tag { color: #80CBC4; }
+  .cm-meta { color: #80CBC4; }
+  .cm-attribute { color: #ffcb6b; }
+  .cm-property { color: #89DDFF; }
+  .cm-qualifier { color: #ffcb6b; }
+  .cm-variable-3, .cm-type { color: #ffcb6b; }
+  .cm-tag { color: rgba(255, 83, 112, 1); }
+  .cm-error {
+    color: rgba(255, 255, 255, 1.0);
+    background-color: #EC5F67;
+  }
+  .CodeMirror-matchingbracket {
+    text-decoration: underline;
+    color: white !important;
+  }
+}
+
+#js-editor,
+#neb-editor {
+  .cm-variable-2 { color: rgba(233, 237, 237, 1); }
+}

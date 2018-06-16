@@ -27,8 +27,42 @@ html {
   --error-color-light: hsl(var(--red-hue), 78%, 60%);
 }
 
+.CodeMirror-hints {
+  background: var(--editor-color-dark);
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+li.CodeMirror-hint {
+  padding: .25rem .4rem;
+  color: var(--text-lighter);
+
+  &-active {
+    background: var(--editor-color-accent);
+    border-radius: 0;
+    color: var(--text-light, var(--text-contrast));
+  }
+}
+
+.CodeMirror-foldmarker {
+  text-shadow: none;
+  color: var(--editor-color-accent);
+}
+
+html[data-theme='palenight'] {
+  --editor-hue: 229;
+  --editor-color: hsl(var(--editor-hue), 20%, 20%);
+  --editor-color-accent: hsl(var(--editor-hue), 90%, 70%);
+
+  --btn-color: hsl(var(--editor-hue), 20%, 80%);
+  --btn-color-hover: hsl(var(--editor-hue), 50%, 68%);
+  --btn-color-active: hsl(var(--editor-hue), 50%, 65%);
+}
+
 html[data-theme='dracula'] {
   --editor-hue: 231;
+  --editor-color: hsl(var(--editor-hue), 15%, 18%);
   --editor-color-accent: hsl(var(--editor-hue), 100%, 80%);
 }
 
@@ -62,6 +96,18 @@ html[data-theme='solarized dark'] {
 //--------------------------------
 html[data-theme='default'],
 html[data-theme='mdn-like'] {
+  // Special tuning
+  div.editor__toolbar {
+    background: var(--editor-color-dark);
+    &:not(:first-of-type) {
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .header--col {
+    border-right: 1px solid rgba(0,0,0,0.1);
+  }
+
   --editor-color: hsl(0, 0%, 100%);
   --editor-color-accent: hsl(0, 0%, 25%);
   --editor-color-dark: hsl(0, 0%, 97%);
@@ -71,7 +117,8 @@ html[data-theme='mdn-like'] {
   --logo-text: #222;
 
   --text-light: hsl(0, 0%, 20%);
-  --text-lighter: hsl(0, 0%, 20%);
+  --text-lighter: hsl(0, 0%, 30%);
+  --text-contrast: white;
 
   --btn-bg-active: hsl(var(--editor-hue), 0%, 90%);
   --btn-color: hsl(var(--editor-hue), 20%, 20%);
