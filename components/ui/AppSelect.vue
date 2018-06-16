@@ -97,7 +97,7 @@ export default {
   }
 
   span {
-    color: white;
+    color: var(--text-lighter);
     padding-left: none;
   }
 
@@ -109,7 +109,6 @@ export default {
 
 .list {
   position: fixed;
-  top: 0; left: 0;
   display: flex;
   flex-direction: column;
   min-width: 8rem;
@@ -120,11 +119,11 @@ export default {
   pointer-events: none;
   opacity: 0;
   transition: opacity .2s ease, transform .2s ease;
-  transform: translateY(-.5rem);
+  transform: translateX(.5rem) translateY(-.5rem);
 
   &--open {
     opacity: 1;
-    transform: translateY(0rem);
+    transform: translateX(.5rem) translateY(0rem);
     pointer-events: all;
   }
 

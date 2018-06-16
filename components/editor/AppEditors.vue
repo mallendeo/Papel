@@ -5,7 +5,10 @@
     </editor-panel>
     <div
       class="editor__toolbar row"
-      :class="{ 'editor__toolbar--danger': editors['html'].error }"
+      :class="{
+        'editor__toolbar--danger': editors['html'].error,
+        'editor__toolbar--mini': zenMode
+      }"
     >
       <app-select
         class="select-wrapper"
@@ -33,7 +36,10 @@
       <div
         v-if="index"
         class="editor__toolbar row"
-        :class="{ 'editor__toolbar--danger': editors[type].error }"
+        :class="{
+          'editor__toolbar--danger': editors[type].error,
+          'editor__toolbar--mini': zenMode
+        }"
       >
         <app-select
           :currTitle="makeTitle(type, editors[type].lang)"
@@ -96,33 +102,46 @@ export default {
 
   computed: {
     ...mapState('editor', ['editors', 'code', 'compiled']),
-    ...mapGetters('editor', ['types', 'preprosList', 'prepros'])
+    ...mapGetters('editor', ['types', 'preprosList', 'prepros']),
+    ...mapState('ui', ['zenMode'])
   },
 
   mounted () {
-    const wrappers = this.types.map(l => `#${l}-editor-wrapper`)
     this.initCode = { ...this.code } // make a copy of the state
     this.$nextTick(() => this.refreshEditors(true))
-
-    this.split = Split(wrappers, {
-      snapOffset: 0,
-      minSize: -1, // FIXME: Workaround for zero gap gutter
-      gutterSize: 32,
-      direction: 'vertical',
-      cursor: 'row-resize',
-      gutter: index => {
-        const elem = this.$el.querySelectorAll('.editor__toolbar')
-        return elem[index]
-      },
-
-      elementStyle: (dimension, size, gutterSize) => ({
-        'flex-basis': `calc(${size}% - ${gutterSize}px)`
-      }),
-
-      onDragEnd: () => this.refreshEditors()
-    })
+    this.initSplit()
   },
   methods: {
+    initSplit () {
+      let sizes = null
+
+      if (this.split) {
+        sizes = this.split.getSizes()
+        this.split.destroy()
+      }
+
+      const wrappers = this.types.map(l => `#${l}-editor-wrapper`)
+
+      this.split = Split(wrappers, {
+        sizes,
+        snapOffset: 0,
+        minSize: -1, // FIXME: Workaround for zero gap gutter
+        gutterSize: 32,
+        direction: 'vertical',
+        cursor: 'row-resize',
+        gutter: index => {
+          const elem = this.$el.querySelectorAll('.editor__toolbar')
+          return elem[index]
+        },
+
+        elementStyle: (dimension, size, gutterSize) => ({
+          'flex-basis': `calc(${size}% - ${gutterSize}px)`
+        }),
+
+        onDragEnd: () => this.refreshEditors()
+      })
+    },
+
     ...mapActions('editor', ['updateCode', 'setLang', 'toggleCompiled']),
 
     // FIXME: Find some way to trigger the update
@@ -256,6 +275,18 @@ $toolbar-size: 2rem;
 
     &--danger {
       box-shadow: inset .125rem 0 0 var(--error-color);
+    }
+
+    &--mini {
+      flex-basis: .25rem;
+      > * {
+        transition: all .1s ease;
+        opacity: 0
+      }
+      &:hover, &:active {
+        flex-basis: 2rem;
+        > * { opacity: 1; }
+      }
     }
   }
 }

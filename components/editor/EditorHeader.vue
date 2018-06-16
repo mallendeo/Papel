@@ -1,7 +1,14 @@
 <template>
-  <header class="header row">
+  <header
+    class="header"
+    :class="ui.layout === 'col'
+      ? 'col header--col'
+      : 'row'
+    "
+  >
     <h1 class="brand row row--center">
-      <papel-logo class="brand__logo" /> Papel
+      <papel-logo class="brand__logo" />
+      <span>Papel</span>
     </h1>
 
     <button
@@ -28,7 +35,7 @@
       @click="save"
       class="btn btn--fade"
     >
-      <i class="material-icons">cloud_upload</i>
+      <upload-icon class="icon--small" />
       <span>Save</span>
       <!--
         call_split -> fork
@@ -43,45 +50,33 @@
 
 <script>
 import PapelLogo from '../icons/PapelLogo'
-import NebulasLogo from '@/components/icons/NebulasLogo'
+import NebulasLogo from '../icons/NebulasLogo'
+import UploadIcon from '../icons/UploadIcon'
 
 import { mapActions, mapState } from 'vuex'
 
 export default {
-  components: { PapelLogo, NebulasLogo },
+  components: {
+    PapelLogo,
+    NebulasLogo,
+    UploadIcon
+  },
   computed: mapState('editor', ['ui']),
   methods: {
     ...mapActions('editor', ['navTo']),
     ...mapActions('nebpay', ['callFunction']),
+    ...mapActions('ipfs', ['saveCurrCode']),
     async save () {
-      const args = [null, {
-        title: 'Example dapp',
-        description: 'Some example dapp',
-        src: {
-          html: {
-            code: '<h1>test</h1>'
-          },
-          css: {
-            type: 'stylus',
-            code: 'h1 { color: red; }'
-          }
-        }
-      }]
-      console.log('SAVING')
-      try {
-        const tx = this.callFunction({ fn: 'saveSheet', args })
-        console.info({ tx })
-        const saved = await tx
-        console.info({ saved })
-      } catch (e) {
-        console.error('ERROR', e)
-      }
+      this.saveCurrCode()
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.icon--small {
+  height: .75rem;
+}
 .brand {
   font-family: 'Comfortaa', sans-serif;
   font-size: .8rem;
@@ -108,12 +103,36 @@ export default {
   background: var(--editor-color-dark);
   color: var(--text-light);
   align-items: center;
+
+  &--col {
+    width: 3rem;
+    .brand {
+      margin-left: auto;
+      margin-right: auto;
+      svg { margin: .75rem auto .5rem auto; }
+      span { display: none; }
+    }
+
+    .btn {
+      height: 2.5rem;
+      margin: .5rem 0;
+      order: 1;
+      span { display: none; }
+      &:last-of-type { order: 0 }
+      &--active {
+        box-shadow: inset -2px 0 0 var(--btn-color-active);
+      }
+    }
+  }
 }
 
 .btn {
-  &:nth-of-type(5) { margin-left: auto; }
-  i { font-size: .9rem; }
-  span { padding-left: .5rem;}
-  &--active { box-shadow: inset 0 -2px 0 var(--btn-color-active) }
+  &:nth-of-type(5) { margin-left: auto }
+  .material-icons { font-size: .9rem }
+  span { padding-left: .5rem }
+
+  &--active {
+    box-shadow: inset 0 -2px 0 var(--btn-color-active);
+  }
 }
 </style>

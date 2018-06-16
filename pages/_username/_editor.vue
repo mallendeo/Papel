@@ -1,11 +1,14 @@
 <template>
   <section class="container row">
-    <div id="content" class="content col">
-      <editor-header />
+    <div id="content" class="content" :class="ui.layout === 'row' ? 'col': 'row'">
+      <editor-header :class="{ 'autohide': zenMode }" />
 
       <transition-group
         name="slide"
-        :class="{ 'slide-right': ui.slideRight }"
+        :class="{
+          'slide-next': ui.slideNext,
+          'slide-updown': ui.layout !== 'row'
+        }"
         tag="div"
         class="content__wrapper"
       >
@@ -77,7 +80,10 @@ export default {
     }
   },
 
-  computed: mapState('editor', ['editors', 'code', 'ui']),
+  computed: {
+    ...mapState('editor', ['editors', 'code', 'ui']),
+    ...mapState('ui', ['zenMode'])
+  },
 
   methods: {
     ...mapActions('neb', ['pay']),
@@ -155,15 +161,28 @@ $dist: 1rem;
   transition: all .2s ease;
   transform: translateX(0rem);
 }
+
 .slide-enter, .slide-leave-to {
   transition: all .2s ease;
   transform: translateX(-$dist);
   opacity: 0;
 }
+
 .slide-leave-to { transform: translateX($dist) }
-.slide-right {
+.slide-next {
   .slide-leave-to { transform: translateX(-$dist) }
   .slide-enter { transform: translateX($dist) }
+}
+
+.slide-updown {
+  .slide-enter-active { transform: translateY(0rem); }
+  .slide-enter, .slide-leave-to { transform: translateY($dist); }
+  .slide-leave-to { transform: translateY(-$dist) }
+
+  &.slide-next {
+    .slide-leave-to { transform: translateY($dist) }
+    .slide-enter { transform: translateY(-$dist) }
+  }
 }
 
 .container {
@@ -188,9 +207,11 @@ $dist: 1rem;
   min-width: 24rem;
   background: var(--editor-color);
   overflow: hidden;
+  position: relative;
 
   &__wrapper {
     height: 100%;
+    width: 100%;
     position: relative;
 
     /deep/ .section {
@@ -208,6 +229,27 @@ $dist: 1rem;
     display: block;
     width: 100%;
     height: 100%;
+  }
+}
+
+.header {
+  transition: transform .1s ease;
+}
+.autohide {
+  position: absolute;
+  z-index: 9;
+  transform: translateY(-95%);
+  transition-delay: .1s;
+  height: 3rem;
+  &:hover {
+    transform: translateY(0%);
+  }
+}
+.content.row .autohide {
+  height: 100%;
+  transform: translateX(-95%);
+  &:hover {
+    transform: translateX(0%);
   }
 }
 
