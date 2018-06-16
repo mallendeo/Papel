@@ -13,7 +13,8 @@ module.exports = {
     ],
     link: [
       { rel: 'icon', type: 'image/png', href: '/favicon.png' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons|Comfortaa' }
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons|Comfortaa|Source+Code+Pro|Inconsolata' },
+      { rel: 'stylesheet', href: 'https://unpkg.com/firacode@1.205.0/distr/fira_code.css' }
     ]
   },
   loading: { color: '#3B8070' },
@@ -24,16 +25,18 @@ module.exports = {
   ],
 
   build: {
+    maxChunkSize: 300000,
+
     vendor: [
-      'vue-codemirror',
-      'vue-observe-visibility',
-      'v-click-outside',
-      'split.js',
-      'ipfs-api',
       'axios',
+      'ipfs-api',
       'nebpay.js',
       'nebulas',
-      'shortid'
+      'shortid',
+      'split.js',
+      'vue-codemirror',
+      'vue-observe-visibility',
+      'v-click-outside'
     ],
 
     extend (config, { isDev, isClient }) {
