@@ -1,8 +1,8 @@
 <template>
-  <header
-    class="header"
+  <nav
+    class="nav"
     :class="ui.layout === 'col'
-      ? 'col header--col'
+      ? 'col nav--col'
       : 'row'
     "
   >
@@ -45,7 +45,7 @@
         cloud_done -> saved
       -->
     </button>
-  </header>
+  </nav>
 </template>
 
 <script>
@@ -98,7 +98,7 @@ export default {
   }
 }
 
-.header {
+.nav {
   flex: 0 0 3rem;
   background: var(--editor-color-dark);
   color: var(--text-light);

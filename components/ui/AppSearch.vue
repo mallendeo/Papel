@@ -127,7 +127,6 @@ export default {
 }
 
 .results {
-  background: var(--color-header);
   width: 100%;
   flex: 1;
   z-index: 10;

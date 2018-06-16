@@ -1,7 +1,7 @@
 <template>
   <section class="container row">
     <div id="content" class="content" :class="ui.layout === 'row' ? 'col': 'row'">
-      <editor-header :class="{ 'autohide': zenMode }" />
+      <editor-nav :class="{ 'autohide': zenMode }" />
 
       <transition-group
         name="slide"
@@ -52,7 +52,7 @@ import Split from 'split.js'
 import AppEditors from '@/components/editor/AppEditors'
 import SmartContractEditor from '@/components/editor/SmartContractEditor'
 import EditorSettings from '@/components/editor/EditorSettings'
-import EditorHeader from '@/components/editor/EditorHeader'
+import EditorNav from '@/components/editor/EditorNav'
 
 const worker = new TransformWorker()
 
@@ -61,7 +61,7 @@ export default {
     AppEditors,
     SmartContractEditor,
     EditorSettings,
-    EditorHeader
+    EditorNav
   },
 
   beforeDestroy () {
@@ -232,7 +232,7 @@ $dist: 1rem;
   }
 }
 
-.header {
+.nav {
   transition: transform .1s ease;
 }
 .autohide {
