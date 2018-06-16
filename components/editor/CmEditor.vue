@@ -2,6 +2,10 @@
   <codemirror
     v-observe-visibility="visibilityChanged"
     class="editor row"
+    :style="{
+      '--editor-font-family': `'${ui.font}'`,
+      '--editor-font-size': `${ui.fontSize}px`
+    }"
     :options="editorOpts"
     @input="val => loaded && $emit('change', val)"
     @ready="onReady"
@@ -11,6 +15,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { CodeMirror } from 'vue-codemirror'
 
 export default {
   props: {
@@ -22,7 +27,7 @@ export default {
   },
   data: () => ({ loaded: false, cm: null }),
   computed: {
-    ...mapState('editor', ['opts']),
+    ...mapState('editor', ['opts', 'ui']),
     editorOpts () {
       return { ...this.opts, ...this.options }
     }
@@ -40,6 +45,15 @@ export default {
 
     onReady (cm) {
       this.cm = cm
+
+      // Show hints
+      cm.on('keyup', (cm, e) => {
+        const isLetter = event.keyCode > 64 && event.keyCode < 91
+        if (!cm.state.completionActive && isLetter) {
+          CodeMirror.commands.autocomplete(cm, null, { completeSingle: false })
+        }
+      })
+
       cm.setValue(this.code)
       this.loaded = true
     },
@@ -58,6 +72,8 @@ export default {
   will-change: flex, height;
 
   /deep/ .CodeMirror {
+    font-family: var(--editor-font-family), monospace;
+    font-size: var(--editor-font-size);
     height: 100%;
     flex: 1;
   }

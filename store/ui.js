@@ -1,12 +1,20 @@
 import * as types from './mutation-types'
+import { getField, updateField } from 'vuex-map-fields'
 
-const TRANSITION_DURATION = 0.2
+const TRANSITION_DURATION = 0.3
 
 export const state = () => ({
-  themeTransition: false
+  themeTransition: false,
+  zenMode: false
 })
 
+export const getters = {
+  getField
+}
+
 export const mutations = {
+  updateField,
+
   [types.SET_THEME_TRANSITION] (state, transition) {
     state.themeTransition = typeof transition !== 'undefined'
       ? Boolean(transition)

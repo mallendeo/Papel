@@ -1,18 +1,27 @@
 import words from 'lodash/words'
 import capitalize from 'lodash/capitalize'
+import { getField, updateField } from 'vuex-map-fields'
 
 import * as types from './mutation-types'
 import * as demo from '../assets/demo'
 
 const themes = [
-  'default',
   'material',
+  'palenight',
+  'dracula',
   'monokai',
   'oceanic-next',
-  'dracula',
-  'solarized light',
   'solarized dark',
+  'solarized light',
+  'default',
   'mdn-like'
+]
+
+const fonts = [
+  'Source Code Pro',
+  'Fira Code',
+  'Inconsolata',
+  'Meslo LG M Regular'
 ]
 
 const tabs = [{
@@ -40,24 +49,67 @@ const tabs = [{
 export const state = () => ({
   opts: {
     tabSize: 2,
-    styleActiveLine: true,
     lineNumbers: true,
     line: true,
+    indentWithTabs: false,
     lineWrapping: true,
     themes,
     theme: themes[1],
-    extraKeys: {
-      Tab (cm) {
-        const spaces = Array(cm.getOption('indentUnit') + 1).join(' ')
-        cm.replaceSelection(spaces)
+    markTagPairs: true,
+    autoRenameTags: true,
+    jsxBracket: true,
+    autoCloseTags: true,
+    autoCloseBrackets: true,
+
+    foldGutter: true,
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+    onKeyEvent (e, s) {
+      if (s.type === 'keyup') {
+        console.log('asd', e)
       }
+    },
+    extraKeys: {
+      'Ctrl-Space': 'autocomplete',
+      Tab: cm => {
+        const { line, ch } = cm.getCursor()
+        const word = cm.findWordAt({ line, ch })
+        const char = cm.getRange(word.anchor, word.head)
+
+        if (char.trim()) {
+          const result = cm.execCommand('emmetExpandAbbreviation')
+          if (typeof result === 'boolean' && result) return
+        }
+
+        if (cm.somethingSelected()) {
+          cm.indentSelection('add')
+          return;
+        }
+
+        if (cm.options.indentWithTabs) {
+          cm.replaceSelection('\t', 'end', '+input')
+          return
+        }
+
+        cm.execCommand('insertSoftTab')
+      },
+      'Shift-Tab': cm => cm.indentSelection('subtract'),
+      'Ctrl-E': 'emmetExpandAbbreviationAll',
+      'Enter': 'emmetInsertLineBreak',
+      'Ctrl-W': 'emmetWrapWithAbbreviation',
+      'Ctrl-Q': cm => cm.foldCode(cm.getCursor())
     }
   },
 
   ui: {
     tabs,
     currTab: tabs[0],
-    slideRight: false
+    slideNext: false,
+    layout: 'col',
+    layouts: ['col', 'row'],
+    fonts,
+    font: fonts[0],
+    fontSize: 16,
+    refreshDelay: 0
   },
 
   code: {
@@ -165,6 +217,8 @@ export const state = () => ({
 })
 
 export const getters = {
+  getField,
+
   allThemes (state) {
     return state.opts.themes
       .map(theme => ({
@@ -179,6 +233,8 @@ export const getters = {
 }
 
 export const mutations = {
+  updateField,
+
   [types.EDITOR_SET_COMPILED] (state, { type, output }) {
     state.compiled[type] = output
     state.editors[type].error = null
@@ -193,7 +249,7 @@ export const mutations = {
     state.opts.theme = theme
   },
   [types.EDITOR_NAV_TO] (state, tab) {
-    state.ui.slideRight = tab.index > state.ui.currTab.index
+    state.ui.slideNext = tab.index > state.ui.currTab.index
     state.ui.currTab = tab
   },
   [types.EDITOR_TOGGLE_COMPILED] (state, type) {
@@ -202,6 +258,10 @@ export const mutations = {
   },
   [types.EDITOR_SET_LANG] (state, { type, lang }) {
     state.editors[type].lang = lang
+  },
+  [types.EDITOR_SET_LAYOUT] (state, layout) {
+    if (state.ui.layouts.indexOf(layout) < 0) return
+    state.ui.layout = layout
   }
 }
 
@@ -226,5 +286,8 @@ export const actions = {
   },
   toggleCompiled ({ commit }, type) {
     commit(types.EDITOR_TOGGLE_COMPILED, type)
+  },
+  setLayout ({ commit }, layout) {
+    commit(types.EDITOR_SET_LAYOUT, layout)
   }
 }
