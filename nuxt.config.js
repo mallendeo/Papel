@@ -25,8 +25,6 @@ module.exports = {
   ],
 
   build: {
-    maxChunkSize: 300000,
-
     vendor: [
       'axios',
       'ipfs-api',
