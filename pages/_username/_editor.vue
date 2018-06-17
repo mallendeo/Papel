@@ -194,8 +194,10 @@ $dist: 1rem;
       cursor: col-resize;
       margin-left: -.25rem;
       z-index: 10;
+      border-right: 1px solid var(--editor-color-dark);
 
       &:hover, &:active {
+        border-right: none;
         background: var(--editor-color-accent);
       }
     }
@@ -239,8 +241,8 @@ $dist: 1rem;
   position: absolute;
   z-index: 9;
   transform: translateY(-95%);
-  transition-delay: .1s;
   height: 3rem;
+  width: 100%;
   &:hover {
     transform: translateY(0%);
   }

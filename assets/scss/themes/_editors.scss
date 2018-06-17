@@ -18,7 +18,8 @@ html {
 
   --btn-color: white;
   --btn-color-hover: white;
-  --btn-color-active: var(--editor-color-accent);
+  --btn-color-active: white;
+  --btn-bg-active: var(--editor-color-accent);
 
   --text-light: hsl(var(--editor-hue), 50%, 90%);
   --text-lighter: hsl(var(--editor-hue), 10%, 50%);
@@ -56,20 +57,18 @@ html[data-theme='palenight'] {
   --editor-color-accent: hsl(var(--editor-hue), 90%, 70%);
 
   --btn-color: hsl(var(--editor-hue), 20%, 80%);
-  --btn-color-hover: hsl(var(--editor-hue), 50%, 68%);
-  --btn-color-active: hsl(var(--editor-hue), 50%, 65%);
 }
 
 html[data-theme='dracula'] {
   --editor-hue: 231;
   --editor-color: hsl(var(--editor-hue), 15%, 18%);
-  --editor-color-accent: hsl(var(--editor-hue), 100%, 80%);
+  --editor-color-accent: hsl(var(--editor-hue), 100%, 70%);
 }
 
 html[data-theme='monokai'] {
   --editor-hue: 70;
   --editor-color: hsl(var(--editor-hue), 8%, 15%);
-  --editor-color-accent: hsl(var(--editor-hue), 30%, 70%);
+  --editor-color-accent: hsl(var(--editor-hue), 50%, 40%);
   --editor-color-dark: hsl(var(--editor-hue), 10%, 10%);
 }
 

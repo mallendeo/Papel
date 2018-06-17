@@ -42,6 +42,7 @@
         }"
       >
         <app-select
+          class="select-wrapper"
           :currTitle="makeTitle(type, editors[type].lang)"
           :options="makeSelectOptions(type)"
           :value="editors[type].lang"
@@ -97,7 +98,8 @@ export default {
   data: () => ({
     split: null,
     showSearch: false,
-    initCode: {}
+    initCode: {},
+    wasDragged: false
   }),
 
   computed: {
@@ -111,35 +113,46 @@ export default {
     this.$nextTick(() => this.refreshEditors(true))
     this.initSplit()
   },
+
+  watch: {
+    zenMode () {
+      this.initSplit()
+    }
+  },
+
   methods: {
     initSplit () {
       let sizes = null
+
+      const toolbars = this.$el.querySelectorAll('.editor__toolbar')
+      const wrappers = this.types.map(l => `#${l}-editor-wrapper`)
 
       if (this.split) {
         sizes = this.split.getSizes()
         this.split.destroy()
       }
 
-      const wrappers = this.types.map(l => `#${l}-editor-wrapper`)
-
       this.split = Split(wrappers, {
         sizes,
         snapOffset: 0,
         minSize: -1, // FIXME: Workaround for zero gap gutter
-        gutterSize: 32,
+        gutterSize: this.zenMode ? 4 : 32,
         direction: 'vertical',
         cursor: 'row-resize',
-        gutter: index => {
-          const elem = this.$el.querySelectorAll('.editor__toolbar')
-          return elem[index]
-        },
-
+        gutter: index => toolbars[index],
         elementStyle: (dimension, size, gutterSize) => ({
           'flex-basis': `calc(${size}% - ${gutterSize}px)`
         }),
 
-        onDragEnd: () => this.refreshEditors()
+        onDrag: () => {
+          this.wasDragged = true
+        },
+        onDragEnd: () => {
+          if (this.wasDragged) this.refreshEditors()
+          this.wasDragged = false
+        }
       })
+
     },
 
     ...mapActions('editor', ['updateCode', 'setLang', 'toggleCompiled']),
@@ -270,7 +283,7 @@ $toolbar-size: 2rem;
 
     &:not(:first-of-type) {
       cursor: row-resize;
-      border-top: 1px solid rgba(0,0,0,.3);
+      border-top: 1px solid var(--editor-color-dark);
     }
 
     &--danger {
@@ -281,11 +294,8 @@ $toolbar-size: 2rem;
       flex-basis: .25rem;
       > * {
         transition: all .1s ease;
+        pointer-events: none;
         opacity: 0
-      }
-      &:hover, &:active {
-        flex-basis: 2rem;
-        > * { opacity: 1; }
       }
     }
   }
