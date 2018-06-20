@@ -152,30 +152,50 @@ export const getters = {
 export const mutations = {
   updateField,
 
+  [types.EDITOR_PUT_OPTIONS] (state, opts) {
+    state.editors = merge(state.editors, opts)
+  },
+
   [types.EDITOR_SET_COMPILED] (state, { type, output }) {
     state.compiled[type] = output
     state.editors[type].error = null
   },
+
   [types.EDITOR_SET_ERROR] (state, { type, error }) {
     state.editors[type].error = error
   },
+
   [types.EDITOR_SET_CODE] (state, { type, code }) {
     state.code[type] = code
   },
+
   [types.EDITOR_SET_THEME] (state, theme) {
     state.opts.theme = theme
   },
+
   [types.EDITOR_NAV_TO] (state, tab) {
-    state.ui.slideNext = tab.index > state.ui.currTab.index
+    const { tabs } = state.ui
+    const index = tabs.indexOf(state.ui.currTab)
+
+    if (typeof tab === 'number' && tabs[tab]) {
+      state.ui.slideNext = tab > index
+      state.ui.currTab = tabs[tab]
+      return
+    }
+
+    state.ui.slideNext = tabs.indexOf(tab) > index
     state.ui.currTab = tab
   },
+
   [types.EDITOR_TOGGLE_COMPILED] (state, type) {
     const { showCompiled } = state.editors[type]
     state.editors[type].showCompiled = !showCompiled
   },
+
   [types.EDITOR_SET_LANG] (state, { type, lang }) {
     state.editors[type].lang = lang
   },
+
   [types.EDITOR_SET_LAYOUT] (state, layout) {
     if (state.ui.layouts.indexOf(layout) < 0) return
     state.ui.layout = layout
@@ -206,5 +226,8 @@ export const actions = {
   },
   setLayout ({ commit }, layout) {
     commit(types.EDITOR_SET_LAYOUT, layout)
+  },
+  putOptions ({ commit }, opts) {
+    commit(types.EDITOR_PUT_OPTIONS, opts)
   }
 }
