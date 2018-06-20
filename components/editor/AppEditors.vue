@@ -1,14 +1,16 @@
 <template>
   <section class="section editors col">
     <editor-panel v-if="showSearch">
-      <app-search />
+      <app-search
+        @backclick="showSearch = !showSearch"
+        placeholder="Search or paste a URL"
+      />
     </editor-panel>
-    <div
-      class="editor__toolbar row"
-      :class="{
-        'editor__toolbar--danger': editors['html'].error,
-        'editor__toolbar--mini': zenMode
-      }"
+
+    <editor-toolbar
+      class="toolbar"
+      :danger="!!editors['html'].error"
+      :mini="zenMode"
     >
       <app-select
         class="select-wrapper"
@@ -18,6 +20,12 @@
         @change="lang => setEditorLang('html', lang)"
       />
 
+      <i
+        title="Add Library"
+        class="toolbar-icon material-icons"
+        @click="showSearch = !showSearch"
+      >add</i>
+
       <app-dropdown icon="settings">
         <lang-settings lang="html" />
       </app-dropdown>
@@ -25,7 +33,7 @@
       <i @click="onToggleCompiledClick('html')" class="toolbar-icon material-icons">
         {{ !editors['html'].showCompiled ? 'visibility' : 'visibility_off' }}
       </i>
-    </div>
+    </editor-toolbar>
 
     <div
       v-for="(type, index) of types"
@@ -33,13 +41,11 @@
       :key="`${type}-editor`"
       :id="`${type}-editor-wrapper`"
     >
-      <div
+      <editor-toolbar
         v-if="index"
-        class="editor__toolbar row"
-        :class="{
-          'editor__toolbar--danger': editors[type].error,
-          'editor__toolbar--mini': zenMode
-        }"
+        :class="{ 'no-events': wasDragged }"
+        :danger="!!editors[type].error"
+        :mini="zenMode"
       >
         <app-select
           class="select-wrapper"
@@ -56,11 +62,10 @@
         <i @click="onToggleCompiledClick(type)" class="toolbar-icon material-icons">
           {{ !editors[type].showCompiled ? 'visibility' : 'visibility_off' }}
         </i>
-      </div>
+      </editor-toolbar>
 
       <cm-editor
-        :updateWhenVisible="true"
-        :updateDelay="100"
+        :update-when-visible="true"
         :code="initCode[type]"
         :options="makeEditorOptions(type)"
         ref="editor"
@@ -81,6 +86,7 @@ import AppDropdown from '../ui/AppDropdown'
 import AppSearch from '../ui/AppSearch'
 import AppSelect from '../ui/AppSelect'
 import EditorPanel from '../ui/EditorPanel'
+import EditorToolbar from './EditorToolbar'
 import CmEditor from './CmEditor'
 import LangSettings from './LangSettings'
 
@@ -92,6 +98,7 @@ export default {
     AppSelect,
     CmEditor,
     EditorPanel,
+    EditorToolbar,
     LangSettings
   },
 
@@ -99,7 +106,8 @@ export default {
     split: null,
     showSearch: false,
     initCode: {},
-    wasDragged: false
+    wasDragged: false,
+    unsubscribe: null
   }),
 
   computed: {
@@ -108,10 +116,20 @@ export default {
     ...mapState('ui', ['zenMode'])
   },
 
+  beforeDestroy () {
+    this.unsubscribe()
+  },
+
   mounted () {
     this.initCode = { ...this.code } // make a copy of the state
     this.$nextTick(() => this.refreshEditors(true))
     this.initSplit()
+
+    this.unsubscribe = this.$store.subscribeAction((action, state) => {
+      if (action.type === 'editor/setOutput' && action.payload.loaded) {
+        this.initCode = { ...this.code }
+      }
+    })
   },
 
   watch: {
@@ -124,7 +142,7 @@ export default {
     initSplit () {
       let sizes = null
 
-      const toolbars = this.$el.querySelectorAll('.editor__toolbar')
+      const toolbars = this.$el.querySelectorAll('.toolbar')
       const wrappers = this.types.map(l => `#${l}-editor-wrapper`)
 
       if (this.split) {
@@ -135,7 +153,7 @@ export default {
       this.split = Split(wrappers, {
         sizes,
         snapOffset: 0,
-        minSize: -1, // FIXME: Workaround for zero gap gutter
+        minSize: 0,
         gutterSize: this.zenMode ? 4 : 32,
         direction: 'vertical',
         cursor: 'row-resize',
@@ -231,10 +249,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$toolbar-size: 2rem;
-
 .select-wrapper {
   min-width: 8rem;
+  margin-right: auto;
 }
 
 .editors {
@@ -265,45 +282,5 @@ $toolbar-size: 2rem;
     overflow: auto;
     position: relative;
   }
-
-  &__toolbar {
-    justify-content: space-between;
-    align-items: center;
-    flex: 0 0 $toolbar-size;
-
-    position: relative;
-
-    //background: var(--editor-color-dark);
-    background: var(--editor-color);
-
-    transition: all .2s ease;
-    color: var(--text-lighter);
-
-    font-size: .75rem;
-
-    &:not(:first-of-type) {
-      cursor: row-resize;
-      border-top: 1px solid var(--editor-color-dark);
-    }
-
-    &--danger {
-      box-shadow: inset .125rem 0 0 var(--error-color);
-    }
-
-    &--mini {
-      flex-basis: .25rem;
-      > * {
-        transition: all .1s ease;
-        pointer-events: none;
-        opacity: 0
-      }
-    }
-  }
-}
-
-.on-top {
-  margin-top: -2rem;
-  position: absolute;
-  z-index: 999;
 }
 </style>
