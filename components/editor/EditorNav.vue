@@ -11,39 +11,49 @@
       <span>Papel</span>
     </h1>
 
-    <button
-      v-for="tab of ui.tabs"
-      :key="`nav-${tab.component}`"
-      :title="tab.title"
-      class="btn btn--fade"
-      :class="{ 'btn--active': ui.currTab === tab }"
-      @click="navTo(tab)"
-    >
-      <i
-        v-if="tab.icon"
-        class="material-icons"
-      >{{ tab.icon }}</i>
+    <!-- Nav -->
+    <template v-for="tab of ui.tabs">
+      <button
+        :key="`nav-${tab.component}`"
+        :title="tab.title"
+        class="btn btn--fade"
+        :class="{ 'btn--active': ui.currTab === tab }"
+        @click="tab.onclick ? tab.onclick(tab) : navTo(tab)"
+      >
+        <i
+          v-if="tab.icon"
+          class="material-icons"
+        >{{ tab.icon }}</i>
 
-      <component
-        v-else-if="tab.iconComponent"
-        :is="tab.iconComponent"
+        <component
+          v-else-if="tab.iconComponent"
+          :is="tab.iconComponent"
+          :class="tab.classes"
+        />
+      </button>
+      <div
+        :key="`spacer-${tab.component}`"
+        v-if="tab.space"
+        class="split"
       />
+    </template>
+    <!-- /Nav -->
+
+    <!-- Actions -->
+    <button
+      title="Zen Mode"
+      @click="zenMode = !zenMode"
+      class="btn btn-ninja"
+      :class="{ 'btn--active': zenMode }"
+    >
+      <ninja-icon class="icon--small" />
     </button>
 
     <button
-      title="Save"
-      @click="save"
-      class="btn btn--fade"
+      title="More"
+      class="btn"
     >
-      <upload-icon class="icon--small" />
-      <span>Save</span>
-      <!--
-        call_split -> fork
-        cloud_upload -> save
-        cloud_off -> no extension
-        cloud + loading -> saving
-        cloud_done -> saved
-      -->
+      <i class="material-icons">more_horiz</i>
     </button>
   </nav>
 </template>
@@ -52,16 +62,22 @@
 import PapelLogo from '../icons/PapelLogo'
 import NebulasLogo from '../icons/NebulasLogo'
 import UploadIcon from '../icons/UploadIcon'
+import NinjaIcon from '../icons/NinjaIcon'
 
 import { mapActions, mapState } from 'vuex'
+import { mapFields } from 'vuex-map-fields'
 
 export default {
   components: {
     PapelLogo,
     NebulasLogo,
-    UploadIcon
+    UploadIcon,
+    NinjaIcon
   },
-  computed: mapState('editor', ['ui']),
+  computed: {
+    ...mapState('editor', ['ui']),
+    ...mapFields('ui', ['zenMode'])
+  },
   methods: {
     ...mapActions('editor', ['navTo']),
     ...mapActions('nebpay', ['callFunction']),
@@ -77,6 +93,7 @@ export default {
 .icon--small {
   height: .75rem;
 }
+
 .brand {
   font-family: 'Comfortaa', sans-serif;
   font-size: .8rem;
@@ -115,13 +132,10 @@ export default {
 
     .btn {
       height: 2.5rem;
+      width: 100%;
       margin: .5rem 0;
-      order: 1;
       span { display: none; }
       &:last-of-type { order: 0 }
-      &--active {
-        box-shadow: inset -2px 0 0 var(--btn-color-active);
-      }
     }
   }
 }
@@ -130,9 +144,16 @@ export default {
   &:nth-of-type(5) { margin-left: auto }
   .material-icons { font-size: .9rem }
   span { padding-left: .5rem }
+}
 
-  &--active {
-    box-shadow: inset 0 -2px 0 var(--btn-color-active);
-  }
+// FIXME:
+.btn-ninja.btn--active {
+  color: #333;
+  background: var(--warning-color);
+  box-shadow: none;
+}
+
+.split {
+  margin-top: auto;
 }
 </style>
