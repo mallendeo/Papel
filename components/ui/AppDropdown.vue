@@ -62,7 +62,6 @@ export default {
 <style lang="scss" scoped>
 .dropdown-wrapper {
   height: 100%;
-  margin-left: auto;
 }
 
 .dropdown {

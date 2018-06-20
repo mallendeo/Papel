@@ -14,7 +14,7 @@
       :class="{ 'list--open': isOpen }"
       :style="{
         left: `${pos.x}px`,
-        top: `${pos.y}px`
+        top: `${pos.y + offset}px`
       }"
     >
       <li
@@ -38,7 +38,7 @@
 /**
  * @example
  * <app-select
- *  :options="[{ title: 'Test', value: 'test' }]"
+ *  :options="[{ title: 'Test', value: 'test', icon: 'test' }]"
  *  value="test"
  * />
  */
@@ -47,7 +47,8 @@ export default {
     options: { type: Array, default: () => [] },
     currTitle: { type: String },
     open: { type: Boolean, default: false },
-    value: ''
+    value: { type: String, default: '' },
+    offset: { type: Number, default: 0 }
   },
   data: () => ({
     isOpen: this.open,
@@ -113,7 +114,7 @@ export default {
   flex-direction: column;
   min-width: 8rem;
   background: var(--editor-color-dark);
-  color: white;
+  color: var(--text-light);
   z-index: 10;
 
   pointer-events: none;

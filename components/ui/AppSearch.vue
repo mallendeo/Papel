@@ -1,7 +1,7 @@
 <template>
   <div class="search col">
     <div class="input__wrapper">
-      <button class="input__back row">
+      <button @click="$emit('backclick')" class="input__back row">
         <i class="material-icons">arrow_back</i>
       </button>
       <input
@@ -117,7 +117,7 @@ export default {
 
   &:focus {
     outline: none;
-    box-shadow: 0 2px 0 hsl(var(--editor-hue), 50%, 40%);
+    box-shadow: inset 0 -2px 0 var(--editor-color-accent);
   }
 }
 
@@ -137,7 +137,7 @@ export default {
     &:after {
       content: '';
       color: white;
-      border: .125rem solid var(--btn-bg);
+      border: .125rem solid var(--editor-color-accent);
       border-radius: 50%;
       border-top-color: transparent;
       border-right-color: transparent;
@@ -156,7 +156,7 @@ export default {
     span { opacity: .5; }
 
     &:hover {
-      background: var(--btn-bg);
+      background: var(--editor-color);
       span { opacity: 1; }
     }
   }
