@@ -33,8 +33,6 @@
           <input type="radio" name="css-reset">
         </label>
       </label>
-
-
     </template>
 
     <template v-if="lang === 'js'">
@@ -85,6 +83,7 @@ label {
   margin-bottom: .5rem;
   margin-top: 1rem;
   display: block;
+  font-size: .8rem;
   span {
     color: hsl(var(--red-hue), 90%, 60%);
   }
