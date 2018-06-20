@@ -2,6 +2,7 @@
 @import 'btns';
 @import 'themes/editors';
 @import 'fonts';
+@import 'helpers';
 
 html {
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -37,32 +38,14 @@ button {
   border-radius: 0;
 }
 
-.col {
-  display: flex;
-  flex-direction: column;
-}
-
-.row {
-  display: flex;
-}
-
-.row, .col {
-  &--center {
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-.abs-center {
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  margin: auto;
-}
-
 .theme-transition {
   pointer-events: none;
 
   *, *:after, *:before {
     transition: all .2s ease;
   }
+}
+
+.section {
+  color: var(--text-light);
 }

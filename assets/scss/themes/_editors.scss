@@ -6,11 +6,13 @@
 //--------------------------------
 html {
   --red-hue: 344;
+  --yellow-hue: 41;
 
   --editor-hue: 200;
   --editor-color-accent: hsl(var(--editor-hue), 100%, 50%);
   --editor-color: hsl(var(--editor-hue), 19%, 18%);
   --editor-color-dark: hsl(var(--editor-hue), 19%, 15%);
+  --editor-color-light: hsl(var(--editor-hue), 20%, 35%);
 
   --logo-stroke: white;
   --logo-fill: var(--editor-color-dark);
@@ -26,6 +28,7 @@ html {
 
   --error-color: hsl(var(--red-hue), 78%, 55%);
   --error-color-light: hsl(var(--red-hue), 78%, 60%);
+  --warning-color: hsl(var(--yellow-hue), 100%, 54%);
 }
 
 .CodeMirror-hints {
@@ -96,7 +99,7 @@ html[data-theme='solarized dark'] {
 html[data-theme='default'],
 html[data-theme='mdn-like'] {
   // Special tuning
-  div.editor__toolbar {
+  div.toolbar {
     background: var(--editor-color-dark);
     &:not(:first-of-type) {
       border-top: 1px solid rgba(0, 0, 0, 0.1);

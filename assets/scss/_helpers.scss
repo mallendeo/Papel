@@ -1,0 +1,25 @@
+.no-events * {
+  pointer-events: none;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+}
+
+.row, .col {
+  &--center {
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.abs-center {
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  margin: auto;
+}
