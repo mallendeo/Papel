@@ -1,5 +1,8 @@
 <template>
-  <section class="container row">
+  <section
+    @keydown.meta.83.prevent.stop="onSave"
+    class="container row"
+  >
     <div id="content" class="content" :class="ui.layout === 'row' ? 'col': 'row'">
       <editor-nav :class="{ 'autohide': zenMode }" />
 
@@ -12,20 +15,24 @@
         tag="div"
         class="content__wrapper"
       >
-        <app-editors
-          key="tab-1"
-          v-show="ui.currTab.component === 'app-editors'" />
-        <smart-contract-editor
-          key="tab-2"
-          v-show="ui.currTab.component === 'smart-contract-editor'" />
-        <editor-settings
-          key="tab-3"
-          v-show="ui.currTab.component === 'editor-settings'" />
+        <component
+          v-for="tab of [
+            'editor-save',
+            'app-editors',
+            'smart-contract-editor',
+            'app-comments',
+            'file-explorer',
+            'editor-settings'
+          ]"
+          :is="tab"
+          :key="`tab-${tab}`"
+          v-show="ui.currTab.component === tab"
+        />
       </transition-group>
     </div>
 
     <div id="preview" class="preview">
-      <!-- Disable allow-popups (prevent alerts) when showing the showcase -->
+      <!-- TODO: Disable allow-popups (prevent alerts) when displaying on showcase -->
       <iframe
         :src="previewUrl"
         sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts"
@@ -50,18 +57,24 @@ import shortid from 'shortid'
 import Split from 'split.js'
 
 import AppEditors from '@/components/editor/AppEditors'
-import SmartContractEditor from '@/components/editor/SmartContractEditor'
-import EditorSettings from '@/components/editor/EditorSettings'
+import AppComments from '@/components/editor/AppComments'
 import EditorNav from '@/components/editor/EditorNav'
+import EditorSettings from '@/components/editor/EditorSettings'
+import EditorSave from '@/components/editor/EditorSave'
+import FileExplorer from '@/components/editor/FileExplorer'
+import SmartContractEditor from '@/components/editor/SmartContractEditor'
 
 const worker = new TransformWorker()
 
 export default {
   components: {
     AppEditors,
-    SmartContractEditor,
+    AppComments,
+    EditorSave,
     EditorSettings,
-    EditorNav
+    EditorNav,
+    SmartContractEditor,
+    FileExplorer
   },
 
   beforeDestroy () {
@@ -69,14 +82,16 @@ export default {
     worker.removeEventListener('message', this.onMessage, false)
   },
 
-  data: () => {
+  data () {
     const previewUrl = process.env.NODE_ENV === 'production'
       ? 'https://a.papel.app/preview/'
       : 'http://localhost:3001/preview.html'
 
     return {
       previewUrl,
-      unsubscribeStore: null
+      unsubscribeStore: null,
+      saveKey: false,
+      slug: this.$route.params.editor
     }
   },
 
@@ -87,7 +102,8 @@ export default {
 
   methods: {
     ...mapActions('neb', ['pay']),
-    ...mapActions('editor', ['setOutput', 'setError']),
+    ...mapActions('editor', ['setOutput', 'setError', 'navTo']),
+    ...mapActions('sheet', ['loadFromLocal', 'saveLocal', 'saveIpfs']),
 
     updateIframe (event) {
       const remote = this.$refs.preview.contentWindow
@@ -113,10 +129,17 @@ export default {
 
       this.updateIframe(data)
       this.setOutput({ type, output })
+    },
+
+    onSave (event) {
+      this.navTo(0)
+      this.saveLocal(this.slug)
+      this.saveIpfs(this.slug)
     }
   },
   mounted () {
     Split(['#content', '#preview'], {
+      sizes: [35, 65],
       snapOffset: 0,
       minSize: 0,
       gutterSize: 4,
@@ -126,6 +149,9 @@ export default {
         'flex-basis': `calc(${size}% - ${gutterSize}px)`
       })
     })
+
+    // Get saved state from localStorage
+    this.loadFromLocal(this.slug)
 
     this.unsubscribeStore = this.$store.subscribeAction((action, state) => {
       if (action.type === 'editor/updateCode') {
@@ -205,7 +231,6 @@ $dist: 1rem;
 }
 
 .content {
-  flex: 2;
   min-width: 24rem;
   background: var(--editor-color);
   overflow: hidden;
@@ -224,8 +249,8 @@ $dist: 1rem;
 }
 
 .preview {
-  flex: 3;
   position: relative;
+  flex: 1;
 
   &__iframe {
     display: block;
