@@ -1,16 +1,12 @@
 const LANG_MAP = {
-  babel: {
-    global: 'Babel',
-    url: '/vendor/babel.min.js'
-  },
-  stylus: {
-    global: 'stylus',
-    url: '/vendor/stylus.min.js'
-  },
-  pug: {
-    global: 'pug',
-    url: '/vendor/pug.min.js'
-  }
+  md: { global: 'showdown', url: '/vendor/showdown.min.js' },
+  pug: { global: 'pug', url: '/vendor/pug.min.js' },
+  stylus: { global: 'stylus', url: '/vendor/stylus.min.js' },
+  scss: { global: 'sass', url: '/vendor/sass.sync.js' },
+  sass: { global: 'sass', url: '/vendor/sass.sync.js' },
+  babel: { global: 'Babel', url: '/vendor/babel.min.js' },
+  ts: { global: 'ts', url: '/vendor/typescriptServices.js' },
+  coffee: { global: 'CoffeeScript', url: '/vendor/coffeescript.js' }
 }
 
 const transform = async (code, lang) => {
@@ -20,38 +16,72 @@ const transform = async (code, lang) => {
 
   const prepros = LANG_MAP[lang]
 
-  let loadedLib = self[prepros.global]
+  let lib = self[prepros.global]
 
-  if (!loadedLib) {
+  if (!lib) {
     self.postMessage({ lang, loading: true })
     importScripts(prepros.url)
 
-    loadedLib = self[prepros.global] // re-assign once loaded
+    lib = self[prepros.global] // re-assign once loaded
 
     self.postMessage({ lang, loading: false })
   }
 
   return new Promise((resolve, reject) => {
     if (!prepros) return reject('Preprocessor not supported.')
+    let out = ''
 
     try {
       switch (lang) {
+        // HTML
         case 'pug':
-          resolve(loadedLib.render(code, { pretty: true }))
+          resolve(lib.render(code, { pretty: true }))
           break
+
+        case 'md':
+          resolve(new lib.Converter().makeHtml(code))
+          break
+
+        // CSS
         case 'stylus':
-          loadedLib(code)
+          lib(code)
             .render((err, str) => {
               if (err) return reject(err)
               resolve(str)
             })
           break
+        case 'sass':
+        case 'scss':
+          const opts = { indentedSyntax: lang === 'sass' }
+          Sass.compile(code, opts, result => {
+            if (result.status) {
+              return reject(Error(result.formatted))
+            }
+
+            resolve(result.text)
+          })
+          break
+
+        // JS
         case 'babel':
-          const out = loadedLib.transform(code, {
+          out = lib.transform(code, {
             presets: ['es2015', 'stage-0']
           })
           resolve(out.code)
           break
+        case 'ts':
+          out = lib.transpile(code, { target: ts.ScriptTarget.ES5 })
+          resolve(out)
+          break
+        case 'coffee':
+          try {
+            out = lib.compile(code)
+            resolve(out)
+          } catch (err) {
+            reject(err)
+          }
+          break
+        
         default:
           throw Error(`Invalid lang: ${lang}`)
       }

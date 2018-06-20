@@ -1,46 +1,34 @@
 import words from 'lodash/words'
 import capitalize from 'lodash/capitalize'
+import merge from 'lodash/merge'
 import { getField, updateField } from 'vuex-map-fields'
 
 import * as types from './mutation-types'
-import * as demo from '../assets/demo'
-
-const themes = [
-  'material',
-  'palenight',
-  'dracula',
-  'monokai',
-  'oceanic-next',
-  'solarized dark',
-  'solarized light',
-  'default',
-  'mdn-like'
-]
-
-const fonts = [
-  'Source Code Pro',
-  'Fira Code',
-  'Inconsolata',
-  'Meslo LG M Regular'
-]
+import { PREPROS, THEMES, FONTS } from './constants'
 
 const tabs = [{
-  index: 0,
+  component: 'editor-save',
+  title: 'Save',
+  iconComponent: 'upload-icon',
+  classes: 'icon--small'
+}, {
   component: 'app-editors',
   title: 'Editor',
   icon: 'code'
 }, {
-  index: 1,
   component: 'smart-contract-editor',
   title: 'Smart contract editor',
   iconComponent: 'nebulas-logo'
 }, {
-  index: 2,
-  component: 'app-info',
-  title: 'Details',
-  icon: 'info'
+  component: 'app-comments',
+  title: 'Comments',
+  icon: 'comment'
 }, {
-  index: 3,
+  space: true,
+  component: 'file-explorer',
+  title: 'My Files',
+  icon: 'folder'
+}, {
   component: 'editor-settings',
   title: 'Editor settings',
   icon: 'settings'
@@ -53,8 +41,8 @@ export const state = () => ({
     line: true,
     indentWithTabs: false,
     lineWrapping: true,
-    themes,
-    theme: themes[1],
+    themes: THEMES,
+    theme: THEMES[1],
     markTagPairs: true,
     autoRenameTags: true,
     jsxBracket: true,
@@ -63,11 +51,6 @@ export const state = () => ({
 
     foldGutter: true,
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-    onKeyEvent (e, s) {
-      if (s.type === 'keyup') {
-        console.log('asd', e)
-      }
-    },
     extraKeys: {
       'Ctrl-Space': 'autocomplete',
       Tab: cm => {
@@ -102,116 +85,50 @@ export const state = () => ({
 
   ui: {
     tabs,
-    currTab: tabs[0],
+    currTab: tabs[1],
     slideNext: false,
     layout: 'col',
     layouts: ['col', 'row'],
-    fonts,
-    font: fonts[0],
-    fontSize: 16,
-    refreshDelay: 0
+    fonts: FONTS,
+    font: FONTS[0],
+    fontSize: 12,
+    refreshDelay: 'instant'
   },
 
   code: {
-    html: demo.pug,
-    css: demo.styl,
-    js: demo.babel,
-    contract: demo.contract
+    html: '',
+    css: '',
+    js: ''
   },
 
   compiled: {
     html: '',
     css: '',
-    js: '',
-    contract: ''
+    js: ''
   },
 
   editors: {
     html: {
       error: null,
       head: '',
-      lang: 'pug',
+      lang: 'html',
       showCompiled: false,
-      prepros: {
-        html: {
-          icon: 'html',
-          mime: 'text/html',
-          title: 'HTML',
-          enabled: true
-        },
-        pug: {
-          icon: 'pug',
-          mime: 'text/x-pug',
-          title: 'Pug',
-          enabled: true
-        },
-        md: {
-          icon: 'markdown',
-          mime: 'text/x-markdown',
-          title: 'Markdown'
-        }
-      }
+      prepros: PREPROS.html
     },
     css: {
       error: null,
       autoprefix: false,
       libs: [],
-      lang: 'stylus',
+      lang: 'css',
       showCompiled: false,
-      prepros: {
-        css: {
-          icon: 'css',
-          mime: 'text/css',
-          title: 'CSS',
-          enabled: true
-        },
-        stylus: {
-          icon: 'stylus',
-          mime: 'text/x-styl',
-          title: 'Stylus',
-          enabled: true
-        },
-        sass: {
-          icon: 'sass',
-          mime: 'text/x-sass',
-          title: 'SASS'
-        },
-        scss: {
-          icon: 'sass',
-          mime: 'text/x-scss',
-          title: 'SCSS'
-        }
-      }
+      prepros: PREPROS.css
     },
     js: {
       error: null,
       libs: [],
-      lang: 'babel',
+      lang: 'js',
       showCompiled: false,
-      prepros: {
-        js: {
-          icon: 'javascript',
-          mime: 'text/javascript',
-          title: 'JS',
-          enabled: true
-        },
-        babel: {
-          icon: 'babel',
-          mime: 'text/jsx',
-          title: 'Babel',
-          enabled: true
-        },
-        ts: {
-          icon: 'typescript',
-          mime: 'text/typescript',
-          title: 'TypeScript'
-        },
-        coffee: {
-          icon: 'coffeescript',
-          mime: 'text/coffeescript',
-          title: 'CoffeeScript'
-        }
-      }
+      prepros: PREPROS.js
     }
   }
 })
