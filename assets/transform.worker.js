@@ -29,6 +29,7 @@ const transform = async (code, lang) => {
 
   return new Promise((resolve, reject) => {
     if (!prepros) return reject('Preprocessor not supported.')
+
     let out = ''
 
     try {
@@ -81,7 +82,7 @@ const transform = async (code, lang) => {
             reject(err)
           }
           break
-        
+
         default:
           throw Error(`Invalid lang: ${lang}`)
       }
@@ -91,11 +92,7 @@ const transform = async (code, lang) => {
   })
 }
 
-self.addEventListener('message', async event => {
-  // type can be html, css or js
-  const { type, code, lang } = event.data
-  if (!lang) return
-
+const compile = async (type, code, lang) => {
   try {
     self.postMessage({
       kind: 'prepros',
@@ -110,6 +107,43 @@ self.addEventListener('message', async event => {
       type,
       lang
     })
+  } finally {
+    setProp(lang, 'processing', false)
   }
+}
+
+const setProp = (lang, prop, value) => {
+  if (!lang || !prop) throw Error('Missing props')
+
+  // Only for languages that needs preprocessing
+  if (['html', 'css', 'js'].indexOf(lang) > -1) return
+  LANG_MAP[lang][prop] = value
+}
+
+const getProp = (lang, prop) => {
+  if (!lang || !prop) throw Error('Missing props')
+  return LANG_MAP[lang] && LANG_MAP[lang][prop]
+}
+
+self.addEventListener('message', async event => {
+  // type can be html, css or js
+  const { type, code, lang } = event.data
+  setProp(lang, 'src', { code, type })
+  if (!lang) return
+
+  const now = Date.now()
+  setProp(lang, 'lastModified', now)
+  if (getProp(lang, 'processing')) return
+
+  setProp(lang, 'processing', true)
+  await compile(type, code, lang)
+
+  // Check if there is new code
+  if (getProp(lang, 'lastModified') > now) {
+    const newCode = getProp(lang, 'src')
+    await compile(newCode.type, newCode.code, lang)
+  }
+
+  setProp(lang, 'processing', false)
 }, false)
 
