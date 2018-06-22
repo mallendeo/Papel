@@ -91,7 +91,7 @@ export const state = () => ({
     layouts: ['col', 'row'],
     fonts: FONTS,
     font: FONTS[0],
-    fontSize: 12,
+    fontSize: 14,
     refreshDelay: 'instant'
   },
 

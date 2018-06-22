@@ -2,6 +2,14 @@
   <section class="section">
     <h1>Save</h1>
 
+    Dist {{ latestHash.dist }}
+    <a :href="`https://ipfs.infura.io/ipfs/${latestHash.dist}`" target="_blank">go</a>
+    <br>
+    Config {{ latestHash.root }}
+    <a :href="`https://ipfs.infura.io/ipfs/${latestHash.root}`" target="_blank">go</a>
+    <br>
+
+
     <input placeholder="Untitled Project" type="text">
     <br>
     <textarea placeholder="Description" cols="30" rows="10"></textarea>
@@ -31,8 +39,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
-
+  computed: {
+    ...mapGetters('sheet', ['latestHash'])
+  }
 }
 </script>
 

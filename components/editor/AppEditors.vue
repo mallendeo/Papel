@@ -250,7 +250,7 @@ export default {
 
 <style lang="scss" scoped>
 .select-wrapper {
-  min-width: 8rem;
+  min-width: 4rem;
   margin-right: auto;
 }
 

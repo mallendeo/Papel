@@ -1,17 +1,41 @@
+import omit from 'lodash/omit'
+import flatMap from 'lodash/flatMap'
+
 import * as types from './mutation-types'
 import * as ipfs from '../lib/ipfs'
 import * as nebpay from '../lib/nebpay'
 import * as db from '../lib/db'
-import omit from 'lodash/omit'
-import flatMap from 'lodash/flatMap'
+import { generateHTML} from '../lib/helpers'
 
 export const state = () => ({
-  currTxHash: null
+  currTxHash: null,
+  isSaving: false,
+  hashes: []
 })
 
+export const getters = {
+  latestHash (state) {
+    const root = state.hashes.find(h => !h.path)
+    const dist = state.hashes.find(h => h.path === 'dist')
+
+    return {
+      root: root && root.hash,
+      dist: dist && dist.hash
+    }
+  }
+}
+
 export const mutations = {
-  [types.SET_CURR_TXHASH] (state, hash) {
+  [types.SHEET_SET_CURR_TXHASH] (state, hash) {
     state.currTxHash = hash
+  },
+
+  [types.SHEET_SET_SAVING] (state, saving) {
+    state.isSaving = saving
+  },
+
+  [types.SHEET_SET_HASHES] (state, hashes) {
+    state.hashes = hashes
   }
 }
 
@@ -34,29 +58,41 @@ export const actions = {
     })
   },
 
-  async saveIpfs ({ rootState }, slug) {
+  async saveIpfs ({ rootState, state, commit }) {
+    if (state.isSaving) return
+
     const { editors, code, compiled } = rootState.editor
-    const files = ['html', 'css', 'js'].map(type => {
+    const fileTypes = ['html', 'css', 'js'].filter(type => code[type])
+
+    const staticHTML = generateHTML({ code, body: compiled.html })
+
+    const files = fileTypes.map(type => {
       const filename = type === 'html' ? 'index' : 'main'
 
       const { lang, prepros } = editors[type]
       const { ext } = prepros[lang]
 
       return [
-        { path: `/dist/${filename}.${type}`, content: new Buffer(compiled[type]) },
-        { path: `/src/${filename}.${ext}`, content: new Buffer(code[type]) }
+        { path: `/src/${filename}.${ext}`, content: new Buffer(code[type]) },
+        {
+          path: `/dist/${filename}.${type}`,
+          content: new Buffer(type === 'html' ? staticHTML : compiled[type])
+        }
       ]
     })
 
     const config = JSON.stringify(pickConfig(editors))
     const ipfsOpts = { wrapWithDirectory: true, pin: true }
 
-    const saved = await ipfs.saveFiles([
+    commit(types.SHEET_SET_SAVING, true)
+
+    const hashes = await ipfs.saveFiles([
       ...flatMap(files),
       { path: '/config.json', content: new Buffer(config) }
     ], ipfsOpts)
 
-    console.log({saved})
+    commit(types.SHEET_SET_SAVING, false)
+    commit(types.SHEET_SET_HASHES, hashes)
   },
 
   loadFromLocal ({ dispatch }, slug) {

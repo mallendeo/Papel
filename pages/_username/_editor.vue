@@ -1,6 +1,7 @@
 <template>
   <section
-    @keydown.meta.83.prevent.stop="onSave"
+    @keydown.meta.83.prevent.stop="onSave(false)"
+    @keydown.shift.meta.83.prevent.stop="onSave(true)"
     class="container row"
   >
     <div id="content" class="content" :class="ui.layout === 'row' ? 'col': 'row'">
@@ -102,7 +103,7 @@ export default {
 
   methods: {
     ...mapActions('neb', ['pay']),
-    ...mapActions('editor', ['setOutput', 'setError', 'navTo']),
+    ...mapActions('editor', ['setOutput', 'setError']),
     ...mapActions('sheet', ['loadFromLocal', 'saveLocal', 'saveIpfs']),
 
     updateIframe (event) {
@@ -131,10 +132,12 @@ export default {
       this.setOutput({ type, output })
     },
 
-    onSave (event) {
-      this.navTo(0)
+    onSave (blockchain) {
       this.saveLocal(this.slug)
-      this.saveIpfs(this.slug)
+      if (blockchain) {
+        console.log('ipfs')
+        this.saveIpfs(this.slug)
+      }
     }
   },
   mounted () {
