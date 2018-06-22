@@ -25,6 +25,7 @@
             'file-explorer',
             'editor-settings'
           ]"
+          :ref="`tab-${tab}`"
           :is="tab"
           :key="`tab-${tab}`"
           v-show="ui.currTab.component === tab"
@@ -150,7 +151,10 @@ export default {
       cursor: 'col-resize',
       elementStyle: (dimension, size, gutterSize) => ({
         'flex-basis': `calc(${size}% - ${gutterSize}px)`
-      })
+      }),
+      onDragEnd: () => {
+        this.$refs['tab-app-editors'][0].refreshEditors()
+      }
     })
 
     // Get saved state from localStorage
@@ -267,7 +271,7 @@ $dist: 1rem;
 }
 .autohide {
   position: absolute;
-  z-index: 9;
+  z-index: 20;
   transform: translateY(-95%);
   height: 3rem;
   width: 100%;

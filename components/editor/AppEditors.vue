@@ -1,8 +1,8 @@
 <template>
   <section class="section editors col">
-    <editor-panel v-if="showSearch">
-      <app-search
-        @backclick="showSearch = !showSearch"
+    <editor-panel v-if="showLibPicker">
+      <library-picker
+        @backclick="showLibPicker = !showLibPicker"
         placeholder="Search or paste a URL"
       />
     </editor-panel>
@@ -23,7 +23,7 @@
       <i
         title="Add Library"
         class="toolbar-icon material-icons"
-        @click="showSearch = !showSearch"
+        @click="showLibPicker = !showLibPicker"
       >add</i>
 
       <app-dropdown icon="settings">
@@ -83,28 +83,28 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 
 import AppToggle from '../ui/AppToggle'
 import AppDropdown from '../ui/AppDropdown'
-import AppSearch from '../ui/AppSearch'
 import AppSelect from '../ui/AppSelect'
 import EditorPanel from '../ui/EditorPanel'
 import EditorToolbar from './EditorToolbar'
 import CmEditor from './CmEditor'
 import LangSettings from './LangSettings'
+import LibraryPicker from './LibraryPicker'
 
 export default {
   components: {
     AppToggle,
     AppDropdown,
-    AppSearch,
     AppSelect,
     CmEditor,
     EditorPanel,
     EditorToolbar,
-    LangSettings
+    LangSettings,
+    LibraryPicker
   },
 
   data: () => ({
     split: null,
-    showSearch: false,
+    showLibPicker: false,
     initCode: {},
     wasDragged: false,
     unsubscribe: null

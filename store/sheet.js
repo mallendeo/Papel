@@ -26,7 +26,7 @@ export const getters = {
 }
 
 export const mutations = {
-  [types.SHEET_SET_CURR_TXHASH] (state, hash) {
+  [types.SHEET_SET_TXHASH] (state, hash) {
     state.currTxHash = hash
   },
 
