@@ -51,6 +51,13 @@ export const PREPROS = {
       mime: 'text/x-scss',
       title: 'SCSS',
       enabled: true
+    },
+    less: {
+      icon: 'less',
+      ext: 'less',
+      mime: 'text/x-less',
+      title: 'LESS',
+      enabled: true
     }
   },
 

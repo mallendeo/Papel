@@ -1,9 +1,24 @@
+// Window patch for some libraries
+window = self
+window.document = {
+  getElementsByTagName (tagName) {
+    if (tagName === 'script') {
+      return [{ dataset: {} }]
+    } else if (tagName === 'style') {
+      return []
+    } else if (tagName === 'link') {
+      return []
+    }
+  }
+}
+
 const LANG_MAP = {
   md: { global: 'showdown', url: '/vendor/showdown.min.js' },
   pug: { global: 'pug', url: '/vendor/pug.min.js' },
   stylus: { global: 'stylus', url: '/vendor/stylus.min.js' },
   scss: { global: 'sass', url: '/vendor/sass.sync.js' },
   sass: { global: 'sass', url: '/vendor/sass.sync.js' },
+  less: { global: 'less', url: '/vendor/less.min.js' },
   babel: { global: 'Babel', url: '/vendor/babel.min.js' },
   ts: { global: 'ts', url: '/vendor/typescriptServices.js' },
   coffee: { global: 'CoffeeScript', url: '/vendor/coffeescript.js' }
@@ -27,7 +42,7 @@ const transform = async (code, lang) => {
     self.postMessage({ lang, loading: false })
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     if (!prepros) return reject('Preprocessor not supported.')
 
     let out = ''
@@ -61,6 +76,11 @@ const transform = async (code, lang) => {
 
             resolve(result.text)
           })
+          break
+        case 'less':
+          lib.render(code)
+            .then(({ css }) => resolve(css))
+            .catch(reject)
           break
 
         // JS
