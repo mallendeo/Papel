@@ -1,22 +1,19 @@
 <template>
   <section class="section editors col">
     <editor-panel v-if="showLibPicker">
-      <library-picker
-        @backclick="showLibPicker = !showLibPicker"
-        placeholder="Search or paste a URL"
-      />
+      <library-picker @backclick="showLibPicker = !showLibPicker" />
     </editor-panel>
 
     <editor-toolbar
       class="toolbar"
-      :danger="!!editors['html'].error"
+      :danger="!!editors.html.error"
       :mini="zenMode"
     >
       <app-select
         class="select-wrapper"
-        :currTitle="makeTitle('html', editors['html'].lang)"
+        :currTitle="makeTitle('html', editors.html.lang)"
         :options="makeSelectOptions('html')"
-        :value="editors['html'].lang"
+        :value="editors.html.lang"
         @change="lang => setEditorLang('html', lang)"
       />
 

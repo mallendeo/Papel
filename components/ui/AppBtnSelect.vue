@@ -1,6 +1,6 @@
 <template>
   <button :disabled="disabled" class="btn-select">
-    <span class="label">{{ label }}</span>
+    <span v-if="label" class="label">{{ label }}</span>
     <div v-if="value" class="select-like" :class="{ caret }">
       <strong class="value">{{ value }}</strong>
     </div>
