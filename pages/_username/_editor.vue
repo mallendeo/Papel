@@ -34,6 +34,8 @@
     </div>
 
     <div id="preview" class="preview">
+      <notifications group="editor" />
+
       <!-- TODO: Disable allow-popups (prevent alerts) when displaying on showcase -->
       <iframe
         :src="previewUrl"

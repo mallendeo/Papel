@@ -21,7 +21,9 @@ module.exports = {
   plugins: [
     '~/plugins/vue-codemirror',
     '~/plugins/vue-observe-visibility',
-    '~/plugins/v-click-outside'
+    '~/plugins/v-click-outside',
+    '~/plugins/vue-clipboard',
+    '~/plugins/vue-notifications'
   ],
 
   build: {
