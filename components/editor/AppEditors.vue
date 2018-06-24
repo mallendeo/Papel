@@ -1,6 +1,6 @@
 <template>
   <section class="section editors col">
-    <editor-panel v-if="showLibPicker">
+    <editor-panel v-show="showLibPicker">
       <library-picker @backclick="showLibPicker = !showLibPicker" />
     </editor-panel>
 

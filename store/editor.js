@@ -199,6 +199,10 @@ export const mutations = {
   [types.EDITOR_SET_LAYOUT] (state, layout) {
     if (state.ui.layouts.indexOf(layout) < 0) return
     state.ui.layout = layout
+  },
+
+  [types.EDITOR_SET_LIBS] (state, { type, libs }) {
+    state.editors[type].libs = libs
   }
 }
 
@@ -229,5 +233,8 @@ export const actions = {
   },
   putOptions ({ commit }, opts) {
     commit(types.EDITOR_PUT_OPTIONS, opts)
+  },
+  setLibs ({ commit }, { type, libs }) {
+    commit(types.EDITOR_SET_LIBS, { type, libs })
   }
 }

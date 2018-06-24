@@ -1,116 +1,129 @@
 <template>
   <div class="search col">
-    <h2 class="title row">
-      <button @click="$emit('backclick')" class="btn-back row">
-        <i class="material-icons">arrow_back</i>
-      </button>
-      Search or paste a URL
-    </h2>
+    <div class="search__content">
+      <h2 class="title row">
+        <button @click="$emit('backclick')" class="btn-back row">
+          <i class="material-icons">arrow_back</i>
+        </button>
+        Search or paste a URL
+      </h2>
 
-    <div class="input__wrapper">
-      <input
-        class="input"
-        @input="onChange"
-        type="search"
-        placeholder="vue, bootstrap, https://cdn.js..."
-      >
-      <button v-if="showInputBtn" class="input__btn">Add</button>
-    </div>
-
-    <div
-      v-if="!search"
-      :key="`libs-${lang}`"
-      v-for="lang of ['js', 'css']"
-      class="results__wrapper"
-    >
-      <h4 class="subtitle">
-        <strong>{{ lang.toUpperCase() }}</strong>
-        Resources
-      </h4>
-      <span v-if="!libs[lang].length">Nothing here yet</span>
-      <draggable
-        element="ul"
-        class="results picks"
-        v-model="libs[lang]"
-        :options="{ handle: '.handle', group: 'libs' }"
-      >
-        <transition-group class="transition-group">
-          <li
-            class="results__item row"
-            v-for="lib of libs[lang]"
-            :key="`pick-${lib.name}`"
-          >
-            <app-btn-select class="btn-select">
-              <strong class="label">
-                {{ lib.name }}
-                <span>&nbsp;/ {{ lib.filename }}</span>
-              </strong>
-              <button
-                class="select-like btn--danger"
-                @click="setLib(lib, true)"
-              >
-                <i class="material-icons">remove_circle</i>
-              </button>
-
-              <button
-                title="Copy URL"
-                class="select-like"
-                v-clipboard:copy="lib.url"
-              >
-                <i class="material-icons">link</i>
-              </button>
-
-              <button class="handle">
-                <i class="material-icons">drag_handle</i>
-              </button>
-            </app-btn-select>
-          </li>
-        </transition-group>
-      </draggable>
-    </div>
-
-    <ul
-      v-if="search && !showInputBtn"
-      class="results"
-      :class="{ 'results--loading': isLoading }"
-    >
-      <li
-        class="results__item row"
-        v-for="result of filtered"
-        :key="result.latest"
-      >
-        <app-btn-select
-          :label="result.name"
-          class="btn-select"
+      <div class="input__wrapper">
+        <input
+          class="input"
+          v-model="search"
+          @keydown.enter="addFromUrl(search)"
+          type="search"
+          placeholder="vue, bootstrap, https://cdn.js..."
         >
-          <select data-version :value="result.version">
-            <option
-              :value="version"
-              :key="`${result.name}-${version}`"
-              v-for="{ version } of result.assets"
-            >{{ version }}</option>
-          </select>
-          <select data-file :value="result.filename">
-            <option
-              :value="file"
-              :key="`${result.name}-${file}`"
-              v-for="file of getFiles(result.assets, result.version)"
-            >{{ file }}</option>
-          </select>
+        <button
+          @click="addFromUrl(search)"
+          v-if="showInputBtn"
+          class="input__btn"
+        >Add</button>
+      </div>
 
-          <button
-            @click="e => toggleLibrary(e.target, result.name)"
-            class="select-like"
+      <div
+        v-if="!search && allLibs.length"
+        :key="`libs-${lang}`"
+        v-for="lang of ['js', 'css']"
+        class="results__wrapper"
+      >
+        <h4 class="subtitle">
+          <strong>{{ lang.toUpperCase() }}</strong>
+          Resources
+        </h4>
+
+        <draggable
+          element="ul"
+          class="results picks"
+          v-model="libs[lang]"
+          :options="{ handle: '.handle', group: 'libs' }"
+        >
+          <transition-group class="transition-group">
+            <li
+              class="results__item row"
+              v-for="lib of libs[lang]"
+              :key="`pick-${lib.name}`"
+            >
+              <app-btn-select class="btn-select">
+                <strong class="label">
+                  {{ lib.name }}
+                  <span v-if="lib.name"> / </span>
+                  <span>{{ lib.filename }}</span>
+                </strong>
+                <button
+                  class="select-like btn--danger"
+                  @click="setLib(lib, true)"
+                >
+                  <i class="material-icons">remove_circle</i>
+                </button>
+
+                <button
+                  title="Copy URL"
+                  class="select-like"
+                  v-clipboard:copy="lib.url"
+                >
+                  <i class="material-icons">link</i>
+                </button>
+
+                <button class="handle">
+                  <i class="material-icons">drag_handle</i>
+                </button>
+              </app-btn-select>
+            </li>
+          </transition-group>
+        </draggable>
+      </div>
+
+      <span class="message" v-if="!search && !allLibs.length">
+        Nothing here yet, try adding some libraries.
+      </span>
+
+      <ul
+        v-if="search && !showInputBtn"
+        class="results"
+        :class="{ 'results--loading': isLoading }"
+      >
+        <li
+          class="results__item row"
+          v-for="result of filtered"
+          :key="result.latest"
+        >
+          <app-btn-select
+            :label="result.name"
+            class="btn-select"
           >
-            <i class="material-icons">add</i>
-          </button>
-        </app-btn-select>
-      </li>
-    </ul>
+            <select data-version :value="result.version">
+              <option
+                :value="version"
+                :key="`${result.name}-${version}`"
+                v-for="{ version } of result.assets"
+              >{{ version }}</option>
+            </select>
+            <select data-file :value="result.filename">
+              <option
+                :value="file"
+                :key="`${result.name}-${file}`"
+                v-for="file of getFiles(result.assets, result.version)"
+              >{{ file }}</option>
+            </select>
+
+            <button
+              @click="e => toggleLibrary(e.target, result.name)"
+              class="select-like"
+            >
+              <i class="material-icons">add</i>
+            </button>
+          </app-btn-select>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import axios from 'axios'
 import draggable from 'vuedraggable'
 import ElementQueries from 'css-element-queries/src/ElementQueries'
@@ -126,25 +139,44 @@ export default {
     delay: { type: Number, default: 500 },
     limit: { type: Number, default: 20 }
   },
-  data: () => ({
-    timeout: null,
-    results: [],
-    libs: {
-      js: [],
-      css: []
-    },
-    isLoading: false,
-    search: ''
-  }),
+  data () {
+    const { editors } = this.$store.state.editor
+
+    return {
+      timeout: null,
+      results: [],
+      loaded: false,
+      libs: {
+        js: editors.js.libs,
+        css: editors.css.libs
+      },
+      showInputBtn: false,
+      isLoading: false,
+      search: ''
+    }
+  },
   mounted () {
     ElementQueries.init()
   },
-  methods: {
-    onChange (event) {
-      const val = event.target.value
 
+  // TODO: Do it properly without using watchers
+  watch: {
+    libs: {
+      handler ({ js, css }) {
+        this.setLibs({ type: 'js', libs: js })
+        this.setLibs({ type: 'css', libs: css })
+      },
+      deep: true
+    },
+    search (val) {
+      this.onChange(val)
+    }
+  },
+  methods: {
+    ...mapActions('editor', ['setLibs']),
+
+    onChange (val) {
       this.results = []
-      this.search = val
 
       if (!val) return
 
@@ -170,11 +202,15 @@ export default {
       }, this.delay)
     },
 
-    addCustomLib (url) {
+    addFromUrl (url) {
+      if (!this.showInputBtn || !url) return
+
       const match = url.match(/[^\/]+$/)
       const filename = match ? match[0] : ''
 
-      return { url, filename }
+      this.setLib({ url, filename })
+      this.search = ''
+      this.showInputBtn = false
     },
 
     setLib (lib, remove) {
@@ -234,6 +270,14 @@ export default {
     filtered () {
       return this.results
         .slice(0, this.limit)
+        .map(lib => ({
+            ...lib,
+            assets: lib.assets.map(asset => ({
+              ...asset,
+              files: asset.files.filter(file => !file.endsWith('map'))
+            }))
+          })
+        )
     },
     allLibs () {
       return [...this.libs.js, ...this.libs.css]
@@ -255,6 +299,15 @@ export default {
   padding: 1rem 0;
 }
 
+.message {
+  margin: auto;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  height: 9rem;
+  opacity: .4;
+}
+
 .title {
   font-weight: 400;
   align-items: center;
@@ -271,7 +324,7 @@ export default {
 // https://github.com/SortableJS/Vue.Draggable#gotchas
 .transition-group {
   display: block;
-  min-height: 10rem;
+  min-height: 1rem;
 }
 
 .btn-select {
@@ -329,16 +382,24 @@ button.handle {
 }
 
 .search {
-  position: relative;
-  height: 100%;
-  overflow-y: auto;
   margin: 0;
+  overflow-y: auto;
 
-  &[min-width~="30rem"] {
+  &, &__content {
+    position: relative;
+    height: 100%;
+  }
+
+  &[min-width~="30rem"] &__content {
     width: 30rem;
     margin: auto;
-    margin-top: 2rem;
+    padding-top: 2rem;
   }
+}
+
+@keyframes shadow {
+  from { box-shadow: 0 0 0rem 0rem var(--editor-color-dark); }
+  to { box-shadow: 0 .5rem 3rem .5rem var(--editor-color-dark); }
 }
 
 .input {
@@ -354,6 +415,7 @@ button.handle {
   background: var(--editor-color);
   padding-left: 2rem;
   flex: 1;
+  animation: shadow .8s .2s ease both;
 
   &::placeholder {
     color: var(--text-lighter);
@@ -363,13 +425,14 @@ button.handle {
     display: flex;
     padding: .5rem 2rem 2rem;
     position: sticky;
-    top: 0;
+    top: 1rem;
     z-index: 9;
   }
 
   &__btn {
     color: var(--text-light);
-    background: var(--editor-color);
+    font-weight: bold;
+    background: var(--editor-color-accent);
     padding: .9rem;
     margin-left: .5rem;
     border-radius: .5rem;
@@ -384,10 +447,9 @@ button.handle {
 }
 
 .results {
-  width: 100%;
-  z-index: 10;
+  z-index: 8;
   word-wrap: break-word;
-  overflow-y: auto;
+  padding-bottom: 2rem;
 
   &--loading {
     &:after {
