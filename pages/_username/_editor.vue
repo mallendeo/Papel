@@ -1,7 +1,7 @@
 <template>
   <section
-    @keydown.meta.83.prevent.stop="onSave(false)"
-    @keydown.shift.meta.83.prevent.stop="onSave(true)"
+    @keydown.meta.83.prevent="onSave(false)"
+    @keydown.shift.meta.83.prevent="onSave(true)"
     class="container row"
   >
     <div id="content" class="content" :class="ui.layout === 'row' ? 'col': 'row'">
@@ -34,7 +34,7 @@
     </div>
 
     <div id="preview" class="preview">
-      <notifications group="editor" />
+      <app-notifications group="editor" />
 
       <!-- TODO: Disable allow-popups (prevent alerts) when displaying on showcase -->
       <iframe
@@ -62,6 +62,7 @@ import Split from 'split.js'
 
 import AppEditors from '@/components/editor/AppEditors'
 import AppComments from '@/components/editor/AppComments'
+import AppNotifications from '@/components/ui/AppNotifications'
 import EditorNav from '@/components/editor/EditorNav'
 import EditorSettings from '@/components/editor/EditorSettings'
 import EditorSave from '@/components/editor/EditorSave'
@@ -74,6 +75,7 @@ export default {
   components: {
     AppEditors,
     AppComments,
+    AppNotifications,
     EditorSave,
     EditorSettings,
     EditorNav,
@@ -109,12 +111,12 @@ export default {
     ...mapActions('editor', ['setOutput', 'setError']),
     ...mapActions('sheet', ['loadFromLocal', 'saveLocal', 'saveIpfs']),
 
-    updateIframe (event) {
+    updateIframe (data) {
       const remote = this.$refs.preview.contentWindow
 
       remote.postMessage({
         type: 'papel:codeupdate',
-        event
+        event: data
       }, this.previewUrl)
     },
 
@@ -125,7 +127,7 @@ export default {
       if (kind !== 'prepros') return
 
       if (error) {
-        this.setError({ type, error: data.error })
+        this.setError({ type, error })
         return
       }
 
@@ -163,15 +165,28 @@ export default {
     this.loadFromLocal(this.slug)
 
     this.unsubscribeStore = this.$store.subscribeAction((action, state) => {
-      if (action.type === 'editor/updateCode') {
-        worker.postMessage(action.payload)
-      }
+      switch (action.type) {
+        case 'editor/updateCode':
+          worker.postMessage(action.payload)
+          break
 
-      if (action.type === 'editor/setLang') {
-        worker.postMessage({
-          ...action.payload,
-          code: this.code[action.payload.type]
-        })
+        case 'editor/setLang':
+          worker.postMessage({
+            ...action.payload,
+            code: this.code[action.payload.type]
+          })
+          break
+
+        case 'editor/setLibs':
+          const remote = this.$refs.preview.contentWindow
+          console.log({action})
+          const data = { libs: {} }
+          data.libs[action.payload.type] = action.payload.libs
+          remote.postMessage({
+            type: 'papel:metaupdate',
+            event: data
+          }, this.previewUrl)
+          break
       }
     })
 
@@ -252,6 +267,7 @@ $dist: 1rem;
 
     /deep/ .section {
       position: absolute;
+      will-change: transform, opacity;
       width: 100%; height: 100%;
     }
   }
