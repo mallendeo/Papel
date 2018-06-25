@@ -43,8 +43,8 @@
           <transition-group class="transition-group">
             <li
               class="results__item row"
-              v-for="lib of libs[lang]"
-              :key="`pick-${lib.name}`"
+              v-for="(lib, index) of libs[lang]"
+              :key="`pick-${lang}-${index}`"
             >
               <app-btn-select class="btn-select">
                 <strong class="label">
@@ -140,15 +140,13 @@ export default {
     limit: { type: Number, default: 20 }
   },
   data () {
-    const { editors } = this.$store.state.editor
-
     return {
       timeout: null,
       results: [],
       loaded: false,
       libs: {
-        js: editors.js.libs,
-        css: editors.css.libs
+        js: [],
+        css: []
       },
       showInputBtn: false,
       isLoading: false,
@@ -157,6 +155,13 @@ export default {
   },
   mounted () {
     ElementQueries.init()
+
+    const { editors } = this.$store.state.editor
+
+    this.libs = {
+      js: editors.js.libs,
+      css: editors.css.libs
+    }
   },
 
   // TODO: Do it properly without using watchers
