@@ -130,6 +130,9 @@ import ElementQueries from 'css-element-queries/src/ElementQueries'
 
 import AppBtnSelect from '../ui/AppBtnSelect'
 
+const CancelToken = axios.CancelToken
+let source // CancelToken.source()
+
 export default {
   components: {
     draggable,
@@ -201,9 +204,26 @@ export default {
 
       this.timeout = setTimeout(async () => {
         const API_URL = 'https://api.cdnjs.com/libraries'
-        const { data } = await axios(`${API_URL}?search=${val}${extra}`)
-        this.results = data.results
-        this.isLoading = false
+        try {
+          if (source) source.cancel()
+          source = CancelToken.source()
+
+          const { data } = await axios(`${API_URL}?search=${val}${extra}`, {
+            cancelToken: source.token
+          })
+
+          this.results = data.results
+        } catch (err) {
+          if (!axios.isCancel(err)) {
+            this.$notify({
+              group: 'editor',
+              title: 'Search error',
+              text: err.message
+            })
+          }
+        } finally {
+          this.isLoading = false
+        }
       }, this.delay)
     },
 
@@ -315,14 +335,16 @@ export default {
 
 .title {
   font-weight: 400;
-  align-items: center;
+  align-items: flex-end;
   padding-left: .5rem;
 }
 
 .btn-back {
   height: 100%;
   color: var(--text-lighter);
-  padding-right: 1rem;
+  margin-right: .5rem;
+  outline: none;
+  &:focus { background: var(--editor-color-dark); }
   i { font-size: 1.25rem; }
 }
 
