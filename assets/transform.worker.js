@@ -1,17 +1,3 @@
-// Window patch for some libraries
-window = self
-window.document = {
-  getElementsByTagName (tagName) {
-    if (tagName === 'script') {
-      return [{ dataset: {} }]
-    } else if (tagName === 'style') {
-      return []
-    } else if (tagName === 'link') {
-      return []
-    }
-  }
-}
-
 const LANG_MAP = {
   md: { global: 'showdown', url: '/vendor/showdown.min.js' },
   pug: { global: 'pug', url: '/vendor/pug.min.js' },
@@ -30,37 +16,57 @@ const transform = async (code, lang) => {
   }
 
   const prepros = LANG_MAP[lang]
-
   let lib = self[prepros.global]
 
   if (!lib) {
     self.postMessage({ lang, loading: true })
-    importScripts(prepros.url)
+
+    // FIXME:
+    // Workaround for less not being loaded
+    // on the first run
+    if (lang === 'less') {
+      window = self
+      window.document = {
+        getElementsByTagName (tagName) {
+          if (tagName === 'script') {
+            return [{ dataset: {} }]
+          } else if (tagName === 'style') {
+            return []
+          } else if (tagName === 'link') {
+            return []
+          }
+        }
+      }
+
+      setTimeout(() => importScripts(prepros.url), 0)
+      await new Promise(r => setTimeout(r, 16))
+    } else {
+      importScripts(prepros.url)
+    }
 
     lib = self[prepros.global] // re-assign once loaded
-
     self.postMessage({ lang, loading: false })
   }
 
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     if (!prepros) return reject('Preprocessor not supported.')
 
-    let out = ''
+    let output = ''
 
     try {
       switch (lang) {
         // HTML
         case 'pug':
-          resolve(lib.render(code, { pretty: true }))
+          resolve(pug.render(code, { pretty: true }))
           break
 
         case 'md':
-          resolve(new lib.Converter().makeHtml(code))
+          resolve(new showdown.Converter().makeHtml(code))
           break
 
         // CSS
         case 'stylus':
-          lib(code)
+          stylus(code)
             .render((err, str) => {
               if (err) return reject(err)
               resolve(str)
@@ -78,29 +84,25 @@ const transform = async (code, lang) => {
           })
           break
         case 'less':
-          lib.render(code)
+          less.render(code)
             .then(({ css }) => resolve(css))
             .catch(reject)
           break
 
         // JS
         case 'babel':
-          out = lib.transform(code, {
+          output = Babel.transform(code, {
             presets: ['es2015', 'stage-0']
           })
-          resolve(out.code)
+          resolve(output.code)
           break
         case 'ts':
-          out = lib.transpile(code, { target: ts.ScriptTarget.ES5 })
-          resolve(out)
+          output = ts.transpile(code, { target: ts.ScriptTarget.ES5 })
+          resolve(output)
           break
         case 'coffee':
-          try {
-            out = lib.compile(code)
-            resolve(out)
-          } catch (err) {
-            reject(err)
-          }
+          output = CoffeeScript.compile(code)
+          resolve(output)
           break
 
         default:
