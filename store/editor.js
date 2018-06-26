@@ -83,6 +83,8 @@ export const state = () => ({
     }
   },
 
+  previewIframe: null,
+
   ui: {
     tabs,
     currTab: tabs[1],
@@ -110,7 +112,7 @@ export const state = () => ({
   editors: {
     html: {
       error: null,
-      head: '',
+      headContent: '<meta name="viewport" content="width=device-width, initial-scale=1">',
       lang: 'html',
       showCompiled: false,
       prepros: PREPROS.html
@@ -151,6 +153,10 @@ export const getters = {
 
 export const mutations = {
   updateField,
+
+  [types.EDITOR_SET_IFRAME] (state, iframe) {
+    state.previewIframe = iframe
+  },
 
   [types.EDITOR_PUT_OPTIONS] (state, opts) {
     state.editors = merge(state.editors, opts)
@@ -236,5 +242,8 @@ export const actions = {
   },
   setLibs ({ commit }, { type, libs }) {
     commit(types.EDITOR_SET_LIBS, { type, libs })
+  },
+  setPreviewIframe ({ commit }, iframe) {
+    commit(types.EDITOR_SET_IFRAME, iframe)
   }
 }

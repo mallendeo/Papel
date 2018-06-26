@@ -108,15 +108,25 @@ export default {
 
   methods: {
     ...mapActions('neb', ['pay']),
-    ...mapActions('editor', ['setOutput', 'setError']),
+    ...mapActions('editor', ['setOutput', 'setError', 'setPreviewIframe']),
     ...mapActions('sheet', ['loadFromLocal', 'saveLocal', 'saveIpfs']),
 
     updateIframe (data) {
-      const remote = this.$refs.preview.contentWindow
-
-      remote.postMessage({
+      this.remote.postMessage({
         type: 'papel:codeupdate',
         event: data
+      }, this.previewUrl)
+    },
+
+    updateMeta () {
+      this.remote.postMessage({
+        type: 'papel:metaupdate',
+        event: {
+          libs: {
+            css: this.editors.css.libs,
+            js: this.editors.js.libs
+          }
+        }
       }, this.previewUrl)
     },
 
@@ -139,12 +149,42 @@ export default {
 
     onSave (blockchain) {
       this.saveLocal(this.slug)
+      const mac = navigator.appVersion.indexOf('Mac') > -1
+
+      !blockchain && this.$notify({
+        group: 'editor',
+        title: 'Project saved locally',
+        text: `Press <i>Shift + ${mac ? 'Cmd' : 'Ctrl'} + S</i> to save on the blockchain.`
+      })
+
       if (blockchain) {
         console.log('ipfs')
         this.saveIpfs(this.slug)
       }
+    },
+
+    subscribe () {
+      return this.$store.subscribeAction((action, state) => {
+        switch (action.type) {
+          case 'editor/updateCode':
+            worker.postMessage(action.payload)
+            break
+
+          case 'editor/setLang':
+            worker.postMessage({
+              ...action.payload,
+              code: this.code[action.payload.type]
+            })
+            break
+
+          case 'editor/setLibs':
+            this.updateMeta()
+            break
+        }
+      })
     }
   },
+
   mounted () {
     Split(['#content', '#preview'], {
       sizes: [35, 65],
@@ -164,35 +204,16 @@ export default {
     // Get saved state from localStorage
     this.loadFromLocal(this.slug)
 
-    this.unsubscribeStore = this.$store.subscribeAction((action, state) => {
-      switch (action.type) {
-        case 'editor/updateCode':
-          worker.postMessage(action.payload)
-          break
-
-        case 'editor/setLang':
-          worker.postMessage({
-            ...action.payload,
-            code: this.code[action.payload.type]
-          })
-          break
-
-        case 'editor/setLibs':
-          const remote = this.$refs.preview.contentWindow
-          console.log({action})
-          const data = { libs: {} }
-          data.libs[action.payload.type] = action.payload.libs
-          remote.postMessage({
-            type: 'papel:metaupdate',
-            event: data
-          }, this.previewUrl)
-          break
-      }
-    })
+    this.setPreviewIframe(this.$refs.preview)
+    this.remote = this.$refs.preview.contentWindow
 
     worker.addEventListener('message', this.onMessage, false)
 
     this.$refs.preview.addEventListener('load', () => {
+      if (this.unsubscribeStore) this.unsubscribeStore()
+      this.unsubscribeStore = this.subscribe()
+      this.updateMeta()
+
       Object.keys(this.editors).forEach(type => {
         this.$store.dispatch('editor/updateCode', {
           type,
@@ -267,7 +288,7 @@ $dist: 1rem;
 
     /deep/ .section {
       position: absolute;
-      will-change: transform, opacity;
+      will-change: opacity;
       width: 100%; height: 100%;
     }
   }

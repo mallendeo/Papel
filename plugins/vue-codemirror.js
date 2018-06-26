@@ -21,6 +21,8 @@ import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/addon/edit/closetag'
 import 'codemirror/addon/edit/matchbrackets'
 
+import 'codemirror/addon/display/placeholder'
+
 // Themes
 // -------------------
 import 'codemirror/lib/codemirror.css'
