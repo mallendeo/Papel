@@ -5,7 +5,8 @@
     </editor-panel>
 
     <editor-toolbar
-      class="toolbar"
+      class="toolbar toolbar--no-drag"
+      data-toolbar
       :danger="!!editors.html.error"
       :mini="zenMode"
     >
@@ -17,11 +18,22 @@
         @change="lang => setEditorLang('html', lang)"
       />
 
-      <i
-        title="Add Library"
-        class="toolbar-icon material-icons"
+      <button
+        title="Add library"
         @click="showLibPicker = !showLibPicker"
-      >add</i>
+        class="btn btn--colored"
+      >
+        <i class="material-icons">add</i>
+      </button>
+
+      <button
+        @click="refreshIframe"
+        class="btn"
+        :class="{ spin: animateRefresh }"
+        @animationend="animateRefresh = false"
+      >
+        <i class="material-icons">refresh</i>
+      </button>
 
       <app-dropdown icon="settings">
         <lang-settings lang="html" />
@@ -40,6 +52,7 @@
     >
       <editor-toolbar
         v-if="index"
+        data-toolbar
         :class="{ 'no-events': wasDragged }"
         :danger="!!editors[type].error"
         :mini="zenMode"
@@ -104,11 +117,12 @@ export default {
     showLibPicker: false,
     initCode: {},
     wasDragged: false,
-    unsubscribe: null
+    unsubscribe: null,
+    animateRefresh: false
   }),
 
   computed: {
-    ...mapState('editor', ['editors', 'code', 'compiled']),
+    ...mapState('editor', ['editors', 'code', 'compiled', 'previewIframe']),
     ...mapGetters('editor', ['types', 'preprosList', 'prepros']),
     ...mapState('ui', ['zenMode'])
   },
@@ -136,10 +150,15 @@ export default {
   },
 
   methods: {
+    refreshIframe () {
+      const { src } = this.previewIframe
+      this.previewIframe.src = src
+      this.animateRefresh = true
+    },
     initSplit () {
       let sizes = null
 
-      const toolbars = this.$el.querySelectorAll('.toolbar')
+      const toolbars = this.$el.querySelectorAll('[data-toolbar]')
       const wrappers = this.types.map(l => `#${l}-editor-wrapper`)
 
       if (this.split) {
@@ -265,6 +284,27 @@ export default {
   cursor: pointer;
 }
 
+.toolbar {
+  .btn {
+    padding: 0 .5rem;
+    margin-right: .5rem;
+    border-radius: .25rem;
+    height: 70%;
+
+    &--colored {
+      color: var(--text-light);
+      background: var(--editor-color-accent);
+    }
+
+    i { font-size: 1rem; }
+  }
+
+  &.toolbar--no-drag{
+    cursor: default;
+    border-top: none;
+  }
+}
+
 .editor {
   &__btn {
     height: 2rem;
@@ -279,5 +319,14 @@ export default {
     overflow: auto;
     position: relative;
   }
+}
+
+.spin {
+  animation: spin .5s ease both;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  from { transform: rotate(-360deg); }
 }
 </style>
