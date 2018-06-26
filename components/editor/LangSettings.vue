@@ -6,9 +6,12 @@
 
       <label for="html-classes-input">HTML <span>&lt;head&gt;</span> content</label>
       <codemirror
+        placeholder="<meta>, <link>, ..."
+        v-observe-visibility="visibilityChanged"
         class="editor"
+        ref="cm"
         :options="htmlMetaOpts"
-        @input="val => {}"
+        v-model="headContent"
       ></codemirror>
     </template>
 
@@ -42,17 +45,28 @@
 
 <script>
 import { mapState } from 'vuex'
+import { mapFields } from 'vuex-map-fields'
 
 export default {
   props: {
     lang: { type: String, required: true }
   },
+  methods: {
+    visibilityChanged () {
+      this.codemirror.refresh()
+    }
+  },
   computed: {
     ...mapState('editor', ['opts']),
+    ...mapFields('editor', ['editors.html.headContent']),
+    codemirror () {
+      return this.$refs.cm.codemirror
+    },
     htmlMetaOpts () {
       return {
         ...this.opts,
-        styleActiveLine: false
+        styleActiveLine: false,
+        lineNumbers: false
       }
     }
   }
@@ -74,8 +88,13 @@ export default {
   flex: 1;
   height: 7rem;
   /deep/ .CodeMirror {
+    font-size: .8rem;
     height: 100%;
     border-radius: .25rem;
+    &-gutters { display: none; }
+    &-empty {
+      color: var(--text-lighter);
+    }
   }
 }
 
@@ -91,10 +110,10 @@ label {
 
 .form-control {
   outline: none;
-  padding: .5rem 1rem;
+  padding: .5rem 0;
   background: var(--editor-color);
   border: none;
-  border-radius: .25rem;
+  font-size: .8rem;
 
   color: var(--text-light);
 

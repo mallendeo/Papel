@@ -12,10 +12,7 @@
     <ul
       class="list"
       :class="{ 'list--open': isOpen }"
-      :style="{
-        left: `${pos.x}px`,
-        top: `${pos.y + offset}px`
-      }"
+      :style="{ top: `${pos.y + offset}px` }"
     >
       <li
         @click="setValue(opt.value)"

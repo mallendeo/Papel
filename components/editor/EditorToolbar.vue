@@ -37,10 +37,8 @@ $toolbar-size: 2rem;
 
   font-size: .75rem;
 
-  &:not(:first-of-type) {
-    cursor: row-resize;
-    border-top: 1px solid var(--editor-color-dark);
-  }
+  cursor: row-resize;
+  border-top: 1px solid var(--editor-color-dark);
 
   &--danger {
     box-shadow: inset .125rem 0 0 var(--error-color);

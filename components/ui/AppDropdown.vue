@@ -97,12 +97,13 @@ export default {
   top: 0; left: 0;
   display: flex;
   flex-direction: column;
-  background: var(--editor-color-dark);
-  color: white;
+  background: var(--editor-color);
+  color: var(--text-light);
   z-index: 10;
 
   pointer-events: none;
   opacity: 0;
+  box-shadow: 0 1rem 3rem var(--editor-color-dark);
   transition: opacity .2s ease, transform .2s ease;
   transform: translateY(-.5rem);
 
