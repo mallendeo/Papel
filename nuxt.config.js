@@ -1,7 +1,7 @@
 module.exports = {
   mode: 'spa',
   env: {
-    contractDev: process.env.CONTRACT_DEV || 'n1wTbrMK62W9EnmeKRJmbFeXpJFpxS7xWYA',
+    contractDev: process.env.CONTRACT_DEV || 'n1jvG6a5tyFEiWJf93gyLnifJv1E8mpSm7Y',
     contractProd: process.env.CONTRACT_PROD || 'DO_NOT_SEND'
   },
   head: {
