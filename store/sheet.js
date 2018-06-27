@@ -4,7 +4,7 @@ import flatMap from 'lodash/flatMap'
 
 import * as types from './mutation-types'
 import * as ipfs from '../lib/ipfs'
-import * as nebpay from '../lib/nebpay'
+import * as blockchain from '../lib/blockchain'
 import * as db from '../lib/db'
 import { generateHTML} from '../lib/helpers'
 
@@ -22,6 +22,21 @@ export const getters = {
     return {
       root: root && root.hash,
       dist: dist && dist.hash
+    }
+  },
+
+  sheetConfig (state, getters, rootState) {
+    const { editor } = rootState
+    const { editors, code, compiled, cmOpts } = editor
+
+    return {
+      cmOpts: pick(cmOpts, 'tabSize', 'indentWithTabs'),
+      ui: pick(editor.ui, 'refreshType', 'updateDelay'),
+      editors: pick(editors,
+        'html.headContent', 'html.htmlClasses', 'html.lang',
+        'css.autoprefix', 'css.libs', 'css.iframeBg', 'css.lang',
+        'js.libs', 'js.lang', 'js.isModule'
+      )
     }
   }
 }
@@ -74,7 +89,7 @@ export const actions = {
     }, conf)
   },
 
-  async saveIpfs ({ rootState, state, commit, dispatch }) {
+  async saveIpfs ({ getters, rootState, state, commit, dispatch }) {
     if (state.isSaving) return
 
     const { editor } = rootState
@@ -98,20 +113,8 @@ export const actions = {
       ]
     })
 
-    const config = JSON.stringify({
-      cmOpts: pick(cmOpts, 'tabSize', 'indentWithTabs'),
-      ui: pick(editor.ui, 'refreshType', 'updateDelay'),
-      editors: pick(editors,
-        'html.headContent', 'html.htmlClasses', 'html.lang',
-        'css.autoprefix', 'css.libs', 'css.iframeBg', 'css.lang',
-        'js.libs', 'js.lang', 'js.isModule'
-      )
-    })
-
-    console.log(JSON.parse(config))
-
+    const config = JSON.stringify(getters.sheetConfig)
     const ipfsOpts = { wrapWithDirectory: true, pin: true }
-
     commit(types.SHEET_SET_SAVING, true)
 
     const hashes = await ipfs.saveFiles([
@@ -119,8 +122,23 @@ export const actions = {
       { path: '/config.json', content: new Buffer(config) }
     ], ipfsOpts)
 
-    commit(types.SHEET_SET_SAVING, false)
     commit(types.SHEET_SET_HASHES, hashes)
+    commit(types.SHEET_SET_SAVING, false)
+  },
+
+  async saveOnNebulas ({ getters }, slug) {
+    const { latestHash } = getters
+    const data = {
+      rootHash: latestHash.root,
+      distHash: latestHash.dist
+    }
+
+    try {
+      await blockchain.saveSheet(slug, data)
+      console.log('saved')
+    } catch (err) {
+      console.error(err)
+    }
   },
 
   loadFromLocal ({ dispatch }, slug) {
