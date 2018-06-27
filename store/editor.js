@@ -35,7 +35,7 @@ const tabs = [{
 }]
 
 export const state = () => ({
-  opts: {
+  cmOpts: {
     tabSize: 2,
     lineNumbers: true,
     line: true,
@@ -83,8 +83,6 @@ export const state = () => ({
     }
   },
 
-  previewIframe: null,
-
   ui: {
     tabs,
     currTab: tabs[1],
@@ -94,8 +92,11 @@ export const state = () => ({
     fonts: FONTS,
     font: FONTS[0],
     fontSize: 14,
-    refreshDelay: 'instant'
+    refreshType: 'live-css',
+    updateDelay: 0
   },
+
+  previewIframe: null,
 
   code: {
     html: '',
@@ -113,6 +114,7 @@ export const state = () => ({
     html: {
       error: null,
       headContent: '<meta name="viewport" content="width=device-width, initial-scale=1">',
+      htmlClasses: '',
       lang: 'html',
       showCompiled: false,
       prepros: PREPROS.html
@@ -121,6 +123,7 @@ export const state = () => ({
       error: null,
       autoprefix: false,
       libs: [],
+      iframeBg: '#fff',
       lang: 'css',
       showCompiled: false,
       prepros: PREPROS.css
@@ -139,13 +142,13 @@ export const getters = {
   getField,
 
   allThemes (state) {
-    return state.opts.themes
+    return state.cmOpts.themes
       .map(theme => ({
         slug: theme,
         name: words(theme).map(capitalize).join(' ')
       }))
   },
-  currTheme: state => state.opts.theme,
+  currTheme: state => state.cmOpts.theme,
   types: state => Object.keys(state.editors),
   preprosList: state => type => Object.keys(state.editors[type].prepros),
   prepros: state => type => state.editors[type].prepros[state.editors[type].lang]
@@ -176,7 +179,7 @@ export const mutations = {
   },
 
   [types.EDITOR_SET_THEME] (state, theme) {
-    state.opts.theme = theme
+    state.cmOpts.theme = theme
   },
 
   [types.EDITOR_NAV_TO] (state, tab) {

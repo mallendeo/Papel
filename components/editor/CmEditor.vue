@@ -27,9 +27,9 @@ export default {
   },
   data: () => ({ loaded: false, cm: null }),
   computed: {
-    ...mapState('editor', ['opts', 'ui']),
+    ...mapState('editor', ['cmOpts', 'ui']),
     editorOpts () {
-      return { ...this.opts, ...this.options }
+      return { ...this.cmOpts, ...this.options }
     }
   },
   methods: {
@@ -74,8 +74,14 @@ export default {
   /deep/ .CodeMirror {
     font-family: var(--editor-font-family), monospace;
     font-size: var(--editor-font-size);
+    line-height: 1.5;
+    -webkit-font-smoothing: initial;
     height: 100%;
     flex: 1;
+
+    &-lines {
+      padding-bottom: 4rem;
+    }
   }
 }
 </style>
