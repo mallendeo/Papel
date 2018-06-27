@@ -23,6 +23,13 @@ import 'codemirror/addon/edit/matchbrackets'
 
 import 'codemirror/addon/display/placeholder'
 
+// search
+import 'codemirror/addon/search/search'
+import 'codemirror/addon/search/searchcursor'
+import 'codemirror/addon/search/jump-to-line'
+import 'codemirror/addon/dialog/dialog'
+import 'codemirror/addon/dialog/dialog.css'
+
 // Themes
 // -------------------
 import 'codemirror/lib/codemirror.css'
