@@ -1,4 +1,5 @@
 import omit from 'lodash/omit'
+import pick from 'lodash/pick'
 import flatMap from 'lodash/flatMap'
 
 import * as types from './mutation-types'
@@ -58,13 +59,29 @@ export const actions = {
     })
   },
 
-  async saveIpfs ({ rootState, state, commit }) {
+  generateHTML ({ rootState }, conf) {
+    const { editors, compiled } = rootState.editor
+
+    const cssLibs = editors.css.libs.map(lib => lib.url)
+    const jsLibs = editors.js.libs.map(lib => lib.url)
+
+    return generateHTML({
+      code: compiled,
+      styles: cssLibs,
+      scripts: jsLibs,
+      htmlClasses: editors.html.htmlClasses,
+      headContent: editors.html.headContent
+    }, conf)
+  },
+
+  async saveIpfs ({ rootState, state, commit, dispatch }) {
     if (state.isSaving) return
 
-    const { editors, code, compiled } = rootState.editor
+    const { editor } = rootState
+    const { editors, code, compiled, cmOpts } = editor
     const fileTypes = ['html', 'css', 'js'].filter(type => code[type])
 
-    const staticHTML = generateHTML({ code, body: compiled.html })
+    const staticHTML = await dispatch('generateHTML')
 
     const files = fileTypes.map(type => {
       const filename = type === 'html' ? 'index' : 'main'
@@ -81,7 +98,18 @@ export const actions = {
       ]
     })
 
-    const config = JSON.stringify(pickConfig(editors))
+    const config = JSON.stringify({
+      cmOpts: pick(cmOpts, 'tabSize', 'indentWithTabs'),
+      ui: pick(editor.ui, 'refreshType', 'updateDelay'),
+      editors: pick(editors,
+        'html.headContent', 'html.htmlClasses', 'html.lang',
+        'css.autoprefix', 'css.libs', 'css.iframeBg', 'css.lang',
+        'js.libs', 'js.lang', 'js.isModule'
+      )
+    })
+
+    console.log(JSON.parse(config))
+
     const ipfsOpts = { wrapWithDirectory: true, pin: true }
 
     commit(types.SHEET_SET_SAVING, true)

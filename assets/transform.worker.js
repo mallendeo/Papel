@@ -1,4 +1,5 @@
-const LANG_MAP = {
+// TODO: add postcss + addons
+const PREPROS_MAP = {
   md: { global: 'showdown', url: '/vendor/showdown.min.js' },
   pug: { global: 'pug', url: '/vendor/pug.min.js' },
   stylus: { global: 'stylus', url: '/vendor/stylus.min.js' },
@@ -6,8 +7,9 @@ const LANG_MAP = {
   sass: { global: 'sass', url: '/vendor/sass.sync.js' },
   less: { global: 'less', url: '/vendor/less.min.js' },
   babel: { global: 'Babel', url: '/vendor/babel.min.js' },
-  ts: { global: 'ts', url: '/vendor/typescriptServices.js' },
-  coffee: { global: 'CoffeeScript', url: '/vendor/coffeescript.js' }
+  ts: { global: 'ts', url: '/vendor/typescriptServices.min.js' },
+  coffee: { global: 'CoffeeScript', url: '/vendor/coffeescript.min.js' },
+  autoprefixer: { global: 'autoprefixer', url: '/vendor/autoprefixer.min.js' }
 }
 
 const transform = async (code, lang) => {
@@ -15,14 +17,13 @@ const transform = async (code, lang) => {
     return Promise.resolve(code)
   }
 
-  const prepros = LANG_MAP[lang]
+  const prepros = PREPROS_MAP[lang]
   let lib = self[prepros.global]
 
   if (!lib) {
     self.postMessage({ lang, loading: true })
 
-    // FIXME:
-    // Workaround for less not being loaded
+    // FIXME: Workaround for less not being loaded
     // on the first run
     if (lang === 'less') {
       window = self
@@ -139,12 +140,12 @@ const setProp = (lang, prop, value) => {
 
   // Only for languages that needs preprocessing
   if (['html', 'css', 'js'].indexOf(lang) > -1) return
-  LANG_MAP[lang][prop] = value
+  PREPROS_MAP[lang][prop] = value
 }
 
 const getProp = (lang, prop) => {
   if (!lang || !prop) throw Error('Missing props')
-  return LANG_MAP[lang] && LANG_MAP[lang][prop]
+  return PREPROS_MAP[lang] && PREPROS_MAP[lang][prop]
 }
 
 self.addEventListener('message', async event => {

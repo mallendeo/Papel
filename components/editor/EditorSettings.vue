@@ -56,27 +56,28 @@
       <h2 class="subtitle">Behaviour</h2>
       <div class="form-group">
         <app-btn-select
-          label="Update frequency"
+          label="Refresh type"
           class="btn-select"
           :caret="false"
         >
-          <select v-model="refreshDelay">
-            <option value="instant">Instant</option>
-            <option :value="1">One second</option>
-            <option :value="2">Two seconds</option>
-            <option value="manual">Manual</option>
+          <select v-model="refreshType">
+            <option value="manual">Manual refresh</option>
+            <option value="refresh">Refresh entire page</option>
+            <option value="live-css">Refresh + CSS Injection</option>
+            <option value="live-reload">Live reload (experimental)</option>
           </select>
         </app-btn-select>
 
         <app-btn-select
-          label="Refresh type"
+          label="Refresh delay"
           class="btn-select"
           :caret="false"
-          :disabled="refreshDelay === 'manual'"
+          :disabled="refreshType === 'manual'"
         >
-          <select :value="refreshDelay === 'manual' ? 0 : 1">
-            <option :value="0">Refresh entire page</option>
-            <option :value="1">Live reload (experimental)</option>
+          <select v-model="updateDelay">
+            <option :value="0">Instant</option>
+            <option :value="1">One second</option>
+            <option :value="2">Two seconds</option>
           </select>
         </app-btn-select>
       </div>
@@ -153,9 +154,10 @@ export default {
       'ui.font',
       'ui.fontSize',
       'ui.fonts',
-      'ui.refreshDelay',
-      'opts.tabSize',
-      'opts.indentWithTabs'
+      'ui.refreshType',
+      'ui.updateDelay',
+      'cmOpts.tabSize',
+      'cmOpts.indentWithTabs'
     ])
   },
   methods: {
@@ -168,7 +170,7 @@ export default {
       this.showThemePopup = false
     }
   },
-  data: () => ({ showThemePopup: false }),
+  data: () => ({ showThemePopup: false, lastRefreshType: null }),
   mounted () {
     ElementQueries.init()
   }

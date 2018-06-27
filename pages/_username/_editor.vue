@@ -1,6 +1,6 @@
 <template>
   <section
-    @keydown.meta.83.prevent="onSave(false)"
+    @keydown.meta.83.exact.prevent="onSave(false)"
     @keydown.shift.meta.83.prevent="onSave(true)"
     class="container row"
   >
@@ -39,10 +39,12 @@
       <!-- TODO: Disable allow-popups (prevent alerts) when displaying on showcase -->
       <iframe
         :src="previewUrl"
+        allow="geolocation; microphone; camera; midi; encrypted-media"
         sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts"
         ref="preview"
         frameborder="0"
         class="preview__iframe"
+        :style="{ background: editors.css.iframeBg }"
       ></iframe>
       <!--<div v-if="htmlErr || cssErr || jsErr" class="error-box">
         <span v-if="htmlErr">{{ htmlErr }}</span>
@@ -84,32 +86,37 @@ export default {
   },
 
   beforeDestroy () {
-    this.unsubscribeStore()
-    worker.removeEventListener('message', this.onMessage, false)
+    this.unsubscribeStore && this.unsubscribeStore()
+    worker.removeEventListener('message', this.onWorkerMessage, false)
   },
 
   data () {
-    const previewUrl = process.env.NODE_ENV === 'production'
-      ? 'https://a.papel.app/preview/'
-      : 'http://localhost:3001/preview.html'
-
     return {
-      previewUrl,
       unsubscribeStore: null,
       saveKey: false,
+      saveTimeout: null,
       slug: this.$route.params.editor
     }
   },
 
   computed: {
     ...mapState('editor', ['editors', 'code', 'ui']),
-    ...mapState('ui', ['zenMode'])
+    ...mapState('ui', ['zenMode']),
+    previewUrl () {
+      const file = this.refreshAll ? 'preview.html' : 'livereload.html'
+      return process.env.NODE_ENV === 'production'
+        ? `https://a.papel.app/preview/${file}`
+        : `http://localhost:3001/${file}`
+    },
+    refreshAll () {
+      return ['live-reload'].indexOf(this.ui.refreshType) === -1
+    }
   },
 
   methods: {
     ...mapActions('neb', ['pay']),
     ...mapActions('editor', ['setOutput', 'setError', 'setPreviewIframe']),
-    ...mapActions('sheet', ['loadFromLocal', 'saveLocal', 'saveIpfs']),
+    ...mapActions('sheet', ['loadFromLocal', 'saveLocal', 'saveIpfs', 'generateHTML']),
 
     updateIframe (data) {
       this.remote.postMessage({
@@ -130,7 +137,7 @@ export default {
       }, this.previewUrl)
     },
 
-    onMessage (event) {
+    onWorkerMessage (event) {
       const { data } = event
       const { kind, type, output, error } = data
 
@@ -143,28 +150,52 @@ export default {
 
       if (!type || typeof output === 'undefined') return
 
-      this.updateIframe(data)
       this.setOutput({ type, output })
+      const manual = this.ui.refreshType === 'manual'
+      const live = this.ui.refreshType === 'live-css'
+
+      if (this.refreshAll && !manual && !live) {
+        this.remote.postMessage({ type: 'papel:reload' }, '*')
+        return
+      }
+
+      if (!manual) {
+        const delay = this.ui.updateDelay
+        if (!delay) {
+          this.updateIframe(data)
+          return
+        }
+
+        if (this.saveTimeout) clearTimeout(this.saveTimeout)
+        this.saveTimeout = setTimeout(() => this.updateIframe(data), delay * 1000)
+      }
     },
 
     onSave (blockchain) {
       this.saveLocal(this.slug)
       const mac = navigator.appVersion.indexOf('Mac') > -1
 
-      !blockchain && this.$notify({
+      if (!blockchain) {
+        this.$notify({
+          group: 'editor',
+          title: 'Project saved locally',
+          text: `Press <i>Shift + ${mac ? 'Cmd' : 'Ctrl'} + S</i> to save on the blockchain.`
+        })
+        return
+      }
+
+      this.$notify({
         group: 'editor',
-        title: 'Project saved locally',
-        text: `Press <i>Shift + ${mac ? 'Cmd' : 'Ctrl'} + S</i> to save on the blockchain.`
+        title: 'Saving project on Nebulas',
+        text: `You'll be prompted to accept the transaction`
       })
 
-      if (blockchain) {
-        console.log('ipfs')
-        this.saveIpfs(this.slug)
-      }
+      console.log('ipfs')
+      this.saveIpfs(this.slug)
     },
 
     subscribe () {
-      return this.$store.subscribeAction((action, state) => {
+      return this.$store.subscribeAction(async (action, state) => {
         switch (action.type) {
           case 'editor/updateCode':
             worker.postMessage(action.payload)
@@ -178,6 +209,10 @@ export default {
             break
 
           case 'editor/setLibs':
+            if (this.refreshAll) {
+              this.remote.postMessage({ type: 'papel:reload' }, '*')
+              return
+            }
             this.updateMeta()
             break
         }
@@ -207,11 +242,22 @@ export default {
     this.setPreviewIframe(this.$refs.preview)
     this.remote = this.$refs.preview.contentWindow
 
-    worker.addEventListener('message', this.onMessage, false)
+    worker.addEventListener('message', this.onWorkerMessage, false)
+
+    window.addEventListener('message', async msg => {
+      if (msg.data === 'papel:gethtml') {
+        this.remote.postMessage({
+          type: 'papel:fullhtml',
+          html: await this.generateHTML({ preview: true, liveCss: true })
+        }, '*')
+      }
+    }, false)
 
     this.$refs.preview.addEventListener('load', () => {
       if (this.unsubscribeStore) this.unsubscribeStore()
       this.unsubscribeStore = this.subscribe()
+      if (this.refreshAll) return
+
       this.updateMeta()
 
       Object.keys(this.editors).forEach(type => {

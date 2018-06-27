@@ -2,7 +2,12 @@
   <div class="settings col" icon="settings" title="">
     <template v-if="lang === 'html'">
       <label>HTML Classes</label>
-      <input placeholder="e.g page-home page--active" class="form-control" type="text">
+      <input
+        v-model="htmlClasses"
+        placeholder="e.g page-home page--active"
+        class="form-control"
+        type="text"
+      >
 
       <label for="html-classes-input">HTML <span>&lt;head&gt;</span> content</label>
       <codemirror
@@ -22,16 +27,26 @@
       </label>
 
       <label class="form-group">
+        Background color
+        <input
+          class="form-control"
+          v-model="iframeBg"
+          type="text"
+          placeholder="#fff, hsl(), ..."
+        >
+      </label>
+
+      <label class="form-group row">
         Use reset
-        <label>
+        <label class="btn">
           Normalize
           <input type="radio" name="css-reset">
         </label>
-        <label>
+        <label class="btn">
           Reset
           <input type="radio" name="css-reset">
         </label>
-        <label>
+        <label class="btn">
           None
           <input type="radio" name="css-reset">
         </label>
@@ -57,14 +72,18 @@ export default {
     }
   },
   computed: {
-    ...mapState('editor', ['opts']),
-    ...mapFields('editor', ['editors.html.headContent']),
+    ...mapState('editor', ['cmOpts']),
+    ...mapFields('editor', [
+      'editors.html.headContent',
+      'editors.html.htmlClasses',
+      'editors.css.iframeBg'
+    ]),
     codemirror () {
       return this.$refs.cm.codemirror
     },
     htmlMetaOpts () {
       return {
-        ...this.opts,
+        ...this.cmOpts,
         styleActiveLine: false,
         lineNumbers: false
       }
@@ -108,6 +127,10 @@ label {
   }
 }
 
+.form-group {
+  display: flex;
+  align-items: center;
+}
 .form-control {
   outline: none;
   padding: .5rem 0;

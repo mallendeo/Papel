@@ -54,7 +54,7 @@
                 </strong>
                 <button
                   class="select-like btn--danger"
-                  @click="setLib(lib, true)"
+                  @click="setLib(lib, true, lang)"
                 >
                   <i class="material-icons">remove_circle</i>
                 </button>
@@ -230,23 +230,38 @@ export default {
     addFromUrl (url) {
       if (!this.showInputBtn || !url) return
 
-      const match = url.match(/[^\/]+$/)
-      const filename = match ? match[0] : ''
+      let filename = ''
+      let type = null
 
-      this.setLib({ url, filename })
+      try {
+        if (url.includes('fonts.googleapis')) {
+          filename = url.match(/family=(.+)/)[1]
+            .split('|')
+            .map(w => w.replace(/\:.+|\+/, ' ').trim())
+            .join(', ')
+          type = 'css'
+        }
+      } catch (e) {
+        console.error(e)
+      }
+
+      const match = url.match(/[^\/]+$/)
+      filename = filename || (match ? match[0] : '')
+
+      this.setLib({ url, filename }, false, type)
       this.search = ''
       this.showInputBtn = false
     },
 
-    setLib (lib, remove) {
-      const type = lib.filename.endsWith('css') ? 'css' : 'js'
+    setLib (lib, remove, libType) {
+      const type = libType || (lib.filename.endsWith('css') ? 'css' : 'js')
       const arr = this.libs[type]
-
+  console.log(type)
       if (remove) {
         this.libs[type] = arr.filter(curr => curr.url !== lib.url)
         this.$notify({
           group: 'editor',
-          title: `${lib.name} / ${lib.filename} removed`
+          title: `${lib.name ? `${lib.name} / ` : ''}${lib.filename} removed`
         })
         return
       }
@@ -424,11 +439,6 @@ button.handle {
   }
 }
 
-@keyframes shadow {
-  from { box-shadow: 0 0 0rem 0rem var(--editor-color-dark); }
-  to { box-shadow: 0 .5rem 3rem .5rem var(--editor-color-dark); }
-}
-
 .input {
   padding: .75rem;
   height: 100%;
@@ -436,17 +446,17 @@ button.handle {
   padding-left: .5rem;
   appearance: none;
   border: none;
+  box-shadow: 0 .5rem 3rem var(--editor-color-dark);
   color: var(--text-light);
-  font-size: 1rem;
+  font-size: .8rem;
   transition: all .2s ease;
   background: var(--editor-color);
   padding-left: 2rem;
   flex: 1;
-  animation: shadow .8s .2s ease both;
 
-  &::placeholder {
-    color: var(--text-lighter);
-  }
+  &:focus { outline: none; }
+
+  &::placeholder { color: var(--text-lighter); }
 
   &__wrapper {
     display: flex;
@@ -464,8 +474,6 @@ button.handle {
     margin-left: .5rem;
     border-radius: .5rem;
   }
-
-  &:focus { outline: none; }
 }
 
 @keyframes spin {
