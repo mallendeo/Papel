@@ -116,6 +116,7 @@ export const state = () => ({
       headContent: '<meta name="viewport" content="width=device-width, initial-scale=1">',
       htmlClasses: '',
       lang: 'html',
+      contentLength: 0,
       showCompiled: false,
       prepros: PREPROS.html
     },
@@ -123,8 +124,9 @@ export const state = () => ({
       error: null,
       autoprefix: false,
       libs: [],
-      iframeBg: '#fff',
       lang: 'css',
+      contentLength: 0,
+      iframeBg: '#fff',
       showCompiled: false,
       prepros: PREPROS.css
     },
@@ -132,6 +134,7 @@ export const state = () => ({
       error: null,
       libs: [],
       lang: 'js',
+      contentLength: 0,
       showCompiled: false,
       prepros: PREPROS.js
     }
@@ -162,7 +165,9 @@ export const mutations = {
   },
 
   [types.EDITOR_PUT_OPTIONS] (state, opts) {
-    state.editors = merge(state.editors, opts)
+    state.editors = merge(state.editors, opts.editors)
+    state.ui = merge(state.ui, opts.ui)
+    state.cmOpts = merge(state.cmOpts, opts.cmOpts)
   },
 
   [types.EDITOR_SET_COMPILED] (state, { type, output }) {
@@ -176,6 +181,14 @@ export const mutations = {
 
   [types.EDITOR_SET_CODE] (state, { type, code }) {
     state.code[type] = code
+    const editor = state.editors[type]
+    editor.contentLength = code.length
+    if (type === 'html') {
+      editor.contentLength =
+        code.length +
+        (editor.headContent || 0) +
+        (editor.htmlClasses || 0)
+    }
   },
 
   [types.EDITOR_SET_THEME] (state, theme) {

@@ -4,10 +4,17 @@
     @keydown.shift.meta.83.prevent="onSave(true)"
     class="container row"
   >
-    <div id="content" class="content" :class="ui.layout === 'row' ? 'col': 'row'">
-      <editor-nav :class="{ 'autohide': zenMode }" />
+    <div
+      id="content"
+      class="content"
+      :class="ui.layout === 'row' ? 'col': 'row'"
+    >
+      <loading-screen v-if="!isLoaded" />
+
+      <editor-nav v-if="isLoaded" :class="{ 'autohide': zenMode }" />
 
       <transition-group
+        v-if="isLoaded"
         name="slide"
         :class="{
           'slide-next': ui.slideNext,
@@ -38,7 +45,7 @@
 
       <!-- TODO: Disable allow-popups (prevent alerts) when displaying on showcase -->
       <iframe
-        :src="previewUrl"
+        :src="isLoaded ? previewUrl : 'about:blank'"
         allow="geolocation; microphone; camera; midi; encrypted-media"
         sandbox="allow-forms allow-modals allow-pointer-lock allow-popups allow-same-origin allow-scripts"
         ref="preview"
@@ -69,6 +76,7 @@ import EditorNav from '@/components/editor/EditorNav'
 import EditorSettings from '@/components/editor/EditorSettings'
 import EditorSave from '@/components/editor/EditorSave'
 import FileExplorer from '@/components/editor/FileExplorer'
+import LoadingScreen from '@/components/ui/LoadingScreen'
 import SmartContractEditor from '@/components/editor/SmartContractEditor'
 
 const worker = new TransformWorker()
@@ -81,8 +89,9 @@ export default {
     EditorSave,
     EditorSettings,
     EditorNav,
-    SmartContractEditor,
-    FileExplorer
+    FileExplorer,
+    LoadingScreen,
+    SmartContractEditor
   },
 
   beforeDestroy () {
@@ -95,6 +104,7 @@ export default {
       unsubscribeStore: null,
       saveKey: false,
       saveTimeout: null,
+      isLoaded: false,
       slug: this.$route.params.editor
     }
   },
@@ -116,7 +126,14 @@ export default {
   methods: {
     ...mapActions('neb', ['pay']),
     ...mapActions('editor', ['setOutput', 'setError', 'setPreviewIframe']),
-    ...mapActions('sheet', ['loadFromLocal', 'saveLocal', 'saveIpfs', 'generateHTML']),
+    ...mapActions('sheet', [
+      'loadFromLocal',
+      'loadFromNebulas',
+      'saveLocal',
+      'saveIpfs',
+      'saveOnNebulas',
+      'generateHTML'
+    ]),
 
     updateIframe (data) {
       this.remote.postMessage({
@@ -171,7 +188,7 @@ export default {
       }
     },
 
-    onSave (blockchain) {
+    async onSave (blockchain) {
       this.saveLocal(this.slug)
       const mac = navigator.appVersion.indexOf('Mac') > -1
 
@@ -190,8 +207,17 @@ export default {
         text: `You'll be prompted to accept the transaction`
       })
 
-      console.log('ipfs')
-      this.saveIpfs(this.slug)
+      try {
+        await this.saveIpfs(this.slug)
+        await this.saveOnNebulas(this.slug)
+      } catch (err) {
+        this.$notify({
+          group: 'editor',
+          type: 'error',
+          title: 'Error while saving project',
+          text: typeof err === 'string' ? err : err.message
+        })
+      }
     },
 
     subscribe () {
@@ -217,10 +243,46 @@ export default {
             break
         }
       })
+    },
+
+    onProjectLoad () {
+      if (this.unsubscribeStore) this.unsubscribeStore()
+      this.unsubscribeStore = this.subscribe()
+      if (this.refreshAll) return
+
+      this.updateMeta()
+
+      Object.keys(this.editors).forEach(type => {
+        this.$store.dispatch('editor/updateCode', {
+          type,
+          code: this.code[type],
+          lang: this.editors[type].lang
+        })
+      })
+    },
+
+    async firstLoad () {
+      try {
+        console.log(this.slug)
+        await this.loadFromNebulas(this.slug)
+      } catch (err) {
+        console.error(err)
+        // Get saved state from localStorage
+        if (this.loadFromLocal(this.slug)) {
+          this.$notify({
+            group: 'editor',
+            type: 'error',
+            title: `There was an error trying to load ${this.slug}`,
+            text: 'Loading from local copy'
+          })
+        }
+      } finally {
+        this.isLoaded = true
+      }
     }
   },
 
-  mounted () {
+  async mounted () {
     Split(['#content', '#preview'], {
       sizes: [35, 65],
       snapOffset: 0,
@@ -236,13 +298,13 @@ export default {
       }
     })
 
-    // Get saved state from localStorage
-    this.loadFromLocal(this.slug)
-
     this.setPreviewIframe(this.$refs.preview)
     this.remote = this.$refs.preview.contentWindow
 
+    await this.firstLoad()
+
     worker.addEventListener('message', this.onWorkerMessage, false)
+    this.$refs.preview.addEventListener('load', this.onProjectLoad)
 
     window.addEventListener('message', async msg => {
       if (msg.data === 'papel:gethtml') {
@@ -252,22 +314,6 @@ export default {
         }, '*')
       }
     }, false)
-
-    this.$refs.preview.addEventListener('load', () => {
-      if (this.unsubscribeStore) this.unsubscribeStore()
-      this.unsubscribeStore = this.subscribe()
-      if (this.refreshAll) return
-
-      this.updateMeta()
-
-      Object.keys(this.editors).forEach(type => {
-        this.$store.dispatch('editor/updateCode', {
-          type,
-          code: this.code[type],
-          lang: this.editors[type].lang
-        })
-      })
-    })
   }
 }
 </script>

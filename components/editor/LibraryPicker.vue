@@ -256,7 +256,7 @@ export default {
     setLib (lib, remove, libType) {
       const type = libType || (lib.filename.endsWith('css') ? 'css' : 'js')
       const arr = this.libs[type]
-  console.log(type)
+
       if (remove) {
         this.libs[type] = arr.filter(curr => curr.url !== lib.url)
         this.$notify({

@@ -8,6 +8,8 @@ import * as blockchain from '../lib/blockchain'
 import * as db from '../lib/db'
 import { generateHTML} from '../lib/helpers'
 
+import { PREPROS } from './constants'
+
 export const state = () => ({
   currTxHash: null,
   isSaving: false,
@@ -33,9 +35,9 @@ export const getters = {
       cmOpts: pick(cmOpts, 'tabSize', 'indentWithTabs'),
       ui: pick(editor.ui, 'refreshType', 'updateDelay'),
       editors: pick(editors,
-        'html.headContent', 'html.htmlClasses', 'html.lang',
-        'css.autoprefix', 'css.libs', 'css.iframeBg', 'css.lang',
-        'js.libs', 'js.lang', 'js.isModule'
+        'html.headContent', 'html.htmlClasses', 'html.lang', 'html.contentLength',
+        'css.autoprefix', 'css.libs', 'css.iframeBg', 'css.lang', 'css.contentLength',
+        'js.libs', 'js.lang', 'js.isModule', 'js.contentLength'
       )
     }
   }
@@ -62,16 +64,51 @@ const pickConfig = editors => Object.keys(editors)
   }, {})
 
 export const actions = {
-  async loadCode (slug) {
-    // get hashes from nebulas
-    //
+  updateFromSave ({ dispatch }, { code, compiled, opts = {} }) {
+    if (!code) return
+
+    dispatch('editor/putOptions', opts, { root: true })
+
+    Object.keys(code).forEach(type => {
+      const srcCode = { type, code: code[type] }
+      dispatch('editor/updateCode', srcCode, { root: true })
+
+      if (!compiled) return
+      const compiledCode = { type, output: compiled[type] }
+      dispatch('editor/setOutput', { ...compiledCode, loaded: true }, { root: true })
+    })
   },
 
-  saveLocal ({ rootState }, slug) {
-    const { code, compiled, editors } = rootState.editor
-    db.set(`sheet:${slug}`, {
-      code, compiled, editors: pickConfig(editors)
+  loadFromLocal ({ dispatch }, slug) {
+    dispatch('updateFromSave', db.get(`sheet:${slug}`))
+    return true
+  },
+
+  async loadFromNebulas ({ dispatch }, slug) {
+    const { rootHash } = await blockchain.getSheet(slug)
+    const opts = await ipfs.getContent(`${rootHash}/config.json`, { parse: true })
+
+    const types = Object.keys(opts.editors).map(type => {
+      const editor = opts.editors[type]
+      return { type, ...PREPROS[type][editor.lang] }
     })
+
+    const [html, css, js] = await Promise.all(types.map(async type => {
+      const filename = type.type === 'html' ? 'index' : 'main'
+      const empty = !opts.editors[type.type].contentLength
+      console.log(`${rootHash}/src/${filename}.${type.ext}`)
+      return empty ? '' : await ipfs.getContent(`${rootHash}/src/${filename}.${type.ext}`)
+    }))
+
+    console.log({ html, css, js, opts, rootHash, slug })
+
+    dispatch('updateFromSave', { code: { html, css, js }, opts })
+    // console.log('sheet config', { code, types, config })
+
+    //dispatch('updateFromSave', )
+    //ipfs.getContent()
+    // get hashes from nebulas
+    //
   },
 
   generateHTML ({ rootState }, conf) {
@@ -87,6 +124,13 @@ export const actions = {
       htmlClasses: editors.html.htmlClasses,
       headContent: editors.html.headContent
     }, conf)
+  },
+
+  saveLocal ({ rootState }, slug) {
+    const { code, compiled, editors } = rootState.editor
+    db.set(`sheet:${slug}`, {
+      code, compiled, editors: pickConfig(editors)
+    })
   },
 
   async saveIpfs ({ getters, rootState, state, commit, dispatch }) {
@@ -126,70 +170,16 @@ export const actions = {
     commit(types.SHEET_SET_SAVING, false)
   },
 
-  async saveOnNebulas ({ getters }, slug) {
+  async saveOnNebulas ({ getters, dispatch }, slug) {
+    dispatch('saveLocal', slug)
+
     const { latestHash } = getters
     const data = {
       rootHash: latestHash.root,
       distHash: latestHash.dist
     }
 
-    try {
-      await blockchain.saveSheet(slug, data)
-      console.log('saved')
-    } catch (err) {
-      console.error(err)
-    }
-  },
-
-  loadFromLocal ({ dispatch }, slug) {
-    const saved = db.get(`sheet:${slug}`)
-    if (!saved) return
-
-    const { compiled, code, editors } = saved
-    if (!code) return
-
-    Object.keys(code).forEach(type => {
-      const srcCode = { type, code: code[type] }
-      const compiledCode = { type, output: compiled[type] }
-      dispatch('editor/updateCode', srcCode, { root: true })
-      dispatch('editor/setOutput', { ...compiledCode, loaded: true }, { root: true })
-      dispatch('editor/putOptions', editors, { root: true })
-    })
-  },
-
-  async saveCode ({ rootState }, compiled) {
-    const { editor } = rootState
-    const { html, css, js } = compiled
-      ? editor.compiled
-      : editor.code
-
-    console.log(html, css, js)
-    // upload to ipfs
-
-    // save on nebulas
-    const args = [null, {
-      title: 'Example dapp',
-      description: 'Some example dapp',
-      src: {
-        html: {
-          code: '<h1>test</h1>'
-        },
-        css: {
-          type: 'stylus',
-          code: 'h1 { color: red; }'
-        }
-      }
-    }]
-
-    try {
-      const tx = nebpay.callFunction({ fn: 'saveSheet', args })
-      console.info({ tx })
-      const saved = await tx
-      console.info({ saved })
-    } catch (e) {
-      console.error('ERROR', e)
-    }
-
+    return await blockchain.saveSheet(slug, data)
   }
 }
 
