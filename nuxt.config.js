@@ -1,7 +1,7 @@
 module.exports = {
   mode: 'spa',
   env: {
-    contractDev: process.env.CONTRACT_DEV || 'n1jvG6a5tyFEiWJf93gyLnifJv1E8mpSm7Y',
+    contractDev: process.env.CONTRACT_DEV || 'n1htfUN3toZMA1Y41yTx6SX8DtEXAy4VBsT',
     contractProd: process.env.CONTRACT_PROD || 'DO_NOT_SEND'
   },
   head: {
@@ -17,7 +17,11 @@ module.exports = {
       { rel: 'stylesheet', href: 'https://unpkg.com/firacode@1.205.0/distr/fira_code.css' }
     ]
   },
-  loading: { color: '#3B8070' },
+  loadingIndicator: {
+    name: 'cube-grid',
+    color: '#6e87f7',
+    background: '#292d3d'
+  },
   plugins: [
     '~/plugins/vue-codemirror',
     '~/plugins/vue-observe-visibility',
