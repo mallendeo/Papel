@@ -263,12 +263,9 @@ export default {
 
     async firstLoad () {
       try {
-        console.log(this.slug)
         await this.loadFromNebulas(this.slug)
       } catch (err) {
-        console.error(err)
-        // Get saved state from localStorage
-        if (this.loadFromLocal(this.slug)) {
+        if (await this.loadFromLocal(this.slug)) {
           this.$notify({
             group: 'editor',
             type: 'error',

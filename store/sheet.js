@@ -80,8 +80,8 @@ export const actions = {
   },
 
   loadFromLocal ({ dispatch }, slug) {
-    dispatch('updateFromSave', db.get(`sheet:${slug}`))
-    return true
+    const saved = db.get(`sheet:${slug}`)
+    return saved && dispatch('updateFromSave', saved)
   },
 
   async loadFromNebulas ({ dispatch }, slug) {
