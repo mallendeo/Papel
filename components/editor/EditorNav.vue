@@ -79,12 +79,7 @@ export default {
     ...mapFields('ui', ['zenMode'])
   },
   methods: {
-    ...mapActions('editor', ['navTo']),
-    ...mapActions('nebpay', ['callFunction']),
-    ...mapActions('ipfs', ['saveCurrCode']),
-    async save () {
-      this.saveCurrCode()
-    }
+    ...mapActions('editor', ['navTo'])
   }
 }
 </script>

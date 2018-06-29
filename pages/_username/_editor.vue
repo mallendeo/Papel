@@ -189,6 +189,8 @@ export default {
     },
 
     async onSave (blockchain) {
+      if (!this.isLoaded) return
+
       this.saveLocal(this.slug)
       const mac = navigator.appVersion.indexOf('Mac') > -1
 
@@ -221,7 +223,7 @@ export default {
     },
 
     subscribe () {
-      return this.$store.subscribeAction(async (action, state) => {
+      return this.$store.subscribeAction((action, state) => {
         switch (action.type) {
           case 'editor/updateCode':
             worker.postMessage(action.payload)
@@ -248,10 +250,10 @@ export default {
     onProjectLoad () {
       if (this.unsubscribeStore) this.unsubscribeStore()
       this.unsubscribeStore = this.subscribe()
+
       if (this.refreshAll) return
 
       this.updateMeta()
-
       Object.keys(this.editors).forEach(type => {
         this.$store.dispatch('editor/updateCode', {
           type,
@@ -298,7 +300,6 @@ export default {
     this.setPreviewIframe(this.$refs.preview)
     this.remote = this.$refs.preview.contentWindow
 
-    await this.firstLoad()
 
     worker.addEventListener('message', this.onWorkerMessage, false)
     this.$refs.preview.addEventListener('load', this.onProjectLoad)
@@ -311,6 +312,8 @@ export default {
         }, '*')
       }
     }, false)
+
+    await this.firstLoad()
   }
 }
 </script>
