@@ -1,8 +1,8 @@
 module.exports = {
   mode: 'spa',
   env: {
-    contractDev: process.env.CONTRACT_DEV || 'n1htfUN3toZMA1Y41yTx6SX8DtEXAy4VBsT',
-    contractProd: process.env.CONTRACT_PROD || 'DO_NOT_SEND'
+    contractDev: process.env.CONTRACT_DEV || 'n1yvQDT9y4LpdXQst6uwvamryJSQ2Wcbaau',
+    contractProd: process.env.CONTRACT_PROD || 'n1jDgsHua33RA3ahQ1Xf9H8FjD1KDSsfs87'
   },
   head: {
     title: 'Code Playground on the Blockchain - Papel',
@@ -18,7 +18,7 @@ module.exports = {
     ]
   },
   loadingIndicator: {
-    name: 'cube-grid',
+    name: 'pulse',
     color: '#6e87f7',
     background: '#292d3d'
   },
