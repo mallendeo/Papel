@@ -113,10 +113,10 @@ export default {
     ...mapState('editor', ['editors', 'code', 'ui']),
     ...mapState('ui', ['zenMode']),
     previewUrl () {
-      const file = this.refreshAll ? 'preview.html' : 'livereload.html'
+      const mode = this.refreshAll ? 'preview' : 'livereload'
       return process.env.NODE_ENV === 'production'
-        ? `https://a.papel.app/preview/${file}`
-        : `http://localhost:3001/${file}`
+        ? `https://a.papel.app/${mode}`
+        : `http://localhost:3001/${mode}.html`
     },
     refreshAll () {
       return ['live-reload'].indexOf(this.ui.refreshType) === -1
