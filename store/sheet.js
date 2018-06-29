@@ -83,6 +83,8 @@ export const actions = {
 
   loadFromLocal ({ dispatch }, slug) {
     const saved = db.get(`sheet:${slug}`)
+    if (!saved) return false
+
     const { code, compiled, ...opts } = saved
     return saved && dispatch('updateFromSave', { code, compiled, opts })
   },
