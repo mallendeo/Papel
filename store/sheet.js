@@ -1,6 +1,4 @@
-import omit from 'lodash/omit'
 import pick from 'lodash/pick'
-import flatMap from 'lodash/flatMap'
 
 import * as types from './mutation-types'
 import * as ipfs from '../lib/ipfs'
@@ -8,9 +6,9 @@ import * as blockchain from '../lib/blockchain'
 import * as db from '../lib/db'
 import { generateHTML} from '../lib/helpers'
 
-import { PREPROS } from './constants'
-
 export const state = () => ({
+  title: 'A Papel Project',
+  description: '',
   currTxHash: null,
   isSaving: false,
   hashes: []
@@ -29,7 +27,7 @@ export const getters = {
 
   sheetConfig (state, getters, rootState) {
     const { editor } = rootState
-    const { editors, code, compiled, cmOpts } = editor
+    const { editors, cmOpts } = editor
 
     return {
       cmOpts: pick(cmOpts, 'tabSize', 'indentWithTabs'),
@@ -57,58 +55,64 @@ export const mutations = {
   }
 }
 
-const pickConfig = editors => Object.keys(editors)
-  .reduce((obj, type) => {
-    obj[type] = omit(editors[type], 'showCompiled', 'error', 'prepros')
-    return obj
-  }, {})
-
 export const actions = {
   updateFromSave ({ dispatch }, { code, compiled, opts = {} }) {
-    if (!code) return
-
+    if (!code) return false
+    console.log({opts})
     dispatch('editor/putOptions', opts, { root: true })
 
     Object.keys(code).forEach(type => {
       const srcCode = { type, code: code[type] }
       dispatch('editor/updateCode', srcCode, { root: true })
 
-      if (!compiled) return
       const compiledCode = { type, output: compiled[type] }
       dispatch('editor/setOutput', { ...compiledCode, loaded: true }, { root: true })
+    })
+
+    return true
+  },
+
+  saveLocal ({ rootState, getters }, slug) {
+    const { code, compiled } = rootState.editor
+    db.set(`sheet:${slug}`, {
+      code,
+      compiled,
+      ...getters.sheetConfig
     })
   },
 
   loadFromLocal ({ dispatch }, slug) {
     const saved = db.get(`sheet:${slug}`)
-    return saved && dispatch('updateFromSave', saved)
+    const { code, compiled, ...opts } = saved
+    return saved && dispatch('updateFromSave', { code, compiled, opts })
   },
 
   async loadFromNebulas ({ dispatch }, slug) {
     const { rootHash } = await blockchain.getSheet(slug)
     const opts = await ipfs.getContent(`${rootHash}/config.json`, { parse: true })
-
-    const types = Object.keys(opts.editors).map(type => {
-      const editor = opts.editors[type]
-      return { type, ...PREPROS[type][editor.lang] }
+    const allCode = await ipfs.getContent(`${rootHash}/code.json`, {
+      parse: true
     })
 
-    const [html, css, js] = await Promise.all(types.map(async type => {
-      const filename = type.type === 'html' ? 'index' : 'main'
-      const empty = !opts.editors[type.type].contentLength
-      console.log(`${rootHash}/src/${filename}.${type.ext}`)
-      return empty ? '' : await ipfs.getContent(`${rootHash}/src/${filename}.${type.ext}`)
-    }))
+    dispatch('updateFromSave', {
+      code: allCode.code,
+      compiled: allCode.compiled,
+      opts
+    })
+  },
 
-    console.log({ html, css, js, opts, rootHash, slug })
+  async saveOnNebulas ({ state, getters, dispatch }, slug) {
+    dispatch('saveLocal', slug)
 
-    dispatch('updateFromSave', { code: { html, css, js }, opts })
-    // console.log('sheet config', { code, types, config })
+    const { latestHash } = getters
+    const data = {
+      isPublic: state.isPublic,
 
-    //dispatch('updateFromSave', )
-    //ipfs.getContent()
-    // get hashes from nebulas
-    //
+      rootHash: latestHash.root,
+      distHash: latestHash.dist
+    }
+
+    return await blockchain.saveSheet(slug, data)
   },
 
   generateHTML ({ rootState }, conf) {
@@ -126,60 +130,37 @@ export const actions = {
     }, conf)
   },
 
-  saveLocal ({ rootState }, slug) {
-    const { code, compiled, editors } = rootState.editor
-    db.set(`sheet:${slug}`, {
-      code, compiled, editors: pickConfig(editors)
-    })
-  },
-
   async saveIpfs ({ getters, rootState, state, commit, dispatch }) {
     if (state.isSaving) return
 
     const { editor } = rootState
-    const { editors, code, compiled, cmOpts } = editor
+    const { code, compiled } = editor
     const fileTypes = ['html', 'css', 'js'].filter(type => code[type])
 
     const staticHTML = await dispatch('generateHTML')
 
     const files = fileTypes.map(type => {
       const filename = type === 'html' ? 'index' : 'main'
-
-      const { lang, prepros } = editors[type]
-      const { ext } = prepros[lang]
-
-      return [
-        { path: `/src/${filename}.${ext}`, content: new Buffer(code[type]) },
-        {
-          path: `/dist/${filename}.${type}`,
-          content: new Buffer(type === 'html' ? staticHTML : compiled[type])
-        }
-      ]
+      return {
+        path: `/dist/${filename}.${type}`,
+        content: new Buffer(type === 'html' ? staticHTML : compiled[type])
+      }
     })
 
     const config = JSON.stringify(getters.sheetConfig)
+    const allCode = JSON.stringify({ code, compiled })
+
     const ipfsOpts = { wrapWithDirectory: true, pin: true }
     commit(types.SHEET_SET_SAVING, true)
 
     const hashes = await ipfs.saveFiles([
-      ...flatMap(files),
-      { path: '/config.json', content: new Buffer(config) }
+      files,
+      { path: '/config.json', content: new Buffer(config) },
+      { path: '/code.json', content: new Buffer(allCode) }
     ], ipfsOpts)
 
     commit(types.SHEET_SET_HASHES, hashes)
     commit(types.SHEET_SET_SAVING, false)
-  },
-
-  async saveOnNebulas ({ getters, dispatch }, slug) {
-    dispatch('saveLocal', slug)
-
-    const { latestHash } = getters
-    const data = {
-      rootHash: latestHash.root,
-      distHash: latestHash.dist
-    }
-
-    return await blockchain.saveSheet(slug, data)
   }
 }
 
