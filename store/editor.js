@@ -191,10 +191,6 @@ export const mutations = {
     }
   },
 
-  [types.EDITOR_SET_THEME] (state, theme) {
-    state.cmOpts.theme = theme
-  },
-
   [types.EDITOR_NAV_TO] (state, tab) {
     const { tabs } = state.ui
     const index = tabs.indexOf(state.ui.currTab)
@@ -237,9 +233,6 @@ export const actions = {
   },
   updateCode ({ commit }, { type, code }) {
     commit(types.EDITOR_SET_CODE, { type, code })
-  },
-  setTheme ({ commit }, theme) {
-    commit(types.EDITOR_SET_THEME, theme)
   },
   setLang ({ commit }, lang) {
     commit(types.EDITOR_SET_LANG, lang)

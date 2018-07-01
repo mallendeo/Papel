@@ -100,13 +100,6 @@ export default {
   &__logo {
     margin-right: .5rem;
     width: 1.25rem;
-    /deep/ {
-      path, rect {
-        fill: var(--logo-fill);
-        stroke-width: 4px;
-        stroke: var(--logo-stroke);
-      }
-    }
   }
 }
 
