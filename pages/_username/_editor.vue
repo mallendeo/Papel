@@ -64,10 +64,14 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import TransformWorker from '~/assets/transform.worker.js'
+
+// Polyfill for Safari
+import 'intersection-observer'
 
 import shortid from 'shortid'
 import Split from 'split.js'
+
+import TransformWorker from '~/assets/transform.worker.js'
 
 import AppEditors from '@/components/editor/AppEditors'
 import AppComments from '@/components/editor/AppComments'
