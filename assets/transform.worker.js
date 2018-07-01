@@ -1,6 +1,6 @@
 // TODO: add postcss + addons
 const PREPROS_MAP = {
-  md: { global: 'showdown', url: '/vendor/showdown.min.js' },
+  md: { global: 'marked', url: '/vendor/marked.min.js' },
   pug: { global: 'pug', url: '/vendor/pug.min.js' },
   stylus: { global: 'stylus', url: '/vendor/stylus.min.js' },
   scss: { global: 'sass', url: '/vendor/sass.sync.js' },
@@ -62,7 +62,14 @@ const transform = async (code, lang) => {
           break
 
         case 'md':
-          resolve(new showdown.Converter().makeHtml(code))
+          resolve(marked(code, {
+            gfm: true,
+            tables: true,
+            breaks: false,
+            pedantic: false,
+            sanitize: true,
+            smartLists: true
+          }))
           break
 
         // CSS
