@@ -1,8 +1,8 @@
 module.exports = {
   mode: 'spa',
   env: {
-    contractDev: process.env.CONTRACT_DEV || 'n1yvQDT9y4LpdXQst6uwvamryJSQ2Wcbaau',
-    contractProd: process.env.CONTRACT_PROD || 'n1jDgsHua33RA3ahQ1Xf9H8FjD1KDSsfs87'
+    contractDev: process.env.CONTRACT_DEV || 'n1tVbiJotXAa64LN3it23YooZqBh82jqUXu',
+    contractProd: process.env.CONTRACT_PROD || 'n1hy1FLTrw6uEf22Cbm4fBQKxVdHNipnGSa'
   },
   head: {
     title: 'Code Playground on the Blockchain - Papel',
@@ -12,7 +12,12 @@ module.exports = {
       { hid: 'description', name: 'description', content: 'Code Playground on the Blockchain' }
     ],
     link: [
-      { rel: 'icon', type: 'image/png', href: '/favicon.png' },
+      { rel: 'apple-touch-icon', sizes: '180x180', href: '/icons/apple-touch-icon.png' },
+      { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/icons/favicon-32x32.png' },
+      { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/icons/favicon-16x16.png' },
+      { rel: 'shortcut icon', type: 'image/x-icon', href: '/icons/favicon.ico' },
+      { rel: 'manifest', href: '/site.webmanifest' },
+      { rel: 'mask-icon', href: '/icons/safari-pinned-tab.svg', color: '#6e87f7' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons|Comfortaa|Source+Code+Pro|Inconsolata' },
       { rel: 'stylesheet', href: 'https://unpkg.com/firacode@1.205.0/distr/fira_code.css' }
     ]
