@@ -5,11 +5,20 @@
 
       <div class="form-group">
         <app-btn-select
-          :value="currTheme"
           label="Choose Theme"
-          @click.native="showThemePopup = !showThemePopup"
           class="btn-select"
-        />
+        >
+          <select
+            @change="() => setThemeTransition()"
+            v-model="theme"
+          >
+            <option
+              v-for="curr of allThemes"
+              :value="curr.slug"
+              :key="`theme-${curr.slug}`"
+            >{{ curr.name }}</option>
+          </select>
+        </app-btn-select>
 
         <app-btn-select
           label="Editor Font"
@@ -99,40 +108,6 @@
         <button class="btn btn-save">Save</button>
       </div>
     </div><!-- /.wrapper -->
-
-    <div
-      class="theme-picker-wrapper"
-      :class="{
-        'theme-picker-wrapper--show': showThemePopup
-      }"
-    >
-      <h4 class="subtitle row">
-        <button
-          @click="showThemePopup = !showThemePopup"
-          class="btn material-icons"
-        >arrow_back</button>
-        <span>Editor Theme</span>
-      </h4>
-
-      <ul class="theme-picker">
-        <li
-          v-for="theme of allThemes"
-          :key="`btn-opt-theme-${theme.slug}`"
-        >
-          <button
-            class="btn btn-picker"
-            :class="{ 'btn--active': currTheme === theme.slug }"
-            @click="changeTheme(theme.slug)"
-          >
-            <img
-              :src="require(`~/assets/img/theme-${theme.slug.replace(/\s/g, '-')}.jpg`)"
-              :alt="`${theme.name} theme`"
-            >
-          </button>
-          <small class="theme-name">{{ theme.name }}</small>
-        </li>
-      </ul>
-    </div>
   </section>
 </template>
 
@@ -157,20 +132,15 @@ export default {
       'ui.refreshType',
       'ui.updateDelay',
       'cmOpts.tabSize',
-      'cmOpts.indentWithTabs'
+      'cmOpts.indentWithTabs',
+      'cmOpts.theme'
     ])
   },
   methods: {
     ...mapActions('editor', ['setTheme', 'setLayout', 'setFont']),
-    ...mapActions('ui', ['setThemeTransition']),
-
-    changeTheme (theme) {
-      this.setThemeTransition()
-      this.setTheme(theme)
-      this.showThemePopup = false
-    }
+    ...mapActions('ui', ['setThemeTransition'])
   },
-  data: () => ({ showThemePopup: false, lastRefreshType: null }),
+  data: () => ({ lastRefreshType: null }),
   mounted () {
     ElementQueries.init()
   }
@@ -264,52 +234,6 @@ export default {
 }
 
 .tab-content {
-  color: var(--text-light);
-}
-
-.theme-picker-wrapper {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--editor-color-dark);
-  padding: 1rem;
-
-  opacity: 0;
-  pointer-events: none;
-  transition: all .2s ease;
-
-  &--show {
-    opacity: 1;
-    pointer-events: all;
-  }
-}
-
-.theme-picker {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  margin: 1rem 0;
-  grid-gap: 1rem;
-  --btn-height: 5rem;
-  max-width: 40rem;
-  font-size: .8rem;
-
-  &[min-width~="25rem"] {
-    grid-template-columns: repeat(3, 1fr);
-    font-size: 1rem;
-    --btn-height: 6rem;
-  }
-
-  &[min-width~="35rem"] {
-    grid-gap: 2rem;
-    padding: 1rem;
-    --btn-height: 7rem;
-  }
-}
-
-.theme-name {
-  display: block;
-  margin-top: .5rem;
   color: var(--text-light);
 }
 
