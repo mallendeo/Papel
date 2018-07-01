@@ -269,13 +269,18 @@ export default {
 
     async firstLoad () {
       try {
+        if (!navigator.onLine) throw Error(`You're offline`)
         await this.loadFromNebulas(this.slug)
       } catch (err) {
         if (await this.loadFromLocal(this.slug)) {
+          const msg = navigator.onLine
+            ? `There was an error trying to load ${this.slug}`
+            : err.message
+
           this.$notify({
             group: 'editor',
             type: 'error',
-            title: `There was an error trying to load ${this.slug}`,
+            title: msg,
             text: 'Loading from local copy'
           })
         }
