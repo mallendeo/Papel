@@ -1,4 +1,5 @@
 import pick from 'lodash/pick'
+import { sha256 } from 'js-sha256'
 
 import * as types from './mutation-types'
 import * as ipfs from '../lib/ipfs'
@@ -11,6 +12,12 @@ export const state = () => ({
   description: '',
   currTxHash: null,
   isSaving: false,
+  isPublic: true,
+
+  // codeHash: sha-256 used for check code changes
+  codeHash: '',
+
+  // IPFS files hashes
   hashes: []
 })
 
@@ -50,15 +57,28 @@ export const mutations = {
     state.isSaving = saving
   },
 
-  [types.SHEET_SET_HASHES] (state, hashes) {
+  [types.SHEET_SET_IPFS_HASHES] (state, hashes) {
     state.hashes = hashes
+  },
+
+  [types.SHEET_SET_HASH] (state, hash) {
+    state.codeHash = hash
   }
 }
 
 export const actions = {
+  calculateHash ({ rootState, getters, commit }, save = false) {
+    const { code, compiled } = rootState.editor
+    const config = { code, compiled, ...getters.sheetConfig }
+    const hash = sha256(JSON.stringify(config))
+
+    if (save) commit(types.SHEET_SET_HASH, hash)
+
+    return hash
+  },
+
   updateFromSave ({ dispatch }, { code, compiled, opts = {} }) {
     if (!code) return false
-    console.log({opts})
     dispatch('editor/putOptions', opts, { root: true })
 
     Object.keys(code).forEach(type => {
@@ -72,13 +92,11 @@ export const actions = {
     return true
   },
 
-  saveLocal ({ rootState, getters }, slug) {
+  async saveLocal ({ rootState, getters, dispatch }, slug) {
     const { code, compiled } = rootState.editor
-    db.set(`sheet:${slug}`, {
-      code,
-      compiled,
-      ...getters.sheetConfig
-    })
+    db.set(`sheet:${slug}`, { code, compiled, ...getters.sheetConfig })
+
+    dispatch('calculateHash', true)
   },
 
   loadFromLocal ({ dispatch }, slug) {
@@ -96,7 +114,7 @@ export const actions = {
       parse: true
     })
 
-    dispatch('updateFromSave', {
+    await dispatch('updateFromSave', {
       code: allCode.code,
       compiled: allCode.compiled,
       opts
@@ -114,7 +132,7 @@ export const actions = {
       distHash: latestHash.dist
     }
 
-    return await blockchain.saveSheet(slug, data)
+    return blockchain.saveSheet(slug, data)
   },
 
   generateHTML ({ rootState }, conf) {
@@ -161,7 +179,7 @@ export const actions = {
       { path: '/code.json', content: new Buffer(allCode) }
     ], ipfsOpts)
 
-    commit(types.SHEET_SET_HASHES, hashes)
+    commit(types.SHEET_SET_IPFS_HASHES, hashes)
     commit(types.SHEET_SET_SAVING, false)
   }
 }
