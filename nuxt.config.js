@@ -2,7 +2,9 @@ module.exports = {
   mode: 'spa',
   env: {
     contractDev: process.env.CONTRACT_DEV || 'n1tVbiJotXAa64LN3it23YooZqBh82jqUXu',
-    contractProd: process.env.CONTRACT_PROD || 'n1hy1FLTrw6uEf22Cbm4fBQKxVdHNipnGSa'
+    contractProd: process.env.CONTRACT_PROD || 'n1hy1FLTrw6uEf22Cbm4fBQKxVdHNipnGSa',
+    mainnetUrl: 'https://mainnet.nebulas.io',
+    testnetUrl: 'https://testnet.nebulas.io'
   },
 
   modules: [
@@ -68,7 +70,6 @@ module.exports = {
       'axios',
       'ipfs-api',
       'nebpay.js',
-      'nebulas',
       'shortid',
       'split.js',
       'vue-codemirror',
