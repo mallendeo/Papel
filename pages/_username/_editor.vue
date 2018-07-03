@@ -86,6 +86,8 @@ import SmartContractEditor from '@/components/editor/SmartContractEditor'
 const worker = new TransformWorker()
 
 export default {
+  layout: 'editor',
+
   components: {
     AppEditors,
     AppComments,
@@ -101,6 +103,7 @@ export default {
   beforeDestroy () {
     this.unsubscribeStore && this.unsubscribeStore()
     worker.removeEventListener('message', this.onWorkerMessage, false)
+    window.removeEventListener('beforeunload', this.onWindowClose, false)
   },
 
   data () {
@@ -116,12 +119,15 @@ export default {
   computed: {
     ...mapState('editor', ['editors', 'code', 'ui']),
     ...mapState('ui', ['zenMode']),
+    ...mapState('sheet', ['codeHash']),
+
     previewUrl () {
       const mode = this.refreshAll ? 'preview' : 'livereload'
       return process.env.NODE_ENV === 'production'
         ? `https://a.papel.app/${mode}`
         : `http://localhost:3001/${mode}.html`
     },
+
     refreshAll () {
       return ['live-reload'].indexOf(this.ui.refreshType) === -1
     }
@@ -129,14 +135,20 @@ export default {
 
   methods: {
     ...mapActions('neb', ['pay']),
-    ...mapActions('editor', ['setOutput', 'setError', 'setPreviewIframe']),
+    ...mapActions('editor', [
+      'setOutput',
+      'setError',
+      'setPreviewIframe',
+      'loadSettings'
+    ]),
     ...mapActions('sheet', [
       'loadFromLocal',
       'loadFromNebulas',
       'saveLocal',
       'saveIpfs',
       'saveOnNebulas',
-      'generateHTML'
+      'generateHTML',
+      'calculateHash'
     ]),
 
     updateIframe (data) {
@@ -268,6 +280,9 @@ export default {
     },
 
     async firstLoad () {
+      // From localStorage
+      this.loadSettings()
+
       try {
         if (!navigator.onLine) throw Error(`You're offline`)
         await this.loadFromNebulas(this.slug)
@@ -287,10 +302,20 @@ export default {
       } finally {
         this.isLoaded = true
       }
+    },
+
+    async onWindowClose (event) {
+      const hash = await this.calculateHash()
+      if (this.codeHash && hash !== this.codeHash) {
+        event.returnValue = true
+      }
     }
   },
 
   async mounted () {
+    // Show dialog on navigation if there are changes
+    window.addEventListener('beforeunload', this.onWindowClose, false)
+
     Split(['#content', '#preview'], {
       sizes: [35, 65],
       snapOffset: 0,
@@ -323,6 +348,7 @@ export default {
     }, false)
 
     await this.firstLoad()
+    await this.calculateHash(true)
   }
 }
 </script>

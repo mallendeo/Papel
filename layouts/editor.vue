@@ -5,10 +5,11 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   computed: {
+    ...mapGetters('editor', ['currTheme', 'themeTransition']),
     ...mapState('ui', ['themeTransition'])
   },
   head () {
@@ -24,4 +25,5 @@ export default {
 
 <style lang="scss">
 @import 'assets/scss/main';
+@import 'assets/scss/editor';
 </style>
