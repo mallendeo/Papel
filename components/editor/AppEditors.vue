@@ -65,7 +65,7 @@
           @change="lang => setEditorLang(type, lang)"
         />
 
-        <app-dropdown icon="settings">
+        <app-dropdown v-if="type !== 'js'" icon="settings">
           <lang-settings :lang="type" />
         </app-dropdown>
 

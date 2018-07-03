@@ -103,7 +103,7 @@ export default {
 
   pointer-events: none;
   opacity: 0;
-  box-shadow: 0 1rem 3rem var(--editor-color-dark);
+  box-shadow: 0 .5rem 3rem -0.4rem var(--editor-color-dark);
   transition: opacity .2s ease, transform .2s ease;
   transform: translateY(-.5rem);
 

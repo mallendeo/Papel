@@ -80,7 +80,7 @@ export default {
     flex: 1;
 
     &-lines {
-      padding-bottom: 4rem;
+      padding-bottom: 8rem;
     }
   }
 }

@@ -35,25 +35,6 @@
           placeholder="#fff, hsl(), ..."
         >
       </label>
-
-      <label class="form-group row">
-        Use reset
-        <label class="btn">
-          Normalize
-          <input type="radio" name="css-reset">
-        </label>
-        <label class="btn">
-          Reset
-          <input type="radio" name="css-reset">
-        </label>
-        <label class="btn">
-          None
-          <input type="radio" name="css-reset">
-        </label>
-      </label>
-    </template>
-
-    <template v-if="lang === 'js'">
     </template>
   </div>
 </template>
