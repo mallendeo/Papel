@@ -91,21 +91,8 @@
         </app-btn-select>
       </div>
 
-      <!--
-      <h2 class="subtitle">Layout</h2>
       <div class="form-group">
-        <button
-          v-for="layout of ui.layouts"
-          :key="`layout-${layout}`"
-          class="btn"
-          :class="{ 'btn--active': ui.layout === layout }"
-          @click="setLayout(layout)"
-        >{{ layout }}</button>
-      </div>
-      -->
-
-      <div class="form-group">
-        <button class="btn btn-save">Save</button>
+        <button @click="save" class="btn btn-save">Save</button>
       </div>
     </div><!-- /.wrapper -->
   </section>
@@ -137,8 +124,15 @@ export default {
     ])
   },
   methods: {
-    ...mapActions('editor', ['setTheme', 'setLayout', 'setFont']),
-    ...mapActions('ui', ['setThemeTransition'])
+    ...mapActions('editor', ['saveSettings']),
+    ...mapActions('ui', ['setThemeTransition']),
+    save () {
+      this.saveSettings()
+      this.$notify({
+        group: 'editor',
+        title: 'Setting saved locally'
+      })
+    }
   },
   data: () => ({ lastRefreshType: null }),
   mounted () {

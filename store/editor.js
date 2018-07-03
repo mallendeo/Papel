@@ -1,7 +1,11 @@
 import words from 'lodash/words'
 import capitalize from 'lodash/capitalize'
 import merge from 'lodash/merge'
+import pick from 'lodash/pick'
+
 import { getField, updateField } from 'vuex-map-fields'
+
+import * as db from '../lib/db'
 
 import * as types from './mutation-types'
 import { PREPROS, THEMES, FONTS } from './constants'
@@ -160,6 +164,17 @@ export const getters = {
 export const mutations = {
   updateField,
 
+  [types.EDITOR_LOAD_SETTINGS] (state, { cmOpts, ui }) {
+    state.cmOpts.indentWithTabs = cmOpts.indentWithTabs
+    state.cmOpts.tabSize = cmOpts.tabSize
+    state.cmOpts.theme = cmOpts.theme
+
+    state.ui.font = ui.font
+    state.ui.fontSize = ui.fontSize
+    state.ui.refreshType = ui.refreshType
+    state.ui.updateDelay = ui.updateDelay
+  },
+
   [types.EDITOR_SET_IFRAME] (state, iframe) {
     state.previewIframe = iframe
   },
@@ -225,6 +240,23 @@ export const mutations = {
 }
 
 export const actions = {
+  saveSettings({ state }) {
+    const settings = pick(state,
+      'ui.font',
+      'ui.fontSize',
+      'ui.refreshType',
+      'ui.updateDelay',
+      'cmOpts.tabSize',
+      'cmOpts.indentWithTabs',
+      'cmOpts.theme'
+    )
+
+    db.set('papel:settings', settings)
+    return settings
+  },
+  loadSettings ({ commit }) {
+    commit(types.EDITOR_LOAD_SETTINGS, db.get('papel:settings'))
+  },
   setOutput ({ commit }, { type, output }) {
     commit(types.EDITOR_SET_COMPILED, { type, output })
   },
@@ -242,9 +274,6 @@ export const actions = {
   },
   toggleCompiled ({ commit }, type) {
     commit(types.EDITOR_TOGGLE_COMPILED, type)
-  },
-  setLayout ({ commit }, layout) {
-    commit(types.EDITOR_SET_LAYOUT, layout)
   },
   putOptions ({ commit }, opts) {
     commit(types.EDITOR_PUT_OPTIONS, opts)
