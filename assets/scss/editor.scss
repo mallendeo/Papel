@@ -1,6 +1,10 @@
-@import 'themes/editors';
+@import 'editor-themes';
 
-html, body {
+html {
+  overflow: hidden;
+}
+
+body {
   overflow-x: hidden;
 }
 

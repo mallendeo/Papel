@@ -12,7 +12,6 @@ html {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 *, *:before, *:after {
@@ -37,6 +36,6 @@ button {
   pointer-events: none;
 
   *, *:after, *:before {
-    transition: all .2s ease;
+    transition: background .2s ease;
   }
 }

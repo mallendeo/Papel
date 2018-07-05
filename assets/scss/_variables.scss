@@ -1,0 +1,17 @@
+body {
+  --color-hue: 229;
+  --color: hsl(var(--color-hue), 20%, 20%);
+  --color-accent: hsl(var(--color-hue), 90%, 70%);
+  --color-dark: hsl(var(--color-hue), 19%, 15%);
+  --color-darker: hsl(var(--color-hue), 19%, 10%);
+
+  --color-text: hsl(0, 0%, 97%);
+  --color-contrast: hsl(0, 0%, 5%);
+}
+
+[data-theme='light'] body {
+  background: #f7f7f7;
+  --color-dark: hsl(0, 0%, 5%);
+  --color-text: hsl(0, 0%, 20%);
+  --color-text-light: hsl(0, 0%, 50%);
+}
