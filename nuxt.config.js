@@ -40,11 +40,13 @@ module.exports = {
   },
   meta: {
     charset: 'utf-8',
-    'google-site-verification': 'moKe0I2qNGqO4OWhWFwdjkT6lAWbrD8ochICI3hl48M',
     description: 'Code Playground on the Blockchain'
   },
   head: {
     title: 'Code Playground on the Blockchain - Papel',
+    meta: [
+      { name: 'google-site-verification', content: 'moKe0I2qNGqO4OWhWFwdjkT6lAWbrD8ochICI3hl48M' }
+    ],
     link: [
       { rel: 'apple-touch-icon', sizes: '180x180', href: '/icons/apple-touch-icon.png' },
       { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/icons/favicon-32x32.png' },
