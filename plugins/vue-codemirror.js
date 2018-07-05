@@ -43,7 +43,7 @@ import 'codemirror/theme/solarized.css'
 import 'codemirror/theme/mdn-like.css'
 
 // Extra
-import '../assets/scss/themes/extra/_palenight.scss'
+import '../assets/scss/extra/_palenight.scss'
 
 // Languages
 // -------------------

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wrapper">
     <nuxt/>
   </div>
 </template>
@@ -9,13 +9,12 @@ import { mapGetters, mapState } from 'vuex'
 
 export default {
   computed: {
-    ...mapGetters('editor', ['currTheme']),
-    ...mapState('ui', ['themeTransition'])
+    ...mapState('ui', ['themeTransition', 'theme'])
   },
   head () {
     return {
       htmlAttrs: {
-        'data-theme': this.currTheme,
+        'data-theme': this.theme,
         class: this.themeTransition ? 'theme-transition' : ''
       }
     }
@@ -25,5 +24,19 @@ export default {
 
 <style lang="scss">
 @import 'assets/scss/base';
-@import 'assets/scss/editor';
+@import 'assets/scss/variables';
+
+.wrapper {
+  max-width: 64rem;
+  margin: auto;
+  padding: 0 4rem;
+}
+
+body {
+  background: var(--color-dark);
+}
+
+[data-theme="light"] body {
+  background: #f7f7f7;
+}
 </style>

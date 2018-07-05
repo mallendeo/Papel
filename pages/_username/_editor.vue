@@ -87,6 +87,12 @@ const worker = new TransformWorker()
 
 export default {
   layout: 'editor',
+  head: {
+    link: [
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Source+Code+Pro|Inconsolata' },
+      { rel: 'stylesheet', href: 'https://unpkg.com/firacode@1.205.0/distr/fira_code.css' }
+    ]
+  },
 
   components: {
     AppEditors,
