@@ -4,7 +4,8 @@ module.exports = {
     contractDev: process.env.CONTRACT_DEV || 'n1tVbiJotXAa64LN3it23YooZqBh82jqUXu',
     contractProd: process.env.CONTRACT_PROD || 'n1hy1FLTrw6uEf22Cbm4fBQKxVdHNipnGSa',
     mainnetUrl: 'https://mainnet.nebulas.io',
-    testnetUrl: 'https://testnet.nebulas.io'
+    testnetUrl: 'https://testnet.nebulas.io',
+    extLink: 'https://chrome.google.com/webstore/detail/gehjkhmhclgnkkhpfamakecfgakkfkco'
   },
 
   modules: [
@@ -39,6 +40,7 @@ module.exports = {
   },
   meta: {
     charset: 'utf-8',
+    'google-site-verification': 'moKe0I2qNGqO4OWhWFwdjkT6lAWbrD8ochICI3hl48M',
     description: 'Code Playground on the Blockchain'
   },
   head: {
@@ -48,8 +50,7 @@ module.exports = {
       { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/icons/favicon-32x32.png' },
       { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/icons/favicon-16x16.png' },
       { rel: 'mask-icon', href: '/icons/safari-pinned-tab.svg', color: '#6e87f7' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons|Comfortaa|Source+Code+Pro|Inconsolata' },
-      { rel: 'stylesheet', href: 'https://unpkg.com/firacode@1.205.0/distr/fira_code.css' }
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons|Comfortaa' }
     ]
   },
   loadingIndicator: {
@@ -66,6 +67,14 @@ module.exports = {
   ],
 
   build: {
+    postcss: [
+      require('postcss-cssnext')({
+        features: {
+          customProperties: false
+        }
+      })
+    ],
+
     vendor: [
       'axios',
       'ipfs-api',
