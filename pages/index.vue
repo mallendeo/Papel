@@ -1,7 +1,5 @@
 <template>
-  <section class="section col">
-    Papel
-
+  <section class="section col wrapper">
     <loading-screen v-if="loading" />
 
     <sheet-grid
@@ -28,13 +26,16 @@ export default {
     SheetGrid,
     LoadingScreen
   },
+
   data: () => ({
     currPage: 1,
     loading: true
   }),
+
   computed: {
     ...mapState('homepage', ['sheets', 'totalSheets'])
   },
+
   methods: {
     ...mapActions('homepage', ['getSheets']),
     goToPage (page) {
@@ -45,8 +46,13 @@ export default {
 
     redirect () {
       this.$router.push('/getting-started')
+    },
+
+    loadList () {
+
     }
   },
+
   async mounted () {
     if (!checkExt()) return this.redirect()
 

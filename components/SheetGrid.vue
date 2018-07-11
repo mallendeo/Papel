@@ -1,28 +1,27 @@
 <template>
-  <div class="sheets">
-    <div class="grid">
-      <div
-        v-if="getUsername(sheet)"
-        v-for="(sheet, index) of sheets"
-        :key="`${sheet.distHash}-${index}`"
-        class="grid__item col"
-      >
-        <nuxt-link class="iframe-wrapper" :to="`/${getUsername(sheet)}/${sheet.slug}`">
-          <iframe
-            :src="`${ipfsUrl}/${sheet.distHash}`"
-            sandbox="allow-scripts allow-pointer-lock allow-same-origin"
-            scrolling="no"
-            tabindex="-1"
-            allowtransparency="true"
-            frameborder="0"
-          ></iframe>
+  <div class="grid">
+    <div
+      v-if="getUsername(sheet)"
+      v-for="(sheet, index) of sheets"
+      :key="`${sheet.distHash}-${index}`"
+      class="grid__item col"
+    >
+      <nuxt-link class="iframe-wrapper" :to="`/${getUsername(sheet)}/${sheet.slug}`">
+        <iframe
+          :src="`${ipfsUrl}/${sheet.distHash}`"
+          sandbox="allow-scripts allow-pointer-lock allow-same-origin"
+          scrolling="no"
+          tabindex="-1"
+          allowtransparency="true"
+          frameborder="0"
+        ></iframe>
 
-          <div v-if="sheet.title || sheet.description" class="details">
-            <h4 v-if="sheet.title" class="details__title">{{ sheet.title }}</h4>
-            <p v-if="sheet.description" class="details__description">{{ sheet.description }}</p>
-          </div>
-        </nuxt-link>
-
+        <div v-if="sheet.title || sheet.description" class="details">
+          <h4 v-if="sheet.title" class="details__title">{{ sheet.title }}</h4>
+          <p v-if="sheet.description" class="details__description">{{ sheet.description }}</p>
+        </div>
+      </nuxt-link>
+      <div class="actions">
         <nuxt-link class="user-link" v-if="showAuthor" :to="`/${getUsername(sheet)}`">
           <img
             class="avatar"
@@ -38,42 +37,44 @@
             <span class="username">@{{ getUsername(sheet) }}</span>
           </div>
 
-          <button>
-            <i class="material-icons">comment</i>
-          </button>
-          <button>
-            <i class="material-icons">favorite_border</i>
-            <i class="material-icons">favorite</i>
-          </button>
         </nuxt-link>
-      </div>
 
-      <nav class="nav" v-if="totalSheets > perPage">
-        <button
-          class="btn nav-btn"
-          @click="$emit('prev')"
-          :disabled="!showPrevBtn"
-        >
-          <i class="material-icons">arrow_back</i>
-          Prev
+        <button class="btn action-btn">
+          <i class="material-icons">comment</i>
+          {{ sheet.numComments || 0 }}
         </button>
-        <button
-          class="btn nav-btn"
-          @click="$emit('next')"
-          :disabled="!showNextBtn"
-        >
-          Next
-          <i class="material-icons">arrow_forward</i>
+        <button class="btn action-btn">
+          <i class="material-icons">
+            {{ sheet.liked ? 'favorite' : 'favorite_border' }}
+          </i>
+          {{ sheet.numLikes || 0 }}
         </button>
-      </nav>
+      </div>
     </div>
+
+    <nav class="nav" v-if="totalSheets > perPage">
+      <nav-btn @click="$emit('prev')" :disabled="!showPrevBtn">
+        <i class="material-icons">arrow_back</i>
+        Prev
+      </nav-btn>
+      <nav-btn @click="$emit('next')" :disabled="!showNextBtn">
+        Next
+        <i class="material-icons">arrow_forward</i>
+      </nav-btn>
+    </nav>
   </div>
 </template>
 
 <script>
 import { HOST as IPFS_HOST } from '../lib/ipfs'
 
+import NavBtn from './ui/NavBtn'
+
 export default {
+  components: {
+    NavBtn
+  },
+
   props: {
     showAuthor: { type: Boolean, default: false },
     username: { type: String },
@@ -105,8 +106,6 @@ export default {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, 15rem) 1fr;
   grid-gap: 2.5rem;
-  padding: 1rem;
-  max-width: 64rem;
 
   &__item {
     height: 100%;
@@ -161,7 +160,6 @@ export default {
   flex: 0 0 2rem;
   color: white;
   display: flex;
-  margin-top: .5rem;
   text-decoration: none;
 }
 
@@ -193,19 +191,29 @@ export default {
 }
 
 .nav-btn {
-  padding: .7rem 1rem;
   width: 40%;
-  border-radius: .25rem;
-  background: var(--color);
-  color: var(--color-light);
+}
 
-  &:hover {
-    background: var(--color-accent);
+.actions {
+  display: flex;
+  margin-top: .5rem;
+  align-items: center;
+}
+
+.action-btn {
+  height: auto;
+  display: flex;
+  align-self: stretch;
+  color: var(--color-text-light);
+  font-size: .75rem;
+  padding: 0 .25rem;
+
+  [class*=icon] {
+    color: var(--color-text);
+    margin-right: .25rem;
+    font-size: .85rem;
   }
 
-  &:disabled {
-    pointer-events: none;
-    opacity: .25;
-  }
+  &:first-of-type { margin-left: auto; }
 }
 </style>
