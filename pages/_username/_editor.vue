@@ -106,10 +106,22 @@ export default {
     SmartContractEditor
   },
 
-  beforeDestroy () {
+  destroyed () {
     this.unsubscribeStore && this.unsubscribeStore()
     worker.removeEventListener('message', this.onWorkerMessage, false)
-    window.removeEventListener('beforeunload', this.onWindowClose, false)
+  },
+
+  async beforeRouteLeave (to, from, next) {
+    window.removeEventListener('beforeunload', this.beforeLeaveHandler)
+
+    const hash = await this.calculateHash()
+
+    if (this.codeHash && hash !== this.codeHash) {
+      const answer = confirm('You have unsaved changes, are you sure you want to leave?')
+      return next(answer)
+    }
+
+    next()
   },
 
   data () {
@@ -156,6 +168,15 @@ export default {
       'generateHTML',
       'calculateHash'
     ]),
+
+    async beforeLeaveHandler (event) {
+      const hash = await this.calculateHash()
+      console.log('HASH ==========', this.codeHash, hash)
+      if (this.codeHash && hash !== this.codeHash) {
+        await this.calculateHash(true)
+        event.returnValue = true
+      }
+    },
 
     updateIframe (data) {
       this.remote.postMessage({
@@ -308,20 +329,10 @@ export default {
       } finally {
         this.isLoaded = true
       }
-    },
-
-    async onWindowClose (event) {
-      const hash = await this.calculateHash()
-      if (this.codeHash && hash !== this.codeHash) {
-        event.returnValue = true
-      }
     }
   },
 
   async mounted () {
-    // Show dialog on navigation if there are changes
-    window.addEventListener('beforeunload', this.onWindowClose, false)
-
     Split(['#content', '#preview'], {
       sizes: [35, 65],
       snapOffset: 0,
@@ -355,6 +366,9 @@ export default {
 
     await this.firstLoad()
     await this.calculateHash(true)
+
+    // Show dialog on navigation if there are changes
+    window.addEventListener('beforeunload', this.beforeLeaveHandler)
   }
 }
 </script>
