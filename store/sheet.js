@@ -70,6 +70,7 @@ export const actions = {
   calculateHash ({ rootState, getters, commit }, save = false) {
     const { code, compiled } = rootState.editor
     const config = { code, compiled, ...getters.sheetConfig }
+
     const hash = sha256(JSON.stringify(config))
 
     if (save) commit(types.SHEET_SET_HASH, hash)
@@ -155,7 +156,8 @@ export const actions = {
 
     const { editor } = rootState
     const { code, compiled } = editor
-    const fileTypes = ['html', 'css', 'js'].filter(type => code[type])
+    const fileTypes = ['html', 'css', 'js']
+      .filter(type => type === 'html' || code[type])
 
     const staticHTML = await dispatch('generateHTML')
 

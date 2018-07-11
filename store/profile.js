@@ -23,6 +23,7 @@ export const actions = {
     try {
       const profile = await blockchain.getProfile(username)
       commit(types.SET_USER_PROFILE, profile)
+      return profile
     } catch (err) {
     }
   },
@@ -34,5 +35,6 @@ export const actions = {
 
   async saveProfile ({}, user) {
     const saved = await blockchain.saveUser(user)
+    return saved
   }
 }

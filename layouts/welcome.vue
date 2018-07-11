@@ -24,19 +24,12 @@ export default {
 
 <style lang="scss">
 @import 'assets/scss/base';
-@import 'assets/scss/variables';
+@import 'assets/scss/themes';
+@import 'assets/scss/default';
 
 .wrapper {
-  max-width: 64rem;
+  max-width: 68rem;
   margin: auto;
   padding: 0 4rem;
-}
-
-body {
-  background: var(--color-dark);
-}
-
-[data-theme="light"] body {
-  background: #f7f7f7;
 }
 </style>

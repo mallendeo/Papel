@@ -255,7 +255,10 @@ export const actions = {
     return settings
   },
   loadSettings ({ commit }) {
-    commit(types.EDITOR_LOAD_SETTINGS, db.get('papel:settings'))
+    const saved = db.get('papel:settings')
+    if (!saved) return
+
+    commit(types.EDITOR_LOAD_SETTINGS, saved)
   },
   setOutput ({ commit }, { type, output }) {
     commit(types.EDITOR_SET_COMPILED, { type, output })

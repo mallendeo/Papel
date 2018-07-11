@@ -6,10 +6,12 @@
       : 'row'
     "
   >
-    <h1 class="brand row row--center">
-      <papel-logo class="brand__logo" />
-      <span>Papel</span>
-    </h1>
+    <nuxt-link to="/">
+      <h1 class="brand row row--center">
+        <papel-logo class="brand__logo" />
+        <span>Papel</span>
+      </h1>
+    </nuxt-link>
 
     <!-- Nav -->
     <template v-for="tab of ui.tabs">

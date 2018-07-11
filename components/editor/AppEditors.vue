@@ -324,9 +324,4 @@ export default {
 .spin {
   animation: spin .5s ease both;
 }
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  from { transform: rotate(-360deg); }
-}
 </style>

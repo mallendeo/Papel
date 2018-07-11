@@ -77,7 +77,7 @@
       </div>
 
       <span class="message" v-if="!search && !allLibs.length">
-        Nothing here yet, try adding some libraries.
+        Nothing here, yet.
       </span>
 
       <ul
@@ -474,11 +474,6 @@ button.handle {
     margin-left: .5rem;
     border-radius: .5rem;
   }
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
 
 .results {

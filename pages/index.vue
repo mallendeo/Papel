@@ -1,8 +1,11 @@
 <template>
-  <section class="container row">
+  <section class="section col">
     Papel
 
+    <loading-screen v-if="loading" />
+
     <sheet-grid
+      v-if="sheets"
       :sheets="sheets"
       :curr-page="currPage"
       :total-sheets="totalSheets"
@@ -13,15 +16,22 @@
   </section>
 </template>
 
-
 <script>
 import { mapActions, mapState } from 'vuex'
+import { getAccount, checkExt } from '../lib/nebulas'
 
+import LoadingScreen from '@/components/ui/LoadingScreen'
 import SheetGrid from '@/components/SheetGrid'
 
 export default {
-  components: { SheetGrid },
-  data: () => ({ currPage: 1 }),
+  components: {
+    SheetGrid,
+    LoadingScreen
+  },
+  data: () => ({
+    currPage: 1,
+    loading: true
+  }),
   computed: {
     ...mapState('homepage', ['sheets', 'totalSheets'])
   },
@@ -31,13 +41,33 @@ export default {
       const { username } = this
       this.currPage = page
       this.getSheets({ page })
+    },
+
+    redirect () {
+      this.$router.push('/getting-started')
     }
   },
-  mounted () {
-    this.getSheets()
+  async mounted () {
+    if (!checkExt()) return this.redirect()
+
+    try {
+      await getAccount(null, 5)
+    } catch (err) {
+      return this.redirect()
+    }
+
+    await this.getSheets()
+    this.loading = false
   }
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
+.section {
+  min-height: 100vh;
+}
+
+.sheets {
+  margin: auto;
+}
 </style>

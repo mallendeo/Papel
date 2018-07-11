@@ -11,6 +11,7 @@ export const state = () => ({
 
 export const mutations = {
   [types.HOME_SET_SHEETS] (state, response) {
+    state.sheets = response
     state.sheets = response.sheets
     state.totalSheets = response.totalSheets
     state.nextPage = response.next
@@ -23,7 +24,7 @@ export const actions = {
     page = state.page
   } = {}) {
     const response = await blockchain.listSheets(type, page)
-    console.log({ response })
     commit(types.HOME_SET_SHEETS, response)
+    return response
   }
 }

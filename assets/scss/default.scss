@@ -1,0 +1,8 @@
+body {
+  background: var(--color-dark);
+  overflow-x: hidden;
+}
+
+[data-theme="light"] body {
+  background: #f7f7f7;
+}

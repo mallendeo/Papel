@@ -25,5 +25,9 @@ export default {
 
 <style lang="scss">
 @import 'assets/scss/base';
-@import 'assets/scss/editor';
+@import 'assets/scss/editor-themes';
+
+html { overflow: hidden; }
+body { overflow-x: hidden; }
+.section { color: var(--text-light); }
 </style>
