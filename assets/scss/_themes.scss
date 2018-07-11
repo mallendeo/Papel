@@ -1,0 +1,34 @@
+body {
+  --red-hue: 344;
+  --color-error: hsl(var(--red-hue), 78%, 55%);
+
+  --color-hue: 229;
+  --color-accent: hsl(var(--color-hue), 90%, 70%);
+
+  --color: hsl(var(--color-hue), 20%, 20%);
+  --color-dark: hsl(var(--color-hue), 19%, 15%);
+  --color-darker: hsl(var(--color-hue), 19%, 12%);
+  --color-darkest: hsl(var(--color-hue), 19%, 9%);
+
+  --color-light: hsl(0, 0%, 90%);
+  --color-lighter: hsl(0, 0%, 95%);
+
+  --color-text: var(--color-light);
+  --color-text-light: var(--color-lighter);
+}
+
+[data-theme=dark] body {
+  --color-text: hsl(0, 0%, 97%);
+  --color-text-lighter: hsl(0, 0%, 70%);
+
+  --color-contrast: hsl(0, 0%, 5%);
+}
+
+[data-theme=light] body {
+  --color-bg: #f7f7f7;
+
+  background: var(--color-bg);
+
+  --color-text: hsl(0, 0%, 20%);
+  --color-text-light: hsl(0, 0%, 50%);
+}
