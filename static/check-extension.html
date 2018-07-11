@@ -2,26 +2,6 @@
 window.addEventListener('load', () => {
   if (typeof window.NasExtWallet !== 'undefined') {
     window.postMessage({ type: 'extensionloaded' }, '*')
-
-    let timeout = null
-
-    const checkAddr = () => {
-      NasExtWallet.getUserAddress(addr => {
-        if (!addr) {
-          timeout = setTimeout(checkAddr, 2000)
-          return
-        }
-
-        timeout && clearTimeout(timeout)
-
-        window.postMessage({
-          type: 'gotuseraddress',
-          payload: addr
-        }, '*')
-      })
-    }
-
-    checkAddr()
   }
-})
+}, false)
 </script>
