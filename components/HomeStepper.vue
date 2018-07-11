@@ -9,27 +9,48 @@
     </ul>
 
     <div class="steps">
-      <div class="step active" :class="{ current: step === 1 }">
+      <div class="transition step" :class="{ current: step === 1 }">
         <nebulas-logo class="icon" />
         <span class="description">Install the Nebulas wallet extension.</span>
-        <action-btn @click.native="install">
+        <action-btn v-if="step === 1" @click.native="install">
           <img src="~/assets/icons/chrome.svg" alt="Google Chrome">
           Install
         </action-btn>
       </div>
 
-      <div class="step" :class="{ active: step > 1, current: step === 2 }">
+      <div class="transition step" :class="{ current: step === 2 }">
         <wallet-icon class="icon" />
         <span class="description">Create a wallet.</span>
-        <small v-if="step === 2" class="hint">
-          We will transfer your tokens once the wallet is created.
+        <small :class="{ hide: step !== 2 }" class="transition hint">
+          <loading-indicator
+            class="transition"
+            :class="{ hide: !nasTransfer }"
+            :style="{ '--size': '1.25rem' }"
+          />
+
+          <transition mode="out-in" name="fade">
+            <span v-if="!addr">Create your wallet with the Nebulas extension on the upper-right corner.</span>
+            <span v-if="addr && nasTransfer">
+              We are now transferring you some tokens.
+              It shouldn't take more than 20 seconds.
+            </span>
+          </transition>
         </small>
       </div>
 
-      <div class="step" :class="{ active: step > 2, current: step === 3 }">
+      <div class="transition step" :class="{ current: step === 3 }">
         <user-icon class="icon" />
         <span class="description">Choose a username.</span>
-        <app-input placeholder="Choose a username" button="Create"/>
+        <app-input
+          v-model="username"
+          :class="{ hide: step !== 3 }"
+          class="transition"
+          placeholder="Choose a username"
+          button="Create"
+          ref="usernameInput"
+          @btnclick="createUser()"
+          @enter="createUser()"
+        />
       </div>
     </div>
 
@@ -43,17 +64,25 @@
 </template>
 
 <script>
+import axios from 'axios'
+import { getAccount, getAddress } from '@/lib/nebulas'
+import { mapActions } from 'vuex'
+import { contract, callback as nebCallback } from '../lib/nebConfig'
+import { asyncUntil } from '../lib/helpers'
+
 import NebulasLogo from '@/components/icons/NebulasLogo'
 import WalletIcon from '@/components/icons/WalletIcon'
 import UserIcon from '@/components/icons/UserIcon'
 
 import ActionBtn from '@/components/ui/ActionBtn'
 import AppInput from '@/components/ui/AppInput'
+import LoadingIndicator from '@/components/ui/LoadingIndicator'
 
 export default {
   components: {
     ActionBtn,
     AppInput,
+    LoadingIndicator,
     NebulasLogo,
     UserIcon,
     WalletIcon
@@ -63,38 +92,39 @@ export default {
       step: 1,
       extLink: process.env.extLink,
       addr: null,
-      showHowto: false
+      showHowto: false,
+      nasTransfer: false,
+      username: '',
+      iframeWin: null,
+      isExtInstalled: typeof window.NasExtWallet !== 'undefined'
     }
   },
   mounted () {
     this.$nextTick(this.init)
+    const { hash } = this.$route
+    const id = hash.includes('steps') && hash
+    id && document.querySelector(id).scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    })
   },
   methods: {
-    init () {
+    ...mapActions('profile', ['saveProfile', 'getProfile']),
+
+    checkExt () {
       const iframe = this.$refs['ext-iframe']
       let timeout = null
 
-      const cb = ({ data }) => {
+      const cb = async ({ data }) => {
         if (!data) return
-        if (data.type === 'extensionloaded') {
-          this.step = 2
+
+        if (data.type === 'extensionloaded' && !this.isExtInstalled) {
           if (timeout) clearTimeout(timeout)
-        }
-
-        if (data.type === 'gotuseraddress') {
-          this.addr = data.payload
+          location.reload()
         }
       }
 
-      const onLoad = () => {
-        const win = iframe.contentWindow
-
-        if (this.step > 1) return
-        timeout = setTimeout(() => win.location.reload(), 1000)
-        check()
-      }
-
-      const check = () => {
+      const checkExt = () => {
         iframe.contentWindow.removeEventListener('message', cb, false)
         iframe.contentWindow.addEventListener('message', cb, false)
 
@@ -102,27 +132,79 @@ export default {
         iframe.addEventListener('load', onLoad, false)
       }
 
-      check()
+      const onLoad = () => {
+        const win = iframe.contentWindow
+        this.iframeWin = win
+
+        if (this.step > 1) return
+        timeout = setTimeout(() => win && win.location.reload(), 1000)
+
+        checkExt()
+      }
+
+      checkExt()
     },
+
+    async checkAddr () {
+      this.addr = await getAddress(true)
+
+      if (await this.getBalance() === 0) {
+        const prod = process.env.NODE_ENV === 'production'
+        const host = 'https://claim.papel.app'
+
+        this.nasTransfer = true
+        await axios.post(`${host}/${prod ? 'mainnet' : 'testnet'}/claim/${this.addr}`)
+
+        await asyncUntil(async retry => ({
+          delay: retry > 0 ? 3000 : 15000,
+          done: await this.getBalance() > 0
+        }), 10)
+      }
+
+      this.step = 3
+    },
+
+    init () {
+      this.step = this.isExtInstalled ? 2 : 1
+      !this.isExtInstalled ? this.checkExt() : this.checkAddr()
+    },
+
+    async getBalance () {
+      const { address } = await getAccount(this.addr)
+      return address.currentBalance
+    },
+
+    async createUser (username = this.username) {
+      const input = this.$refs.usernameInput
+      if (!username) return input.showError()
+
+      if (await this.getProfile(username)) {
+        input.showError('Username is taken.')
+        return
+      }
+
+      this.saveProfile({ username })
+    },
+
     install () {
-      if (!window.chrome) {
+      this.$router.push('getting-started#steps')
+      window.open(this.extLink, '_blank')
+
+      // FIXME: Inline installs can only be initiated for
+      // Chrome Web Store items that have one or more verified sites.
+
+      /* if (!window.chrome) {
         window.open(this.extLink, '_blank')
         return
       }
 
-      chrome.webstore.install()
+      chrome.webstore.install(this.extLink) */
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.hidden {
-  width: 0; height: 0;
-  border: none;
-  position: absolute;
-}
-
 .stepper {
   --color: var(--color-text-light, #ffffff80);
   width: 100%;
@@ -145,21 +227,12 @@ export default {
 
   &.current {
     pointer-events: all;
+    opacity: 1;
+    color: var(--color-text, white);
 
     .action-btn {
       opacity: 1;
     }
-  }
-
-  &.active {
-    opacity: 1;
-    color: var(--color-text, white);
-  }
-
-  span {
-    margin-top: 2rem;
-    width: 10rem;
-    text-align: center;
   }
 }
 
@@ -175,13 +248,26 @@ export default {
 
 .description {
   min-height: 2.5rem;
+  margin-top: 2rem;
+  width: 10rem;
+  text-align: center;
 }
 
 .hint {
-  margin-top: 3rem;
-  opacity: .5;
   width: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.5rem;
+
+  font-size: .9rem;
   text-align: center;
+  opacity: .7;
+
+  .loading {
+    margin-bottom: 2rem;
+    flex: 0 0 1.25rem;
+  }
 }
 
 .video {
@@ -204,7 +290,7 @@ export default {
 }
 
 .input-wrapper {
-  margin: 3rem auto 0 auto;
+  margin: 2rem auto 0 auto;
 }
 
 .steps-num {
@@ -215,9 +301,14 @@ export default {
   font-weight: bold;
 
   li.active {
-    background: var(--color-accent);
+    transition: all .4s ease;
     color: white;
-    &.num { box-shadow: none; }
+
+    &.num {
+      background: var(--color-accent);
+      box-shadow: none;
+      transition-delay: .2s;
+    }
   }
 
   $b-size: 2px;
@@ -233,11 +324,43 @@ export default {
 
   .line {
     flex: 1;
-    border-top: $b-size solid rgba(0,0,0,.1);
+    background: rgba(0,0,0,.1);
+    height: $b-size;
+    position: relative;
 
-    &.active {
-      border-color: var(--color-accent);
+    &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0%;
+      transition: all .4s ease;
+      background: var(--color-accent);
+    }
+
+    &.active:after {
+      width: 100%;
     }
   }
+}
+
+// Helpers
+.fade-enter-active, .fade-leave-active { transition: opacity .4s; }
+.fade-enter, .fade-leave-to { opacity: 0; }
+
+.hidden {
+  width: 0; height: 0;
+  border: none;
+  position: absolute;
+}
+
+.transition {
+  transition: opacity .4s ease;
+}
+
+.hide {
+  opacity: 0;
+  pointer-events: none;
 }
 </style>
