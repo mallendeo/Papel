@@ -16,6 +16,9 @@
     align-items: center;
     justify-content: center;
   }
+
+  &--ai-center { align-items: center; }
+  &--jc-center { justify-content: center; }
 }
 
 .abs-center {

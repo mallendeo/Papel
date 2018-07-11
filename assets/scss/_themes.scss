@@ -10,8 +10,8 @@ body {
   --color-darker: hsl(var(--color-hue), 19%, 12%);
   --color-darkest: hsl(var(--color-hue), 19%, 9%);
 
-  --color-light: hsl(0, 0%, 90%);
-  --color-lighter: hsl(0, 0%, 95%);
+  --color-light: hsl(0, 0%, 95%);
+  --color-lighter: hsl(0, 0%, 75%);
 
   --color-text: var(--color-light);
   --color-text-light: var(--color-lighter);
