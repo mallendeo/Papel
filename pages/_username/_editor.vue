@@ -112,15 +112,15 @@ export default {
   },
 
   async beforeRouteLeave (to, from, next) {
-    window.removeEventListener('beforeunload', this.beforeLeaveHandler)
-
     const hash = await this.calculateHash()
 
     if (this.codeHash && hash !== this.codeHash) {
       const answer = confirm('You have unsaved changes, are you sure you want to leave?')
+      if (answer) window.removeEventListener('beforeunload', this.beforeLeaveHandler)
       return next(answer)
     }
 
+    window.removeEventListener('beforeunload', this.beforeLeaveHandler)
     next()
   },
 

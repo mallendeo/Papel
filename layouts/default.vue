@@ -71,6 +71,7 @@ export default {
 <style lang="scss" scoped>
 .header {
   padding: .8rem 2rem;
+  margin-bottom: 3rem;
   height: 4rem;
   background: var(--color-darker);
   display: flex;

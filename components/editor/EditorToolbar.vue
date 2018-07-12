@@ -26,19 +26,15 @@ $toolbar-size: 2rem;
   justify-content: space-between;
   align-items: center;
   flex: 0 0 $toolbar-size;
-
   position: relative;
 
-  //background: var(--editor-color-dark);
-  background: var(--editor-color);
-
-  transition: all .2s ease;
+  background: var(--editor-color-dark);
   color: var(--text-lighter);
-
   font-size: .75rem;
 
   cursor: row-resize;
   border-top: 1px solid var(--editor-color-dark);
+  transition: all .2s ease;
 
   &--danger {
     box-shadow: inset .125rem 0 0 var(--error-color);
