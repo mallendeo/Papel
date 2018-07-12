@@ -1,8 +1,8 @@
 module.exports = {
   mode: 'spa',
   env: {
-    contractDev: process.env.CONTRACT_DEV || 'n1tVbiJotXAa64LN3it23YooZqBh82jqUXu',
-    contractProd: process.env.CONTRACT_PROD || 'n1hy1FLTrw6uEf22Cbm4fBQKxVdHNipnGSa',
+    contractDev: process.env.CONTRACT_DEV || 'n1njgKxCCh2db19dwzFoQZBRdXmMegY4DHR',
+    contractProd: process.env.CONTRACT_PROD || 'n1rf4jfcYAwTmQBUCgNJtYd2TfqMBhhEVn4',
     mainnetUrl: 'https://mainnet.nebulas.io',
     testnetUrl: 'https://testnet.nebulas.io',
     extLink: 'https://chrome.google.com/webstore/detail/gehjkhmhclgnkkhpfamakecfgakkfkco'

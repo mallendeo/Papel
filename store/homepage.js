@@ -11,7 +11,6 @@ export const state = () => ({
 
 export const mutations = {
   [types.HOME_SET_SHEETS] (state, response) {
-    state.sheets = response
     state.sheets = response.sheets
     state.totalSheets = response.totalSheets
     state.nextPage = response.next

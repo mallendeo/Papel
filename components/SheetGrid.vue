@@ -21,6 +21,7 @@
           <p v-if="sheet.description" class="details__description">{{ sheet.description }}</p>
         </div>
       </nuxt-link>
+
       <div class="actions">
         <nuxt-link class="user-link" v-if="showAuthor" :to="`/${getUsername(sheet)}`">
           <img
@@ -157,7 +158,7 @@ export default {
 }
 
 .user-link {
-  flex: 0 0 2rem;
+  flex: 1;
   color: white;
   display: flex;
   text-decoration: none;
