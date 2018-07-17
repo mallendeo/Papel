@@ -314,7 +314,9 @@ export default {
             ...lib,
             assets: lib.assets.map(asset => ({
               ...asset,
-              files: asset.files.filter(file => !file.endsWith('map'))
+              files: asset.files.filter(file => {
+                return file.endsWith('js') || file.endsWith('css')
+              })
             }))
           })
         )

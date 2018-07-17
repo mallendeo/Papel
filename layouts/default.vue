@@ -8,22 +8,40 @@
 
       <ul class="tabs">
         <nuxt-link
-          v-for="(list, index) of ['picks', 'popular', 'public']"
-          :key="`list-${list}`"
+          v-for="list of lists"
+          :key="`list-${list.id}`"
           class="tabs__item"
           tag="li"
-          exact
-          exact-active-class="active"
-          :to="`/${index ? list : ''}`"
+          @click="currList = list"
+          active-class="active"
+          :to="list.href"
         >
-          <a>{{ list }}</a>
+          <a>
+            <img
+              v-if="list.icon"
+              :src="require(`~/assets/icons/${list.icon}`)"
+              class="tab-icon"
+            >
+            {{ list.label }}
+          </a>
         </nuxt-link>
       </ul>
 
-      <nav-btn>
-        <i class="material-icons">add</i>
-        New project
-      </nav-btn>
+      <template v-if="loggedUser">
+        <nav-btn class="header-btn" :to="`/u/${loggedUser.username}/${slug()}`">
+          <i class="material-icons">add</i>
+          New project
+        </nav-btn>
+
+        <nuxt-link :to="`/u/${loggedUser.username}/`" class="profile-btn">
+          <img
+            class="avatar"
+            :src="loggedUser.avatar
+              ? `${ipfsUrl}/${loggedUser.avatar}`
+              : require('~/assets/icons/user.svg')"
+          >
+        </nuxt-link>
+      </template>
     </div>
 
     <!-- Content -->
@@ -36,7 +54,10 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
+import shortid from 'shortid'
+
+import { IPFS_URL } from '@/lib/ipfs'
 
 import PapelLogo from '@/components/icons/PapelLogo'
 import NavBtn from '@/components/ui/NavBtn'
@@ -47,8 +68,27 @@ export default {
     NavBtn
   },
 
+  data: () => ({
+    ipfsUrl: IPFS_URL,
+    lists: [
+      { id: 'picks', label: 'Picks', icon: 'ok.svg', href: '/picks' },
+      { id: 'popular', label: 'Popular', icon: 'flame.svg', href: '/popular' },
+      { id: 'public', label: 'New', icon: 'confetti.svg', href: '/public' }
+    ]
+  }),
+
+  mounted () {
+    this.getLoggedUser().catch(console.error)
+  },
+
+  methods: {
+    ...mapActions('homepage', ['getLoggedUser']),
+    slug: () => shortid.generate()
+  },
+
   computed: {
-    ...mapState('ui', ['themeTransition'])
+    ...mapState('ui', ['themeTransition']),
+    ...mapState('homepage', ['loggedUser'])
   },
 
   head () {
@@ -73,13 +113,18 @@ export default {
   padding: .8rem 2rem;
   margin-bottom: 3rem;
   height: 4rem;
-  background: var(--color-darker);
   display: flex;
   align-items: center;
 }
 
-.logo {
+.avatar {
   width: 2rem;
+  height: 2rem;
+  margin-left: 2rem;
+}
+
+.logo {
+  width: 1.5rem;
 
   &-wrapper {
     display: flex;
@@ -89,7 +134,7 @@ export default {
   + h1 {
     margin-left: .75rem;
     font-family: 'Comfortaa', sans-serif;
-    font-size: 1.25rem;
+    font-size: 1rem;
     color: var(--color-text);
     font-weight: 400;
   }
@@ -98,7 +143,8 @@ export default {
 .tabs {
   display: flex;
   font-size: 1rem;
-  margin-left: 2rem;
+  margin-left: 4rem;
+  margin-right: auto;
 
   &__item {
     margin-right: 1rem;
@@ -107,8 +153,15 @@ export default {
     a {
       text-decoration: none;
       color: var(--color-text-light);
+      padding: 0 .25rem;
+      padding-bottom: .5rem;
     }
   }
+}
+
+.tab-icon {
+  width: .75rem;
+  margin-right: .25rem;
 }
 
 .active a {
@@ -116,13 +169,10 @@ export default {
   color: var(--color-text);
 }
 
-button.nav-btn {
-  width: auto;
-  margin-left: auto;
-  height: 2.5rem;
+.header-btn {
   font-weight: bold;
-
   [class*=icon] {
+    font-size: 1rem;
     margin-right: .5rem;
   }
 }

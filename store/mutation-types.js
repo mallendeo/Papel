@@ -27,3 +27,4 @@ export const SET_SHEET_LIST = 'SET_SHEET_LIST'
 
 // Homepage
 export const HOME_SET_SHEETS = 'HOME_SET_SHEETS'
+export const SET_LOGGED_USER = 'SET_LOGGED_USER'

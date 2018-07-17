@@ -2,9 +2,10 @@ module.exports = {
   mode: 'spa',
   env: {
     contractDev: process.env.CONTRACT_DEV || 'n1njgKxCCh2db19dwzFoQZBRdXmMegY4DHR',
-    contractProd: process.env.CONTRACT_PROD || 'n1rf4jfcYAwTmQBUCgNJtYd2TfqMBhhEVn4',
+    contractProd: process.env.CONTRACT_PROD || 'n1pt4yTCC88CzXBVMGzXU1NfekuBn8u1pzs',
     mainnetUrl: 'https://mainnet.nebulas.io',
     testnetUrl: 'https://testnet.nebulas.io',
+    useMainnet: process.env.USE_MAINNET,
     extLink: 'https://chrome.google.com/webstore/detail/gehjkhmhclgnkkhpfamakecfgakkfkco'
   },
 
@@ -38,10 +39,12 @@ module.exports = {
     background_color: '#292D3D',
     display: 'standalone'
   },
+
   meta: {
     charset: 'utf-8',
     description: 'Code Playground on the Blockchain'
   },
+
   head: {
     title: 'Code Playground on the Blockchain - Papel',
     meta: [
@@ -55,11 +58,13 @@ module.exports = {
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons|Comfortaa' }
     ]
   },
+
   loadingIndicator: {
     name: 'pulse',
     color: '#6e87f7',
     background: '#292d3d'
   },
+
   plugins: [
     '~/plugins/vue-codemirror',
     '~/plugins/vue-observe-visibility',

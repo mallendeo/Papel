@@ -10,33 +10,14 @@ import * as db from '../lib/db'
 import * as types from './mutation-types'
 import { PREPROS, THEMES, FONTS } from './constants'
 
-const tabs = [{
-  component: 'editor-save',
-  title: 'Save',
-  iconComponent: 'upload-icon',
-  classes: 'icon--small'
-}, {
-  component: 'app-editors',
-  title: 'Editor',
-  icon: 'code'
-}, {
-  component: 'smart-contract-editor',
-  title: 'Smart contract editor',
-  iconComponent: 'nebulas-logo'
-}, {
-  component: 'app-comments',
-  title: 'Comments',
-  icon: 'comment'
-}, {
-  space: true,
-  component: 'file-explorer',
-  title: 'My Files',
-  icon: 'folder'
-}, {
-  component: 'editor-settings',
-  title: 'Editor settings',
-  icon: 'settings'
-}]
+const tabs = [
+  { component: 'editor-save', title: 'Save', icon: 'cloud' },
+  { component: 'app-editors', title: 'Editor', icon: 'code' },
+  // { component: 'smart-contract-editor', title: 'Smart contract editor', iconComponent: 'nebulas-logo' },
+  { component: 'file-explorer', title: 'My Files', icon: 'folder' },
+  { space: true, component: 'app-comments', title: 'Comments', icon: 'comment' },
+  { component: 'editor-settings', title: 'Editor settings', icon: 'settings' }
+]
 
 export const state = () => ({
   cmOpts: {

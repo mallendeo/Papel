@@ -1,12 +1,14 @@
 <template>
   <div class="grid">
+    <loading-screen v-if="loading" />
+
     <div
       v-if="getUsername(sheet)"
       v-for="(sheet, index) of sheets"
       :key="`${sheet.distHash}-${index}`"
       class="grid__item col"
     >
-      <nuxt-link class="iframe-wrapper" :to="`/${getUsername(sheet)}/${sheet.slug}`">
+      <nuxt-link class="iframe-wrapper" :to="`/u/${getUsername(sheet)}/${sheet.slug}`">
         <iframe
           :src="`${ipfsUrl}/${sheet.distHash}`"
           sandbox="allow-scripts allow-pointer-lock allow-same-origin"
@@ -23,22 +25,40 @@
       </nuxt-link>
 
       <div class="actions">
-        <nuxt-link class="user-link" v-if="showAuthor" :to="`/${getUsername(sheet)}`">
-          <img
-            class="avatar"
-            :src="sheet.author.avatar
-              ? `${ipfsUrl}/${sheet.author.avatar}`
-              : require('~/assets/icons/user.svg')"
-            :alt="`User @${getUsername(sheet)}`"
-          >
+        <div class="link">
+          <nuxt-link v-if="showAuthor" :to="`/u/${getUsername(sheet)}`">
+            <img
+              class="avatar"
+              :src="sheet.author.avatar
+                ? `${ipfsUrl}/${sheet.author.avatar}`
+                : require('~/assets/icons/user.svg')"
+              :alt="`User @${getUsername(sheet)}`"
+            >
+            <img
+              v-if="sheet.author.isAdmin"
+              class="avatar__addon"
+              src="~/assets/icons/crown.svg"
+              alt="Crown"
+            >
+          </nuxt-link>
           <div class="col">
-            <span class="name">
-              {{ sheet.author.name || getUsername(sheet) }}
-            </span>
-            <span class="username">@{{ getUsername(sheet) }}</span>
-          </div>
+            <nuxt-link
+              class="title"
+              v-if="showAuthor"
+              :to="`/u/${getUsername(sheet)}/${sheet.slug}`"
+            >
+              {{ sheet.title || `A project by ${getUsername(sheet)}` }}
+            </nuxt-link>
 
-        </nuxt-link>
+            <nuxt-link
+              class="username"
+              v-if="showAuthor"
+              :to="`/u/${getUsername(sheet)}`"
+            >
+              {{ sheet.author.name }}
+            </nuxt-link>
+          </div>
+        </div>
 
         <button class="btn action-btn">
           <i class="material-icons">comment</i>
@@ -54,11 +74,11 @@
     </div>
 
     <nav class="nav" v-if="totalSheets > perPage">
-      <nav-btn @click="$emit('prev')" :disabled="!showPrevBtn">
+      <nav-btn :to="pageUrl(currPage - 1)" :disabled="!showPrevBtn">
         <i class="material-icons">arrow_back</i>
         Prev
       </nav-btn>
-      <nav-btn @click="$emit('next')" :disabled="!showNextBtn">
+      <nav-btn :icon-right="true" :to="pageUrl(currPage + 1)" :disabled="!showNextBtn">
         Next
         <i class="material-icons">arrow_forward</i>
       </nav-btn>
@@ -67,34 +87,59 @@
 </template>
 
 <script>
-import { HOST as IPFS_HOST } from '../lib/ipfs'
+import { mapState, mapActions } from 'vuex'
+import { IPFS_URL } from '../lib/ipfs'
 
+import LoadingScreen from './ui/LoadingScreen'
 import NavBtn from './ui/NavBtn'
 
 export default {
   components: {
+    LoadingScreen,
     NavBtn
+  },
+
+  data: () => ({ loading: true }),
+
+  async mounted () {
+    const { page, list: type } = this.$route.params
+    await this.getSheets({ page, type })
+    this.loading = false
   },
 
   props: {
     showAuthor: { type: Boolean, default: false },
     username: { type: String },
-    currPage: { type: Number },
     perPage: { type: Number, default: 6 },
-    totalSheets: { type: Number },
-    ipfsUrl: { type: String, default: `https://${IPFS_HOST}/ipfs` },
-    sheets: { type: Array, required: true }
+    ipfsUrl: { type: String, default: IPFS_URL }
+  },
+
+  methods: {
+    ...mapActions('homepage', ['getSheets'])
   },
 
   computed: {
+    ...mapState('homepage', ['sheets', 'totalSheets']),
+
     showPrevBtn () {
       return this.currPage > 1
     },
+
+    currPage () {
+      return Number(this.$route.params.page || 1)
+    },
+
     showNextBtn () {
       return this.currPage < this.totalSheets / this.perPage
     },
+
     getUsername () {
       return sheet => this.username || sheet.author && sheet.author.username
+    },
+
+    pageUrl () {
+      const { params: { list = 'picks' } } = this.$route
+      return page => `/${list === 'public' ? 'picks' : list}/${page || ''}`
     }
   }
 }
@@ -105,7 +150,7 @@ export default {
   width: 100%; height: 100%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 15rem) 1fr;
+  grid-template-rows: repeat(2, 16rem) 1fr;
   grid-gap: 2.5rem;
 
   &__item {
@@ -144,11 +189,30 @@ export default {
   height: 1.75rem;
   align-self: center;
   border-radius: 50%;
+
+  &__addon {
+    width: 1rem;
+    position: absolute;
+    left: .9rem;
+    bottom: 0;
+  }
 }
 
 .username,
-.name {
+.title {
+  max-width: 10rem;
   margin-left: .5rem;
+  text-decoration: none;
+  color: var(--color-text);
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  font-weight: bold;
+}
+
+.title {
+  font-size: .9rem;
 }
 
 .username {
@@ -157,10 +221,11 @@ export default {
   font-size: .8rem;
 }
 
-.user-link {
+.link {
   flex: 1;
   color: white;
   display: flex;
+  position: relative;
   text-decoration: none;
 }
 
@@ -191,13 +256,9 @@ export default {
   justify-content: space-between;
 }
 
-.nav-btn {
-  width: 40%;
-}
-
 .actions {
   display: flex;
-  margin-top: .5rem;
+  margin-top: 1rem;
   align-items: center;
 }
 

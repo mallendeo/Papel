@@ -9,7 +9,8 @@
         :type="type"
         :placeholder="placeholder"
         class="input"
-        v-on="$listeners"
+        :value="value"
+        @input="event => $emit('input', event.target.value)"
       >
       <button @click="$emit('btnclick')" v-if="button" class="input-btn">
         {{ button }}
@@ -28,6 +29,7 @@
 export default {
   props: {
     type: { default: 'text' },
+    value: {},
     placeholder: { type: String },
     button: { type: String },
     errorMsg: { type: String },

@@ -1,12 +1,14 @@
 import * as types from './mutation-types'
 import * as blockchain from '../lib/blockchain'
+import { getAddress } from '../lib/nebulas'
 
 export const state = () => ({
   sheets: [],
   sheetsType: 'public',
   totalSheets: 0,
   nextPage: false,
-  page: 1
+  page: 1,
+  loggedUser: null
 })
 
 export const mutations = {
@@ -14,6 +16,10 @@ export const mutations = {
     state.sheets = response.sheets
     state.totalSheets = response.totalSheets
     state.nextPage = response.next
+  },
+
+  [types.SET_LOGGED_USER] (state, user) {
+    state.loggedUser = user
   }
 }
 
@@ -22,8 +28,16 @@ export const actions = {
     type = state.sheetsType,
     page = state.page
   } = {}) {
+    console.log({ type, page })
     const response = await blockchain.listSheets(type, page)
     commit(types.HOME_SET_SHEETS, response)
     return response
+  },
+
+  async getLoggedUser({ commit }) {
+    const address = await getAddress()
+    const user = await blockchain.getUserByAddress(address)
+    commit(types.SET_LOGGED_USER, user)
+    return user
   }
 }

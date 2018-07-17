@@ -67,7 +67,7 @@
 import axios from 'axios'
 import { getAccount, getAddress } from '@/lib/nebulas'
 import { mapActions } from 'vuex'
-import { contract, callback as nebCallback } from '../lib/nebConfig'
+import { contract, useMainnet, callback as nebCallback } from '../lib/nebConfig'
 import { asyncUntil } from '../lib/helpers'
 
 import NebulasLogo from '@/components/icons/NebulasLogo'
@@ -149,11 +149,10 @@ export default {
       this.addr = await getAddress(true)
 
       if (await this.getBalance() === 0) {
-        const prod = process.env.NODE_ENV === 'production'
         const host = 'https://claim.papel.app'
 
         this.nasTransfer = true
-        await axios.post(`${host}/${prod ? 'mainnet' : 'testnet'}/claim/${this.addr}`)
+        await axios.post(`${host}/${useMainnet ? 'mainnet' : 'testnet'}/claim/${this.addr}`)
 
         await asyncUntil(async retry => ({
           delay: retry > 0 ? 3000 : 15000,

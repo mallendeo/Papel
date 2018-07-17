@@ -63,7 +63,6 @@
 <script>
 import PapelLogo from '../icons/PapelLogo'
 import NebulasLogo from '../icons/NebulasLogo'
-import UploadIcon from '../icons/UploadIcon'
 import NinjaIcon from '../icons/NinjaIcon'
 
 import { mapActions, mapState } from 'vuex'
@@ -73,7 +72,6 @@ export default {
   components: {
     PapelLogo,
     NebulasLogo,
-    UploadIcon,
     NinjaIcon
   },
   computed: {
