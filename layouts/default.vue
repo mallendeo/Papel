@@ -27,13 +27,18 @@
         </nuxt-link>
       </ul>
 
+      <icon-toggle
+        @click.native="toggleTheme"
+        :on="theme === 'light'"
+        :icons="['brightness_2', 'wb_sunny']"
+      />
+
       <template v-if="loggedUser">
-        <nav-btn class="header-btn" :to="`/u/${loggedUser.username}/${slug()}`">
-          <i class="material-icons">add</i>
-          New project
+        <nav-btn :to="`/${loggedUser.username}/${slug()}`">
+          Create Project
         </nav-btn>
 
-        <nuxt-link :to="`/u/${loggedUser.username}/`" class="profile-btn">
+        <nuxt-link :to="`/${loggedUser.username}/`" class="profile-btn">
           <img
             class="avatar"
             :src="loggedUser.avatar
@@ -61,18 +66,20 @@ import { IPFS_URL } from '@/lib/ipfs'
 
 import PapelLogo from '@/components/icons/PapelLogo'
 import NavBtn from '@/components/ui/NavBtn'
+import IconToggle from '@/components/ui/IconToggle'
 
 export default {
   components: {
     PapelLogo,
-    NavBtn
+    NavBtn,
+    IconToggle
   },
 
   data: () => ({
     ipfsUrl: IPFS_URL,
     lists: [
       { id: 'picks', label: 'Picks', icon: 'ok.svg', href: '/picks' },
-      { id: 'popular', label: 'Popular', icon: 'flame.svg', href: '/popular' },
+      // { id: 'popular', label: 'Popular', icon: 'flame.svg', href: '/popular' },
       { id: 'public', label: 'New', icon: 'confetti.svg', href: '/public' }
     ]
   }),
@@ -83,18 +90,19 @@ export default {
 
   methods: {
     ...mapActions('homepage', ['getLoggedUser']),
+    ...mapActions('ui', ['toggleTheme']),
     slug: () => shortid.generate()
   },
 
   computed: {
-    ...mapState('ui', ['themeTransition']),
+    ...mapState('ui', ['theme', 'themeTransition']),
     ...mapState('homepage', ['loggedUser'])
   },
 
   head () {
     return {
       htmlAttrs: {
-        'data-theme': this.currTheme,
+        'data-theme': this.theme,
         class: this.themeTransition ? 'theme-transition' : ''
       }
     }
@@ -167,13 +175,5 @@ export default {
 .active a {
   font-weight: bold;
   color: var(--color-text);
-}
-
-.header-btn {
-  font-weight: bold;
-  [class*=icon] {
-    font-size: 1rem;
-    margin-right: .5rem;
-  }
 }
 </style>

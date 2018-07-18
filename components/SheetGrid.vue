@@ -1,14 +1,12 @@
 <template>
   <div class="grid">
-    <loading-screen v-if="loading" />
-
     <div
       v-if="getUsername(sheet)"
-      v-for="(sheet, index) of sheets"
+      v-for="(sheet, index) of sheetList"
       :key="`${sheet.distHash}-${index}`"
       class="grid__item col"
     >
-      <nuxt-link class="iframe-wrapper" :to="`/u/${getUsername(sheet)}/${sheet.slug}`">
+      <nuxt-link class="iframe-wrapper" :to="`/${getUsername(sheet)}/${sheet.slug}`">
         <iframe
           :src="`${ipfsUrl}/${sheet.distHash}`"
           sandbox="allow-scripts allow-pointer-lock allow-same-origin"
@@ -26,7 +24,7 @@
 
       <div class="actions">
         <div class="link">
-          <nuxt-link v-if="showAuthor" :to="`/u/${getUsername(sheet)}`">
+          <nuxt-link v-if="showAuthor" :to="`/${getUsername(sheet)}`">
             <img
               class="avatar"
               :src="sheet.author.avatar
@@ -44,8 +42,7 @@
           <div class="col">
             <nuxt-link
               class="title"
-              v-if="showAuthor"
-              :to="`/u/${getUsername(sheet)}/${sheet.slug}`"
+              :to="`/${getUsername(sheet)}/${sheet.slug}`"
             >
               {{ sheet.title || `A project by ${getUsername(sheet)}` }}
             </nuxt-link>
@@ -53,7 +50,7 @@
             <nuxt-link
               class="username"
               v-if="showAuthor"
-              :to="`/u/${getUsername(sheet)}`"
+              :to="`/${getUsername(sheet)}`"
             >
               {{ sheet.author.name }}
             </nuxt-link>
@@ -99,12 +96,15 @@ export default {
     NavBtn
   },
 
-  data: () => ({ loading: true }),
-
   async mounted () {
     const { page, list: type } = this.$route.params
-    await this.getSheets({ page, type })
-    this.loading = false
+    const { username } = this
+
+    if (username) {
+      console.log(await this.getUserSheets({ username, page }))
+    } else {
+      await this.getSheets({ page, type })
+    }
   },
 
   props: {
@@ -115,11 +115,21 @@ export default {
   },
 
   methods: {
+    ...mapActions('profile', ['getUserSheets']),
     ...mapActions('homepage', ['getSheets'])
   },
 
   computed: {
+    ...mapState('profile', ['userSheets', 'totalUserSheets']),
     ...mapState('homepage', ['sheets', 'totalSheets']),
+
+    sheetList () {
+      const profile = this.userSheets && this.userSheets.length
+
+      return profile && this.username
+        ? this.userSheets
+        : this.sheets
+    },
 
     showPrevBtn () {
       return this.currPage > 1

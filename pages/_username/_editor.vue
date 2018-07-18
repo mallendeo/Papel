@@ -53,11 +53,11 @@
         class="preview__iframe"
         :style="{ background: editors.css.iframeBg }"
       ></iframe>
-      <!--<div v-if="htmlErr || cssErr || jsErr" class="error-box">
-        <span v-if="htmlErr">{{ htmlErr }}</span>
-        <span v-if="cssErr">{{ cssErr }}</span>
-        <span v-if="jsErr">{{ jsErr }}</span>
-      </div>-->
+      <div v-if="errors" class="error-box">
+        <span v-if="errors.html">{{ errors.html }}</span>
+        <span v-if="errors.css">{{ errors.css }}</span>
+        <span v-if="errors.js">{{ errors.js }}</span>
+      </div>
     </div>
   </section>
 </template>
@@ -68,7 +68,6 @@ import { mapState, mapActions } from 'vuex'
 // Polyfill for Safari
 import 'intersection-observer'
 
-import shortid from 'shortid'
 import Split from 'split.js'
 
 import TransformWorker from '~/assets/transform.worker.js'
@@ -125,12 +124,14 @@ export default {
   },
 
   data () {
+    const { slug } = this.$route.params
+
     return {
       unsubscribeStore: null,
       saveKey: false,
       saveTimeout: null,
       isLoaded: false,
-      slug: this.$route.params.editor
+      slug
     }
   },
 
@@ -138,6 +139,19 @@ export default {
     ...mapState('editor', ['editors', 'code', 'ui']),
     ...mapState('ui', ['zenMode']),
     ...mapState('sheet', ['codeHash']),
+
+    errors () {
+      const { html, css, js } = this.editors
+      if (html.error || css.error || js.error) {
+        return {
+          html: html.error,
+          css: css.error,
+          js: js.error
+        }
+      }
+
+      return null
+    },
 
     previewUrl () {
       const mode = this.refreshAll ? 'preview' : 'livereload'
@@ -314,6 +328,7 @@ export default {
         if (!navigator.onLine) throw Error(`You're offline`)
         await this.loadFromNebulas(this.slug)
       } catch (err) {
+        console.log('slug', this.$route)
         if (await this.loadFromLocal(this.slug)) {
           const msg = navigator.onLine
             ? `There was an error trying to load ${this.slug}`

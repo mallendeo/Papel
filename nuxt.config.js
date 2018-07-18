@@ -73,6 +73,40 @@ module.exports = {
     '~/plugins/vue-notifications'
   ],
 
+  router: {
+    extendRoutes (routes, resolve) {
+      const home = resolve(__dirname, 'pages/index.vue')
+      const profile = resolve(__dirname, 'pages/_username/index.vue')
+      const editor = resolve(__dirname, 'pages/_username/_editor.vue')
+
+      // Workaround for dynamic routes like:
+      // -- /user/project
+      // -- /popular/12
+      // -- /user/private/2
+
+      routes.splice(0, routes.length)
+      routes.push(
+        {
+          name: 'getting-started',
+          path: '/getting-started',
+          component: resolve(__dirname, 'pages/getting-started.vue')
+        },
+
+        { name: 'home', path: '/', component: home },
+        { name: 'home-picks', path: '/picks/:page?', component: home },
+        // { name: 'home-popular', path: '/popular/:page?', component: home },
+        { name: 'home-public', path: '/public/:page?', component: home },
+
+        { name: 'profile', path: '/:username', component: profile },
+        // { name: 'profile-popular', path: '/:username/popular/:page?', component: profile },
+        // { name: 'profile-public', path: '/:username/public/:page?', component: profile },
+        // { name: 'profile-private', path: '/:username/private/:page?', component: profile },
+
+        { name: 'editor', path: '/:username/:slug', component: editor }
+      )
+    }
+  },
+
   build: {
     postcss: [
       require('postcss-cssnext')({

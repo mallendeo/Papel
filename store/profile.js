@@ -3,8 +3,8 @@ import * as blockchain from '../lib/blockchain'
 
 export const state = () => ({
   userProfile: {},
-  sheets: [],
-  totalSheets: 0
+  userSheets: [],
+  totalUserSheets: 0
 })
 
 export const mutations = {
@@ -13,8 +13,8 @@ export const mutations = {
   },
 
   [types.SET_SHEET_LIST] (state, { results, total }) {
-    state.sheets = results
-    state.totalSheets = total
+    state.userSheets = results
+    state.totalUserSheets = total
   }
 }
 
@@ -31,6 +31,7 @@ export const actions = {
   async getUserSheets ({ commit }, { username, page = 1 }) {
     const sheets = await blockchain.getUserSheets(username, page)
     commit(types.SET_SHEET_LIST, sheets)
+    return sheets
   },
 
   async saveProfile ({}, user) {
