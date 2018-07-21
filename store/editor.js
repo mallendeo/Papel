@@ -14,8 +14,8 @@ const tabs = [
   { component: 'editor-save', title: 'Save', icon: 'cloud' },
   { component: 'app-editors', title: 'Editor', icon: 'code' },
   // { component: 'smart-contract-editor', title: 'Smart contract editor', iconComponent: 'nebulas-logo' },
-  { component: 'file-explorer', title: 'My Files', icon: 'folder' },
-  { space: true, component: 'app-comments', title: 'Comments', icon: 'comment' },
+  { space: true, component: 'file-explorer', title: 'My Files', icon: 'folder' },
+  // { space: true, component: 'app-comments', title: 'Comments', icon: 'comment' },
   { component: 'editor-settings', title: 'Editor settings', icon: 'settings' }
 ]
 

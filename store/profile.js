@@ -19,7 +19,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async getProfile ({ dispatch, commit }, username) {
+  async getProfile ({ commit }, username) {
     try {
       const profile = await blockchain.getProfile(username)
       commit(types.SET_USER_PROFILE, profile)
@@ -32,6 +32,10 @@ export const actions = {
     const sheets = await blockchain.getUserSheets(username, page)
     commit(types.SET_SHEET_LIST, sheets)
     return sheets
+  },
+
+  async getUserByAddress ({}, addr) {
+    return blockchain.getUserByAddress(addr)
   },
 
   async saveProfile ({}, user) {

@@ -86,6 +86,7 @@ module.exports = {
       const home = resolve(__dirname, 'pages/index.vue')
       const profile = resolve(__dirname, 'pages/_username/index.vue')
       const editor = resolve(__dirname, 'pages/_username/_editor.vue')
+      const profileSettings = resolve(__dirname, 'pages/_username/edit.vue')
 
       // Workaround for dynamic routes like:
       // -- /user/project
@@ -106,6 +107,7 @@ module.exports = {
         { name: 'home-public', path: '/public/:page?', component: home },
 
         { name: 'profile', path: '/:username', component: profile },
+        { name: 'profile-settings', path: '/:username/edit', component: profileSettings },
         // { name: 'profile-popular', path: '/:username/popular/:page?', component: profile },
         // { name: 'profile-public', path: '/:username/public/:page?', component: profile },
         // { name: 'profile-private', path: '/:username/private/:page?', component: profile },

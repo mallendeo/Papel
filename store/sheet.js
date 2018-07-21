@@ -1,11 +1,12 @@
 import pick from 'lodash/pick'
 import { sha256 } from 'js-sha256'
+import { getField, updateField } from 'vuex-map-fields'
 
 import * as types from './mutation-types'
 import * as ipfs from '../lib/ipfs'
 import * as blockchain from '../lib/blockchain'
 import * as db from '../lib/db'
-import { generateHTML} from '../lib/helpers'
+import { generateHTML } from '../lib/helpers'
 
 export const state = () => ({
   title: 'A Papel Project',
@@ -18,10 +19,13 @@ export const state = () => ({
   codeHash: '',
 
   // IPFS files hashes
-  hashes: []
+  hashes: [],
+  rootIpfsHash: null
 })
 
 export const getters = {
+  getField,
+
   latestHash (state) {
     const root = state.hashes.find(h => !h.path)
     const dist = state.hashes.find(h => h.path === 'dist')
@@ -49,6 +53,8 @@ export const getters = {
 }
 
 export const mutations = {
+  updateField,
+
   [types.SHEET_SET_TXHASH] (state, hash) {
     state.currTxHash = hash
   },
@@ -59,6 +65,10 @@ export const mutations = {
 
   [types.SHEET_SET_IPFS_HASHES] (state, hashes) {
     state.hashes = hashes
+  },
+
+  [types.SHEET_SET_ROOT_IPFS_HASH] (state, rootHash) {
+    state.rootIpfsHash = rootHash
   },
 
   [types.SHEET_SET_HASH] (state, hash) {
@@ -108,8 +118,11 @@ export const actions = {
     return saved && dispatch('updateFromSave', { code, compiled, opts })
   },
 
-  async loadFromNebulas ({ dispatch }, slug) {
+  async loadFromNebulas ({ dispatch, commit }, slug) {
     const { rootHash } = await blockchain.getSheet(slug)
+
+    commit(types.SHEET_SET_ROOT_IPFS_HASH, rootHash)
+
     const opts = await ipfs.getContent(`${rootHash}/config.json`, { parse: true })
     const allCode = await ipfs.getContent(`${rootHash}/code.json`, {
       parse: true
@@ -128,7 +141,8 @@ export const actions = {
     const { latestHash } = getters
     const data = {
       isPublic: state.isPublic,
-
+      title: state.title,
+      description: state.description,
       rootHash: latestHash.root,
       distHash: latestHash.dist
     }
