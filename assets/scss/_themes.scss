@@ -3,7 +3,7 @@ body {
   --color-error: hsl(var(--red-hue), 78%, 55%);
 
   --color-hue: 229;
-  --color-accent: hsl(var(--color-hue), 90%, 70%);
+  --color-accent: hsl(var(--color-hue), 94%, 67%);
 
   --color: hsl(var(--color-hue), 20%, 20%);
   --color-dark: hsl(var(--color-hue), 19%, 15%);
@@ -21,7 +21,7 @@ body {
   --color-text: hsl(0, 0%, 97%);
   --color-text-lighter: hsl(0, 0%, 70%);
 
-  --color-contrast: hsl(0, 0%, 5%);
+  --color-contrast: hsl(var(--color-hue), 19%, 10%);
   --color-shade: var(--color-darker);
 }
 
