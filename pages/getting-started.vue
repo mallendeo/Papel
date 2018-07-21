@@ -26,7 +26,7 @@
 
         <h2 class="hero__subtitle">A Code Playground on <br>the Blockchain.</h2>
 
-        <action-btn>Start Coding!</action-btn>
+        <action-btn @click.native="scrollTo('#steps')">Start Coding!</action-btn>
 
         <div class="p-wrapper">
           <p v-if="!extInstalled" class="hero__description">

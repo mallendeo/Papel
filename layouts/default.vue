@@ -1,10 +1,10 @@
 <template>
   <section>
     <div class="header">
-      <div class="logo-wrapper">
+      <nuxt-link to="/" class="logo-wrapper">
         <papel-logo class="logo" />
         <h1>Papel</h1>
-      </div>
+      </nuxt-link>
 
       <ul class="tabs">
         <nuxt-link
@@ -134,10 +134,10 @@ export default {
 <style lang="scss" scoped>
 .header {
   padding: .8rem 2rem;
-  margin-bottom: 3rem;
   height: 4rem;
   display: flex;
   align-items: center;
+  background: var(--color-contrast);
 }
 
 .avatar {
@@ -152,6 +152,7 @@ export default {
   &-wrapper {
     display: flex;
     align-items: center;
+    text-decoration: none;
   }
 
   + h1 {

@@ -60,7 +60,7 @@ export default {
 }
 
 .nav-btn, .nav-btn /deep/ {
-  font-size: 1.1rem;
+  font-size: 1rem;
   .material-icons {
     font-size: 1rem;
     margin-right: .5rem;

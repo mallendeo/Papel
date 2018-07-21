@@ -17,3 +17,10 @@ export default {
   middleware: 'check-extension'
 }
 </script>
+
+<style scoped>
+.grid {
+  margin-top: 3rem;
+}
+</style>
+

@@ -10,9 +10,15 @@
         :placeholder="placeholder"
         class="input"
         :value="value"
+        :disabled="disabled"
         @input="event => $emit('input', event.target.value)"
       >
-      <button @click="$emit('btnclick')" v-if="button" class="input-btn">
+      <button
+        @click="$emit('btnclick')"
+        v-if="button"
+        class="input-btn"
+        :disabled="disabled"
+      >
         {{ button }}
       </button>
     </div>
@@ -30,6 +36,7 @@ export default {
   props: {
     type: { default: 'text' },
     value: {},
+    disabled: { type: Boolean },
     placeholder: { type: String },
     button: { type: String },
     errorMsg: { type: String },
@@ -132,6 +139,11 @@ export default {
 
   &:hover {
     background: var(--color-accent);
+  }
+
+  &:disabled {
+    background: transparent;
+    cursor: not-allowed;
   }
 }
 </style>

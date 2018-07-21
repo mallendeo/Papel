@@ -186,7 +186,7 @@ export default {
     margin-left: auto;
     padding: .75rem 2rem;
     height: auto;
-    color: var(--color-text-lighter);
+    color: var(--color-text);
 
     &:hover {
       background: var(--color-editor-accent);

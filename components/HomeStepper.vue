@@ -40,17 +40,36 @@
 
       <div class="transition step" :class="{ current: step === 3 }">
         <user-icon class="icon" />
-        <span class="description">Choose a username.</span>
-        <app-input
-          v-model="username"
-          :class="{ hide: step !== 3 }"
-          class="transition"
-          placeholder="Choose a username"
-          button="Create"
-          ref="usernameInput"
-          @btnclick="createUser()"
-          @enter="createUser()"
-        />
+
+        <transition name="fade" mode="out-in">
+          <span :key="user && user.username" class="description">
+            {{ user ? `Hi ${user.username}!` : 'Choose a username.' }}
+          </span>
+        </transition>
+
+        <action-btn
+          class="home-btn"
+          v-if="user"
+          @click.native="$router.push('/')"
+        >
+          Go to the app
+        </action-btn>
+
+        <transition name="fade">
+          <div v-if="showInput">
+            <app-input
+              v-model="username"
+              :class="{ hide: step !== 3 }"
+              class="transition"
+              placeholder="Choose a username"
+              button="Create"
+              :disabled="fetching"
+              ref="usernameInput"
+              @btnclick="createUser()"
+              @enter="createUser()"
+            />
+          </div>
+        </transition>
       </div>
     </div>
 
@@ -87,18 +106,23 @@ export default {
     UserIcon,
     WalletIcon
   },
+
   data () {
     return {
       step: 1,
       extLink: process.env.extLink,
       addr: null,
+      fetching: false,
       showHowto: false,
+      showInput: false,
       nasTransfer: false,
       username: '',
+      user: null,
       iframeWin: null,
       isExtInstalled: typeof window.NasExtWallet !== 'undefined'
     }
   },
+
   mounted () {
     this.$nextTick(this.init)
     const { hash } = this.$route
@@ -108,8 +132,16 @@ export default {
       block: 'start'
     })
   },
+
   methods: {
-    ...mapActions('profile', ['saveProfile', 'getProfile']),
+    ...mapActions('profile', ['saveProfile', 'getProfile', 'getUserByAddress']),
+
+    async init () {
+      this.step = this.isExtInstalled ? 2 : 1
+      if (!this.isExtInstalled) return this.checkExt()
+      await this.checkAddr()
+      this.checkUsername()
+    },
 
     checkExt () {
       const iframe = this.$refs['ext-iframe']
@@ -163,9 +195,14 @@ export default {
       this.step = 3
     },
 
-    init () {
-      this.step = this.isExtInstalled ? 2 : 1
-      !this.isExtInstalled ? this.checkExt() : this.checkAddr()
+    async checkUsername () {
+      try {
+        const user = await this.getUserByAddress(this.addr)
+        this.user = user
+        if (!user.username) this.showInput = true
+      } catch (err) {
+        this.showInput = true
+      }
     },
 
     async getBalance () {
@@ -177,12 +214,16 @@ export default {
       const input = this.$refs.usernameInput
       if (!username) return input.showError()
 
+      this.fetching = true
       if (await this.getProfile(username)) {
         input.showError('Username is taken.')
+        this.fetching = false
         return
       }
 
-      this.saveProfile({ username })
+      await this.saveProfile({ username })
+      this.user = { username }
+      this.showInput = false
     },
 
     install () {
@@ -357,5 +398,10 @@ export default {
 .hide {
   opacity: 0;
   pointer-events: none;
+}
+
+.home-btn {
+  margin-top: 1rem;
+  animation: fade-in .4s .4s ease both;
 }
 </style>

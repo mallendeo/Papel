@@ -41,6 +41,7 @@
               alt="Crown"
             >
           </nuxt-link>
+
           <div class="col">
             <nuxt-link
               class="title"
@@ -54,7 +55,7 @@
               v-if="showAuthor"
               :to="`/${getUsername(sheet)}`"
             >
-              {{ sheet.author.name }}
+              {{ sheet.author.name || sheet.author.username }}
             </nuxt-link>
           </div>
         </div>
@@ -131,10 +132,8 @@ export default {
     ...mapState('homepage', ['sheets', 'totalSheets']),
 
     sheetList () {
-      const profile = this.userSheets && this.userSheets.length
-
-      return profile && this.username
-        ? this.userSheets
+      return this.username
+        ? this.userSheets || []
         : this.sheets
     },
 
@@ -184,7 +183,7 @@ export default {
   top: 0; left: 0;
   width: 100%; height: 100%;
   padding: 1rem;
-  background: var(--color);
+  background: var(--color-shade);
   transition: all .2s ease;
   opacity: 0;
   color: var(--color-text);

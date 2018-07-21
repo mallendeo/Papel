@@ -193,11 +193,11 @@ export default {
     border-radius: .25rem;
     cursor: pointer;
 
-    span { opacity: .5; }
+    button { opacity: 0; }
 
     &:hover {
       background: var(--color-editor-light);
-      span { opacity: 1; }
+      button { opacity: 1; }
     }
 
     .material-icons {

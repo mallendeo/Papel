@@ -59,7 +59,7 @@ $height: 1.5rem;
   position: absolute;
   border-radius: $height / 2;
   left: 0;
-  background: var(--thumb-bg, #708AF4);
+  background: var(--thumb-bg, var(--color-accent));
   transition: transform .2s ease;
 }
 </style>

@@ -1,48 +1,29 @@
 <template>
   <section class="section">
     <h1>Save</h1>
+    Private <input type="checkbox">
 
-    Dist {{ latestHash.dist }}
-    <a :href="`https://ipfs.infura.io/ipfs/${latestHash.dist}`" target="_blank">go</a>
-    <br>
-    Config {{ latestHash.root }}
-    <a :href="`https://ipfs.infura.io/ipfs/${latestHash.root}`" target="_blank">go</a>
-    <br>
-
+    <a
+      v-if="rootIpfsHash"
+      :href="`https://ipfs.infura.io/ipfs/${rootIpfsHash}/dist`"
+      target="_blank"
+    >Preview</a>
 
     <input placeholder="Untitled Project" type="text">
     <br>
     <textarea placeholder="Description" cols="30" rows="10"></textarea>
     <br>
-    <input placeholder="Tags" type="text">
-    <br>
-    Private <input type="checkbox">
 
-    <br>
-    <br>
-    <h4>Deploy</h4>
-    Url: https://<input type="text">.papel.app
-    <button>Deploy</button>
-
-    <br>
-    <br>
-    <h4>History</h4>
-    <ul>
-      <li>now - Current progress (Local)</li>
-      <li>30 min ago - Add animation <button>load</button></li>
-      <li>34 min ago - Create svg logo <button>load</button></li>
-    </ul>
-
-    <br>
     <button>Save</button>
   </section>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
+
 export default {
   computed: {
-    ...mapGetters('sheet', ['latestHash'])
+    ...mapState('sheet', ['rootIpfsHash'])
   }
 }
 </script>

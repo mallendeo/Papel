@@ -292,7 +292,7 @@ export default {
     height: 70%;
 
     &--colored {
-      color: var(--color-text-light);
+      color: white;
       background: var(--color-editor-accent);
     }
 
