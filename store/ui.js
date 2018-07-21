@@ -1,11 +1,12 @@
 import * as types from './mutation-types'
 import { getField, updateField } from 'vuex-map-fields'
+import * as db from '../lib/db'
 
 const TRANSITION_DURATION = 0.3
 
 export const state = () => ({
   themeTransition: false,
-  theme: 'dark',
+  theme: db.get('ui.theme') || 'dark',
   zenMode: false
 })
 
@@ -30,13 +31,10 @@ export const mutations = {
 export const actions = {
   toggleTheme ({ dispatch, commit, state }) {
     dispatch('setThemeTransition')
+    const theme = state.theme === 'dark' ? 'light' : 'dark'
+    commit(types.SET_THEME, theme)
 
-    if (state.theme === 'dark') {
-      commit(types.SET_THEME, 'light')
-      return
-    }
-
-    commit(types.SET_THEME, 'dark')
+    db.set('ui.theme', theme)
   },
 
   setThemeTransition ({ commit }) {

@@ -45,3 +45,8 @@ button {
     transition: background .2s ease;
   }
 }
+
+
+// Transition helpers
+.fade-enter-active, .fade-leave-active { transition: opacity .4s; }
+.fade-enter, .fade-leave-to { opacity: 0; }

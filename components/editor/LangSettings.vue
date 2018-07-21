@@ -93,7 +93,7 @@ export default {
     border-radius: .25rem;
     &-gutters { display: none; }
     &-empty {
-      color: var(--text-lighter);
+      color: var(--color-text-lighter);
     }
   }
 }
@@ -115,14 +115,14 @@ label {
 .form-control {
   outline: none;
   padding: .5rem 0;
-  background: var(--editor-color);
+  background: var(--color-editor);
   border: none;
   font-size: .8rem;
 
-  color: var(--text-light);
+  color: var(--color-text-light);
 
   &::placeholder {
-    color: var(--text-lighter);
+    color: var(--color-text-lighter);
   }
 }
 </style>

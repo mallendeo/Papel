@@ -17,11 +17,11 @@
           :to="list.href"
         >
           <a>
-            <img
+            <component
               v-if="list.icon"
-              :src="require(`~/assets/icons/${list.icon}`)"
               class="tab-icon"
-            >
+              :is="list.icon"
+            />
             {{ list.label }}
           </a>
         </nuxt-link>
@@ -33,8 +33,16 @@
         :icons="['brightness_2', 'wb_sunny']"
       />
 
+      <nav-btn
+        :shadow="true"
+        v-if="loaded && !loggedUser"
+        :to="`/getting-started#steps`"
+      >
+        Create User
+      </nav-btn>
+
       <template v-if="loggedUser">
-        <nav-btn :to="`/${loggedUser.username}/${slug()}`">
+        <nav-btn :shadow="true" :to="`/${loggedUser.username}/${slug()}`">
           Create Project
         </nav-btn>
 
@@ -68,24 +76,31 @@ import PapelLogo from '@/components/icons/PapelLogo'
 import NavBtn from '@/components/ui/NavBtn'
 import IconToggle from '@/components/ui/IconToggle'
 
+import ConfettiIcon from '@/components/icons/ConfettiIcon'
+import OkIcon from '@/components/icons/OkIcon'
+
 export default {
   components: {
     PapelLogo,
     NavBtn,
-    IconToggle
+    IconToggle,
+    ConfettiIcon,
+    OkIcon
   },
 
   data: () => ({
     ipfsUrl: IPFS_URL,
+    loaded: false,
     lists: [
-      { id: 'picks', label: 'Picks', icon: 'ok.svg', href: '/picks' },
-      // { id: 'popular', label: 'Popular', icon: 'flame.svg', href: '/popular' },
-      { id: 'public', label: 'New', icon: 'confetti.svg', href: '/public' }
+      { id: 'picks', label: 'Picks', icon: 'ok-icon', href: '/picks' },
+      // { id: 'popular', label: 'Popular', icon: 'flame-icon', href: '/popular' },
+      { id: 'public', label: 'New', icon: 'confetti-icon', href: '/public' }
     ]
   }),
 
-  mounted () {
-    this.getLoggedUser().catch(console.error)
+  async mounted () {
+    await this.getLoggedUser().catch(console.error)
+    this.loaded = true
   },
 
   methods: {
@@ -132,7 +147,7 @@ export default {
 }
 
 .logo {
-  width: 1.5rem;
+  width: 1.8rem;
 
   &-wrapper {
     display: flex;
@@ -141,8 +156,8 @@ export default {
 
   + h1 {
     margin-left: .75rem;
-    font-family: 'Comfortaa', sans-serif;
-    font-size: 1rem;
+    font-family: 'Raleway', sans-serif;
+    font-size: 1.25rem;
     color: var(--color-text);
     font-weight: 400;
   }
@@ -175,5 +190,9 @@ export default {
 .active a {
   font-weight: bold;
   color: var(--color-text);
+}
+
+.toggle {
+  margin-right: 2rem;
 }
 </style>

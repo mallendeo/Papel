@@ -4,7 +4,7 @@
       v-if="to"
       v-on="$listeners"
       class="btn row row--ai-center nav-btn"
-      :class="{ disabled }"
+      :class="{ disabled, shadow }"
       :to="to"
     >
       <slot />
@@ -26,6 +26,7 @@ export default {
   props: {
     to: { type: String },
     disabled: { type: Boolean },
+    shadow: { type: Boolean },
     iconRight: { type: Boolean, default: false }
   }
 }
@@ -36,18 +37,26 @@ export default {
 .nav-btn {
   padding: .5rem 1rem;
   border-radius: .25rem;
-  background: var(--color);
-  color: var(--color-light);
+  background: var(--color-shade);
+  color: var(--color-text);
   text-decoration: none;
 
   &:hover {
     background: var(--color-accent);
+    color: white;
   }
 
   &:disabled, &.disabled {
     pointer-events: none;
     opacity: .25;
   }
+}
+
+[data-theme=light] .shadow {
+  box-shadow: var(
+    --shadow,
+    0 .25rem .75rem -.25rem var(--shadow-color, rgba(0,0,0,.2))
+  );
 }
 
 .nav-btn, .nav-btn /deep/ {

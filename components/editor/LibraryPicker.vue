@@ -358,10 +358,10 @@ export default {
 
 .btn-back {
   height: 100%;
-  color: var(--text-lighter);
+  color: var(--color-text-lighter);
   margin-right: .5rem;
   outline: none;
-  &:focus { background: var(--editor-color-dark); }
+  &:focus { background: var(--color-editor-dark); }
   i { font-size: 1.25rem; }
 }
 
@@ -381,14 +381,14 @@ export default {
 
   /deep/ {
     .label, select {
-      color: var(--text-light);
+      color: var(--color-text-light);
       flex: 1;
       text-align: left;
     }
 
     .label {
       font-weight: bold;
-      color: var(--text-lighter);
+      color: var(--color-text-lighter);
     }
 
     select {
@@ -403,7 +403,7 @@ export default {
 
     .btn--danger {
       &:hover {
-        background: var(--error-color);
+        background: var(--color-error);
       }
     }
   }
@@ -411,7 +411,7 @@ export default {
 
 button.handle {
   cursor: row-resize;
-  color: var(--text-light);
+  color: var(--color-text-light);
 }
 
 .picks {
@@ -420,7 +420,7 @@ button.handle {
   .results__item {
     transition: all .2s ease;
     justify-content: space-between;
-    * { color: var(--text-light); }
+    * { color: var(--color-text-light); }
     *:first-child { margin-right: auto; }
   }
 }
@@ -448,17 +448,17 @@ button.handle {
   padding-left: .5rem;
   appearance: none;
   border: none;
-  box-shadow: 0 .5rem 3rem var(--editor-color-dark);
-  color: var(--text-light);
+  box-shadow: 0 .5rem 3rem var(--color-editor-dark);
+  color: var(--color-text-light);
   font-size: .8rem;
   transition: all .2s ease;
-  background: var(--editor-color);
+  background: var(--color-editor);
   padding-left: 2rem;
   flex: 1;
 
   &:focus { outline: none; }
 
-  &::placeholder { color: var(--text-lighter); }
+  &::placeholder { color: var(--color-text-lighter); }
 
   &__wrapper {
     display: flex;
@@ -469,9 +469,9 @@ button.handle {
   }
 
   &__btn {
-    color: var(--text-light);
+    color: var(--color-text-light);
     font-weight: bold;
-    background: var(--editor-color-accent);
+    background: var(--color-editor-accent);
     padding: .9rem;
     margin-left: .5rem;
     border-radius: .5rem;
@@ -488,7 +488,7 @@ button.handle {
       content: '';
       @extend %abs-center;
       color: white;
-      border: .125rem solid var(--editor-color-accent);
+      border: .125rem solid var(--color-editor-accent);
       border-radius: 50%;
       border-top-color: transparent;
       border-right-color: transparent;
@@ -504,14 +504,14 @@ button.handle {
 
   &__item {
     font-size: .75rem;
-    color: var(--text-light);
+    color: var(--color-text-light);
     position: relative;
     cursor: pointer;
 
     span { opacity: .5; }
 
     &:hover {
-      background: var(--editor-color);
+      background: var(--color-editor);
       span { opacity: 1; }
     }
   }

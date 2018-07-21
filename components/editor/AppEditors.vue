@@ -65,7 +65,7 @@
           @change="lang => setEditorLang(type, lang)"
         />
 
-        <app-dropdown v-if="type !== 'js'" icon="settings">
+        <app-dropdown v-if="type === 'html'" icon="settings">
           <lang-settings :lang="type" />
         </app-dropdown>
 
@@ -273,7 +273,7 @@ export default {
 .editors {
   height: 100%;
   position: relative;
-  background: var(--editor-color);
+  background: var(--color-editor);
 }
 
 .cm-editor--opaque { opacity: .5 }
@@ -292,8 +292,8 @@ export default {
     height: 70%;
 
     &--colored {
-      color: var(--text-light);
-      background: var(--editor-color-accent);
+      color: var(--color-text-light);
+      background: var(--color-editor-accent);
     }
 
     i { font-size: 1rem; }

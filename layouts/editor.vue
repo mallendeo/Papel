@@ -29,5 +29,5 @@ export default {
 
 html { overflow: hidden; }
 body { overflow-x: hidden; }
-.section { color: var(--text-light); }
+.section { color: var(--color-text-light); }
 </style>

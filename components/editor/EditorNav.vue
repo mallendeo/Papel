@@ -51,12 +51,12 @@
       <ninja-icon class="icon--small" />
     </button>
 
-    <button
+    <!--<button
       title="More"
       class="btn"
     >
       <i class="material-icons">more_horiz</i>
-    </button>
+    </button>-->
   </nav>
 </template>
 
@@ -90,12 +90,12 @@ export default {
 }
 
 .brand {
-  font-family: 'Comfortaa', sans-serif;
+  font-family: 'Raleway', sans-serif;
   font-size: .8rem;
   margin-left: 1rem;
   margin-right: 2rem;
   font-weight: 400;
-  color: var(--logo-text);
+  color: var(--color-logo-text);
 
   &__logo {
     margin-right: .5rem;
@@ -105,8 +105,8 @@ export default {
 
 .nav {
   flex: 0 0 3rem;
-  background: var(--editor-color-dark);
-  color: var(--text-light);
+  background: var(--color-editor-dark);
+  color: var(--color-text-light);
   align-items: center;
 
   &--col {
@@ -137,7 +137,7 @@ export default {
 // FIXME:
 .btn-ninja.btn--active {
   color: #333;
-  background: var(--warning-color);
+  background: var(--color-warning);
   box-shadow: none;
 }
 

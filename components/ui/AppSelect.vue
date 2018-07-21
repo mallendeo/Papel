@@ -95,12 +95,12 @@ export default {
   }
 
   span {
-    color: var(--text-lighter);
+    color: var(--color-text-lighter);
     padding-left: none;
   }
 
   .material-icons {
-    color: hsl(var(--editor-hue), 10%, 30%);
+    color: hsl(var(--color-hue), 10%, 30%);
     margin-left: auto;
   }
 }
@@ -110,8 +110,8 @@ export default {
   display: flex;
   flex-direction: column;
   min-width: 8rem;
-  background: var(--editor-color-dark);
-  color: var(--text-light);
+  background: var(--color-editor-dark);
+  color: var(--color-text-light);
   z-index: 10;
 
   pointer-events: none;
@@ -138,8 +138,8 @@ export default {
     transition: all .1s ease;
     display: flex;
 
-    &:hover { background: var(--editor-color) }
-    &--active { border-left-color: var(--editor-color-accent) }
+    &:hover { background: var(--color-editor) }
+    &--active { border-left-color: var(--color-editor-accent) }
     &--disabled {
       opacity: .5;
       pointer-events: none;

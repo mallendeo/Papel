@@ -177,7 +177,7 @@ export default {
 
 .btn {
   height: 2rem;
-  background: var(--editor-color-dark);
+  background: var(--color-editor-dark);
   border-radius: .25rem;
   font-size: 1rem;
 
@@ -186,11 +186,11 @@ export default {
     margin-left: auto;
     padding: .75rem 2rem;
     height: auto;
-    color: var(--text-lighter);
+    color: var(--color-text-lighter);
 
     &:hover {
-      background: var(--editor-color-accent);
-      color: var(--text-contrast);
+      background: var(--color-editor-accent);
+      color: var(--color-text-contrast);
     }
   }
 }
@@ -200,11 +200,11 @@ export default {
   width: 100%;
   position: absolute;
   top: 0;
-  background: var(--editor-color-dark);
+  background: var(--color-editor-dark);
 }
 
 .tab {
-  --c: var(--editor-color-accent);
+  --c: var(--color-editor-accent);
 
   display: flex;
   flex: 1;
@@ -228,7 +228,7 @@ export default {
 }
 
 .tab-content {
-  color: var(--text-light);
+  color: var(--color-text-light);
 }
 
 .btn-picker {
@@ -248,6 +248,6 @@ export default {
 
 .btn--active {
   opacity: 1;
-  border-color: var(--editor-color-accent);
+  border-color: var(--color-editor-accent);
 }
 </style>

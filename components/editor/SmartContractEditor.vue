@@ -82,8 +82,8 @@ export default {
 
 .nav {
   flex: 0 0 3rem;
-  background: var(--editor-color-dark);
-  color: var(--text-light);
+  background: var(--color-editor-dark);
+  color: var(--color-text-light);
   justify-content: flex-end;
 
   &__title {
@@ -103,7 +103,7 @@ export default {
 
   &--active {
     background: transparent;
-    color: var(--warning-color);
+    color: var(--color-warning);
     border-bottom-color: currentColor;
   }
 }

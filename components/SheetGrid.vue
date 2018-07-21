@@ -1,7 +1,9 @@
 <template>
   <div class="grid">
+    <loading-indicator v-if="loading" />
+
     <div
-      v-if="getUsername(sheet)"
+      v-if="!loading && getUsername(sheet)"
       v-for="(sheet, index) of sheetList"
       :key="`${sheet.distHash}-${index}`"
       class="grid__item col"
@@ -87,24 +89,29 @@
 import { mapState, mapActions } from 'vuex'
 import { IPFS_URL } from '../lib/ipfs'
 
-import LoadingScreen from './ui/LoadingScreen'
+import LoadingIndicator from './ui/LoadingIndicator'
 import NavBtn from './ui/NavBtn'
 
 export default {
   components: {
-    LoadingScreen,
+    LoadingIndicator,
     NavBtn
   },
 
+  data: () => ({ loading: true }),
+
   async mounted () {
+    this.loading = true
     const { page, list: type } = this.$route.params
     const { username } = this
 
     if (username) {
-      console.log(await this.getUserSheets({ username, page }))
+      await this.getUserSheets({ username, page })
     } else {
       await this.getSheets({ page, type })
     }
+
+    this.loading = false
   },
 
   props: {
@@ -166,6 +173,10 @@ export default {
   &__item {
     height: 100%;
   }
+}
+
+.loading {
+  grid-area: 1 / 2;
 }
 
 .details {

@@ -1,16 +1,24 @@
+const {
+  USE_MAINNET,
+  CONTRACT_DEV = 'n1fynGaH1PMQ5X1CGFWgUakFBJprADpbfhk',
+  CONTRACT_PROD = 'n1or8poEh25NdniYzpbXgaaZTYKnCTxD1pR'
+} = process.env
+
 module.exports = {
   mode: 'spa',
   env: {
-    contractDev: process.env.CONTRACT_DEV || 'n1njgKxCCh2db19dwzFoQZBRdXmMegY4DHR',
-    contractProd: process.env.CONTRACT_PROD || 'n1pt4yTCC88CzXBVMGzXU1NfekuBn8u1pzs',
+    contractDev: CONTRACT_DEV,
+    contractProd: CONTRACT_PROD,
     mainnetUrl: 'https://mainnet.nebulas.io',
     testnetUrl: 'https://testnet.nebulas.io',
-    useMainnet: process.env.USE_MAINNET,
+    useMainnet: typeof USE_MAINNET !== 'undefined' && JSON.stringify(USE_MAINNET) === '"true"',
+    ipfsHost: process.env.IPFS_HOST,
+    ipfsPort: process.env.IPFS_PORT,
     extLink: 'https://chrome.google.com/webstore/detail/gehjkhmhclgnkkhpfamakecfgakkfkco'
   },
 
   modules: [
-    '@nuxtjs/pwa',
+    '@nuxtjs/pwa'
   ],
 
   workbox: {
@@ -55,7 +63,7 @@ module.exports = {
       { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/icons/favicon-32x32.png' },
       { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/icons/favicon-16x16.png' },
       { rel: 'mask-icon', href: '/icons/safari-pinned-tab.svg', color: '#6e87f7' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons|Comfortaa' }
+      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons|Raleway' }
     ]
   },
 

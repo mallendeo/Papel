@@ -344,10 +344,6 @@ export default {
   }
 }
 
-// Helpers
-.fade-enter-active, .fade-leave-active { transition: opacity .4s; }
-.fade-enter, .fade-leave-to { opacity: 0; }
-
 .hidden {
   width: 0; height: 0;
   border: none;

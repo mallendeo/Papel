@@ -1,8 +1,12 @@
 <template>
   <section class="col wrapper">
-    <h1>{{ $route.params.username }}</h1>
-    <input type="text" v-model="username">
-    <button @click="upsertUser">save</button>
+    <aside class="profile__info">
+      <h4>{{ $route.params.username }}</h4>
+      <img :src="userProfile.avatar" class="profile__avatar">
+      <input type="text" v-model="username">
+      <button @click="upsertUser">save</button>
+    </aside>
+
     <h4>Showcase</h4>
     <sheet-grid
       v-if="userProfile.showcase"

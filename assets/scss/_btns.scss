@@ -4,8 +4,8 @@
   justify-content: space-around;
   height: 100%;
 
-  color: var(--btn-color);
-  background: var(--btn-bg);
+  color: var(--color-btn);
+  background: var(--color-btn-bg);
   padding: 0 1rem;
   font-size: .8rem;
   z-index: 5;
@@ -23,8 +23,8 @@
   }
 
   &:hover {
-    color: var(--btn-color-hover);
-    --icon-color: var(--btn-color-hover);
+    color: var(--color-btn-hover);
+    --icon-color: var(--color-btn-hover);
     opacity: 1;
   }
 
@@ -34,8 +34,8 @@
 
   &--active {
     opacity: 1;
-    background: var(--btn-bg-active);
-    color: var(--btn-color-active);
-    --icon-color: var(--btn-color-active);
+    background: var(--color-btn-bg-active);
+    color: var(--color-btn-active);
+    --icon-color: var(--color-btn-active);
   }
 }

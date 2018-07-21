@@ -185,7 +185,6 @@ export default {
 
     async beforeLeaveHandler (event) {
       const hash = await this.calculateHash()
-      console.log('HASH ==========', this.codeHash, hash)
       if (this.codeHash && hash !== this.codeHash) {
         await this.calculateHash(true)
         event.returnValue = true
@@ -427,11 +426,11 @@ $dist: 1rem;
       cursor: col-resize;
       margin-left: -.25rem;
       z-index: 10;
-      border-right: 1px solid var(--editor-color-dark);
+      border-right: 1px solid var(--color-editor-dark);
 
       &:hover, &:active {
         border-right: none;
-        background: var(--editor-color-accent);
+        background: var(--color-editor-accent);
       }
     }
   }
@@ -439,7 +438,7 @@ $dist: 1rem;
 
 .content {
   min-width: 24rem;
-  background: var(--editor-color);
+  background: var(--color-editor);
   overflow: hidden;
   position: relative;
 
@@ -491,7 +490,7 @@ $dist: 1rem;
 .error-box {
   position: absolute;
   bottom: 0;
-  background: var(--error-color);
+  background: var(--color-error);
   color: white;
   width: 100%;
   transform: translateY(100%);
@@ -501,7 +500,7 @@ $dist: 1rem;
     display: block;
     padding: .5rem 1rem;
     &:nth-child(2) {
-      background: var(--error-color-light);
+      background: var(--color-error-light);
       padding-top: 0;
     }
   }

@@ -28,7 +28,7 @@ export default {
   width: 100%;
   height: 100%;
   top: 0; left: 0;
-  background: var(--color, var(--editor-color));
+  background: var(--color, var(--color-editor));
   color: white;
   z-index: 20;
 
@@ -41,7 +41,7 @@ export default {
   width: 40px;
   height: 40px;
   margin: 100px auto;
-  background-color: var(--color-accent, var(--editor-color-accent));
+  background-color: var(--color-accent, var(--color-editor-accent));
   border-radius: 100%;
   animation: sk-scaleout 1.0s infinite ease-in-out;
 }

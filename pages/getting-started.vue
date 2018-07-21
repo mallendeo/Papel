@@ -215,7 +215,7 @@ export default {
   margin-top: .5rem;
 
   &__name {
-    font-family: 'Comfortaa', sans-serif;
+    font-family: 'Raleway', sans-serif;
     font-size: 2.4rem;
     padding-left: 1.75rem;
     font-weight: normal;

@@ -28,16 +28,16 @@ $toolbar-size: 2rem;
   flex: 0 0 $toolbar-size;
   position: relative;
 
-  background: var(--editor-color-dark);
-  color: var(--text-lighter);
+  background: var(--color-editor-dark);
+  color: var(--color-text-lighter);
   font-size: .75rem;
 
   cursor: row-resize;
-  border-top: 1px solid var(--editor-color-dark);
+  border-top: 1px solid var(--color-editor-dark);
   transition: all .2s ease;
 
   &--danger {
-    box-shadow: inset .125rem 0 0 var(--error-color);
+    box-shadow: inset .125rem 0 0 var(--color-error);
   }
 
   &--mini {

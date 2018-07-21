@@ -81,7 +81,7 @@ export default {
     cursor: pointer;
 
     .material-icons {
-      color: hsl(var(--editor-hue), 10%, 50%);
+      color: hsl(var(--color-hue), 10%, 50%);
       margin-left: auto;
       font-size: .9rem;
     }
@@ -97,13 +97,13 @@ export default {
   top: 0; left: 0;
   display: flex;
   flex-direction: column;
-  background: var(--editor-color);
-  color: var(--text-light);
+  background: var(--color-editor);
+  color: var(--color-text-light);
   z-index: 10;
 
   pointer-events: none;
   opacity: 0;
-  box-shadow: 0 .5rem 3rem -0.4rem var(--editor-color-dark);
+  box-shadow: 0 .5rem 3rem -0.4rem var(--color-editor-dark);
   transition: opacity .2s ease, transform .2s ease;
   transform: translateY(-.5rem);
 

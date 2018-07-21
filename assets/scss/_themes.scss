@@ -22,10 +22,12 @@ body {
   --color-text-lighter: hsl(0, 0%, 70%);
 
   --color-contrast: hsl(0, 0%, 5%);
+  --color-shade: var(--color-darker);
 }
 
 [data-theme=light] body {
-  --color-bg: #f7f7f7;
+  --color-bg: #fcfcfc;
+  --color-shade: var(--color-light);
 
   background: var(--color-bg);
 
