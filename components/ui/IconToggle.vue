@@ -1,11 +1,12 @@
 <template>
   <div
+    v-on="$listeners"
     class="toggle"
     :class="{ 'toggle--on': on }"
   >
     <div class="thumb"></div>
-    <i class="material-icons" :class="{ fade: on }">{{ icons[0] }}</i>
-    <i class="material-icons" :class="{ fade: !on }">{{ icons[1] }}</i>
+    <i class="material-icons" :class="{ fade: on }">{{ icons[0] || '' }}</i>
+    <i class="material-icons" :class="{ fade: !on }">{{ icons[1] || '' }}</i>
   </div>
 </template>
 
@@ -34,17 +35,21 @@ $height: 1.5rem;
   background: var(--toggle-bg, #292D3D);
   border-radius: $height / 2;
   cursor: pointer;
+  user-select: none;
 
   &--on {
     background: var(--toggle-bg--on, #e2e2e2);
     .thumb {
       transform: translateX(100%);
+      background: var(--thumb-bg--on, var(--color-accent));
     }
   }
 
   .material-icons {
     font-size: $height / 2;
     z-index: 1;
+    width: $height;
+    text-align: center;
     transition: opacity .2s ease;
   }
 }

@@ -51,12 +51,11 @@ $ yarn start
 - Account activity and notifications
 - Export / Download projects
 - Project tagging
-- View counter (custom extension)
-- Unit testing
 
 ## Smart Contract and Preview repositories
 
 https://github.com/mallendeo/papel-neb-contract
+
 https://github.com/mallendeo/papel-preview
 
 # License

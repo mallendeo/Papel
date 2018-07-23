@@ -3,15 +3,17 @@
     class="loading-wrapper"
     :class="{ 'loading-wrapper--fixed': fixed }"
   >
-    <div class="spinner">
-      <div class="double-bounce1"></div>
-      <div class="double-bounce2"></div>
-    </div>
+    <loading-indicator />
   </div>
 </template>
 
 <script>
+import LoadingIndicator from './LoadingIndicator'
+
 export default {
+  components: {
+    LoadingIndicator
+  },
   props: {
     fixed: { type: Boolean, default: false }
   }
@@ -37,21 +39,7 @@ export default {
   }
 }
 
-.spinner {
-  width: 40px;
-  height: 40px;
-  margin: 100px auto;
-  background-color: var(--color-accent, var(--color-editor-accent));
-  border-radius: 100%;
-  animation: sk-scaleout 1.0s infinite ease-in-out;
-}
-
-@keyframes sk-scaleout {
-  0% {
-    transform: scale(0);
-  } 100% {
-    transform: scale(1.0);
-    opacity: 0;
-  }
+.loading {
+  --color: var(--color-editor-accent);
 }
 </style>

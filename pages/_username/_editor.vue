@@ -43,7 +43,6 @@
     <div id="preview" class="preview">
       <app-notifications group="editor" />
 
-      <!-- TODO: Disable allow-popups (prevent alerts) when displaying on showcase -->
       <iframe
         :src="isLoaded ? previewUrl : 'about:blank'"
         allow="geolocation; microphone; camera; midi; encrypted-media"
@@ -51,8 +50,9 @@
         ref="preview"
         frameborder="0"
         class="preview__iframe"
-        :style="{ background: editors.css.iframeBg }"
+        :style="{ background: iframeBg }"
       ></iframe>
+
       <div v-if="errors" class="error-box">
         <span v-if="errors.html">{{ errors.html }}</span>
         <span v-if="errors.css">{{ errors.css }}</span>
@@ -131,7 +131,9 @@ export default {
       saveKey: false,
       saveTimeout: null,
       isLoaded: false,
-      slug
+      slug,
+      iframeBg: '#fff',
+      latestCodeHash: null
     }
   },
 
@@ -196,6 +198,14 @@ export default {
         type: 'papel:codeupdate',
         event: data
       }, this.previewUrl)
+
+      if (data && data.type !== 'css') return
+      const regex = /(?:html|\s?body)[\s\S]+?background(?:-color)?:\s+(.+);[\s\S]}/g
+      let matches
+      let bg = '#fff'
+
+      while (matches = regex.exec(data.output)) bg = matches[1]
+      this.iframeBg = bg
     },
 
     updateMeta () {
@@ -365,7 +375,6 @@ export default {
     this.setPreviewIframe(this.$refs.preview)
     this.remote = this.$refs.preview.contentWindow
 
-
     worker.addEventListener('message', this.onWorkerMessage, false)
     this.$refs.preview.addEventListener('load', this.onProjectLoad)
 
@@ -380,6 +389,7 @@ export default {
 
     await this.firstLoad()
     await this.calculateHash(true)
+    this.latestCodeHash = this.codeHash
 
     // Show dialog on navigation if there are changes
     window.addEventListener('beforeunload', this.beforeLeaveHandler)

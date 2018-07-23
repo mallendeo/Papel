@@ -19,23 +19,6 @@
         v-model="headContent"
       ></codemirror>
     </template>
-
-    <template v-if="lang === 'css'">
-      <label class="form-group">
-        Use autoprefixer
-        <input type="checkbox">
-      </label>
-
-      <label class="form-group">
-        Background color
-        <input
-          class="form-control"
-          v-model="iframeBg"
-          type="text"
-          placeholder="#fff, hsl(), ..."
-        >
-      </label>
-    </template>
   </div>
 </template>
 
@@ -56,8 +39,7 @@ export default {
     ...mapState('editor', ['cmOpts']),
     ...mapFields('editor', [
       'editors.html.headContent',
-      'editors.html.htmlClasses',
-      'editors.css.iframeBg'
+      'editors.html.htmlClasses'
     ]),
     codemirror () {
       return this.$refs.cm.codemirror

@@ -111,7 +111,6 @@ export const state = () => ({
       libs: [],
       lang: 'css',
       contentLength: 0,
-      iframeBg: '#fff',
       showCompiled: false,
       prepros: PREPROS.css
     },
@@ -136,6 +135,7 @@ export const getters = {
         name: words(theme).map(capitalize).join(' ')
       }))
   },
+
   currTheme: state => state.cmOpts.theme,
   types: state => Object.keys(state.editors),
   preprosList: state => type => Object.keys(state.editors[type].prepros),
@@ -235,36 +235,46 @@ export const actions = {
     db.set('papel:settings', settings)
     return settings
   },
+
   loadSettings ({ commit }) {
     const saved = db.get('papel:settings')
     if (!saved) return
 
     commit(types.EDITOR_LOAD_SETTINGS, saved)
   },
+
   setOutput ({ commit }, { type, output }) {
     commit(types.EDITOR_SET_COMPILED, { type, output })
   },
+
   setError({ commit }, { type, error }) {
     commit(types.EDITOR_SET_ERROR, { type, error })
   },
+
   updateCode ({ commit }, { type, code }) {
     commit(types.EDITOR_SET_CODE, { type, code })
   },
+
   setLang ({ commit }, lang) {
     commit(types.EDITOR_SET_LANG, lang)
   },
+
   navTo ({ commit }, tab) {
     commit(types.EDITOR_NAV_TO, tab)
   },
+
   toggleCompiled ({ commit }, type) {
     commit(types.EDITOR_TOGGLE_COMPILED, type)
   },
+
   putOptions ({ commit }, opts) {
     commit(types.EDITOR_PUT_OPTIONS, opts)
   },
+
   setLibs ({ commit }, { type, libs }) {
     commit(types.EDITOR_SET_LIBS, { type, libs })
   },
+
   setPreviewIframe ({ commit }, iframe) {
     commit(types.EDITOR_SET_IFRAME, iframe)
   }

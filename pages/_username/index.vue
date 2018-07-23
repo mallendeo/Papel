@@ -45,6 +45,9 @@ export default {
     LoadingIndicator,
     SheetGrid
   },
+
+  middleware: 'check-extension',
+
   data: () => ({ loading: true }),
   computed: {
     ...mapState('profile', ['userProfile', 'totalUserSheets']),

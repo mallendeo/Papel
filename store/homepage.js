@@ -1,3 +1,5 @@
+import { getField, updateField } from 'vuex-map-fields'
+
 import * as types from './mutation-types'
 import * as blockchain from '../lib/blockchain'
 import { getAddress } from '../lib/nebulas'
@@ -11,7 +13,13 @@ export const state = () => ({
   loggedUser: null
 })
 
+export const getters = {
+  getField
+}
+
 export const mutations = {
+  updateField,
+
   [types.HOME_SET_SHEETS] (state, response) {
     state.sheets = response.sheets
     state.totalSheets = response.totalSheets

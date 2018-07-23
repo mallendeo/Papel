@@ -1,6 +1,9 @@
 <template>
   <div class="grid">
-    <loading-indicator v-if="loading" />
+    <loading-indicator
+      :style="{ '--color': 'var(--color-accent)' }"
+      v-if="loading"
+    />
 
     <div
       v-if="!loading && getUsername(sheet)"
@@ -8,7 +11,7 @@
       :key="`${sheet.distHash}-${index}`"
       class="grid__item col"
     >
-      <nuxt-link class="iframe-wrapper" :to="`/${getUsername(sheet)}/${sheet.slug}`">
+      <a class="iframe-wrapper" :href="`/${getUsername(sheet)}/${sheet.slug}`">
         <iframe
           :src="`${ipfsUrl}/${sheet.distHash}`"
           sandbox="allow-scripts allow-pointer-lock allow-same-origin"
@@ -22,11 +25,11 @@
           <h4 v-if="sheet.title" class="details__title">{{ sheet.title }}</h4>
           <p v-if="sheet.description" class="details__description">{{ sheet.description }}</p>
         </div>
-      </nuxt-link>
+      </a>
 
       <div class="actions">
         <div class="link">
-          <nuxt-link v-if="showAuthor" :to="`/${getUsername(sheet)}`">
+          <a v-if="showAuthor" :href="`/${getUsername(sheet)}`">
             <img
               class="avatar"
               :src="sheet.author.avatar
@@ -40,23 +43,16 @@
               src="~/assets/icons/crown.svg"
               alt="Crown"
             >
-          </nuxt-link>
+          </a>
 
           <div class="col">
-            <nuxt-link
-              class="title"
-              :to="`/${getUsername(sheet)}/${sheet.slug}`"
-            >
+            <a class="title" :href="`/${getUsername(sheet)}/${sheet.slug}`">
               {{ sheet.title || `A project by ${getUsername(sheet)}` }}
-            </nuxt-link>
+            </a>
 
-            <nuxt-link
-              class="username"
-              v-if="showAuthor"
-              :to="`/${getUsername(sheet)}`"
-            >
+            <a class="username" v-if="showAuthor" :href="`/${getUsername(sheet)}`">
               {{ sheet.author.name || sheet.author.username }}
-            </nuxt-link>
+            </a>
           </div>
         </div>
 

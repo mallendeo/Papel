@@ -11,8 +11,11 @@
         class="input"
         :value="value"
         :disabled="disabled"
+        @change="event => $emit('change', event.target.value)"
         @input="event => $emit('input', event.target.value)"
       >
+      <label>{{ placeholder }}</label>
+
       <button
         @click="$emit('btnclick')"
         v-if="button"
@@ -71,6 +74,22 @@ export default {
   transform: translateY(-.5rem);
 }
 
+input:placeholder-shown + label {
+  opacity: 0;
+  transform: translateY(1rem);
+}
+
+label {
+  position: absolute;
+  top: 0;
+  font-size: var(--font-size-small);
+  opacity: 1;
+  z-index: -1;
+  color: var(--color-text);
+  transform: translateY(0);
+  transition: all .2s ease;
+}
+
 .error-msg {
   margin-top: .5rem;
   margin-left: .4rem;
@@ -88,7 +107,9 @@ export default {
 }
 
 .input-wrapper {
+  padding-top: 1.5rem;
   min-width: 5rem;
+  position: relative;
 }
 
 .shake {
@@ -121,6 +142,7 @@ export default {
 }
 
 .input {
+  flex: 1;
   padding: 1rem;
   background: none;
   border: none;

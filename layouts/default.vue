@@ -1,10 +1,10 @@
 <template>
   <section>
     <div class="header">
-      <nuxt-link to="/" class="logo-wrapper">
+      <a href="/" class="logo-wrapper">
         <papel-logo class="logo" />
         <h1>Papel</h1>
-      </nuxt-link>
+      </a>
 
       <ul class="tabs">
         <nuxt-link
@@ -42,18 +42,18 @@
       </nav-btn>
 
       <template v-if="loggedUser">
-        <nav-btn :shadow="true" :to="`/${loggedUser.username}/${slug()}`">
+        <nav-btn :shadow="true" :href="`/${loggedUser.username}/${slug()}`">
           Create Project
         </nav-btn>
 
-        <nuxt-link :to="`/${loggedUser.username}/`" class="profile-btn">
+        <a :href="`/${loggedUser.username}/`" class="profile-btn">
           <img
             class="avatar"
             :src="loggedUser.avatar
               ? `${ipfsUrl}/${loggedUser.avatar}`
               : require('~/assets/icons/user.svg')"
           >
-        </nuxt-link>
+        </a>
       </template>
     </div>
 

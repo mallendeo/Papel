@@ -1,7 +1,8 @@
 <template>
   <div :class="{ 'icon-right': iconRight }">
+    <!-- TODO: Refactor -->
     <nuxt-link
-      v-if="to"
+      v-if="!href && to"
       v-on="$listeners"
       class="btn row row--ai-center nav-btn"
       :class="{ disabled, shadow }"
@@ -10,8 +11,17 @@
       <slot />
     </nuxt-link>
 
+    <a
+      v-on="$listeners"
+      v-if="href"
+      class="btn row row--ai-center nav-btn"
+      :href="href"
+    >
+      <slot />
+    </a>
+
     <button
-      v-else
+      v-if="!href && !to"
       v-on="$listeners"
       :disabled="disabled"
       class="btn row row--ai-center nav-btn"
@@ -25,6 +35,7 @@
 export default {
   props: {
     to: { type: String },
+    href: { type: String },
     disabled: { type: Boolean },
     shadow: { type: Boolean },
     iconRight: { type: Boolean, default: false }
