@@ -60,6 +60,7 @@ module.exports = {
     ],
     link: [
       { rel: 'apple-touch-icon', sizes: '180x180', href: '/icons/apple-touch-icon.png' },
+      { rel: 'icon', type: 'image/x-icon', href: '/icons/favicon.ico' },
       { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/icons/favicon-32x32.png' },
       { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/icons/favicon-16x16.png' },
       { rel: 'mask-icon', href: '/icons/safari-pinned-tab.svg', color: '#6e87f7' },
@@ -67,11 +68,7 @@ module.exports = {
     ]
   },
 
-  loadingIndicator: {
-    name: 'pulse',
-    color: '#6e87f7',
-    background: '#292d3d'
-  },
+  loadingIndicator: 'static/loading.html',
 
   plugins: [
     '~/plugins/vue-codemirror',
