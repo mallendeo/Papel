@@ -1,6 +1,8 @@
-# Papel
+<h1>
+  <img src="./papel-logo.svg" alt="Papel Logo" width="128px">
+</h1>
 
-Papel is a code playground built on top of [Nebulas](https://nebulas.io).
+Papel is a frontend code playground built on top of [Nebulas](https://nebulas.io).
 
 https://papel.app
 
@@ -25,7 +27,7 @@ $ yarn
 $ yarn dev
 ```
 
-# Distribution Build
+# Production Build
 ```bash
 # Build for production and launch server
 $ USE_MAINNET="true" yarn build
