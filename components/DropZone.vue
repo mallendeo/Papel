@@ -8,8 +8,18 @@
     @dragstart.stop.prevent
     @dragend.stop.prevent
     class="dropzone"
+    :class="{
+      highlight,
+      'highlight--over': isOver
+    }"
   >
-    <slot />
+    <div :class="{ 'no-events': isOver }">
+      <slot />
+    </div>
+    <small
+      v-if="showMessage"
+      class="abs-center message"
+    >{{ !isOver ? 'Drag & drop an image' : 'Drop to upload' }}</small>
   </div>
 </template>
 
@@ -29,6 +39,8 @@ import { asyncFileReader } from '@/lib/helpers'
 export default {
   props: {
     single: { type: Boolean, default: false },
+    showMessage: { type: Boolean, default: false },
+    highlight: { type: Boolean, default: false },
     filter: { type: Function }
   },
 
@@ -94,3 +106,26 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.highlight {
+  position: relative;
+  --color: var(--color-lighter);
+  padding: 1rem 2rem;
+
+  border: 1px dashed var(--color);
+  border-radius: .25rem;
+
+  &--over {
+    --color: var(--color-accent, var(--color-editor-accent));
+  }
+}
+
+.message {
+  position: absolute;
+  top: calc(100% + .5rem);
+  font-size: .8rem;
+  color: var(--color-text);
+  text-align: center;
+}
+</style>
