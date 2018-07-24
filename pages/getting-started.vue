@@ -122,7 +122,7 @@ export default {
       const { address } = await getAccount()
       this.hasBalance = address.currentBalance >= 10 ** 12
     } catch (err) {
-      console.log(err)
+      console.error(err)
     }
   }
 }

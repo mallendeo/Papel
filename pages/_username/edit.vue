@@ -17,6 +17,8 @@
           @uploaded="onUploaded"
           :filter="filesFilter"
           :single="true"
+          :show-message="true"
+          :highlight="true"
         >
           <loading-indicator
             :style="{ '--color': 'var(--color-accent)' }"
@@ -164,17 +166,15 @@ export default {
 
 .dropzone {
   position: relative;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .title {
   color: var(--color-text);
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
 }
 
-.avatar {
-  opacity: .2;
-}
+.avatar { opacity: .2; }
 
 .form {
   align-items: center;
@@ -191,10 +191,10 @@ button.action-btn {
   margin-top: 1rem;
   align-self: flex-end;
 }
-.loading {
-  z-index: 9;
-}
+
+.loading { z-index: 9; }
 .page-loading {
-  margin-top: 4rem;
+  position: relative;
+  top: calc(50vh - 4rem);
 }
 </style>

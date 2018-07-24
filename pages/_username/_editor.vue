@@ -337,7 +337,6 @@ export default {
         if (!navigator.onLine) throw Error(`You're offline`)
         await this.loadFromNebulas(this.slug)
       } catch (err) {
-        console.log('slug', this.$route)
         if (await this.loadFromLocal(this.slug)) {
           const msg = navigator.onLine
             ? `There was an error trying to load ${this.slug}`

@@ -73,6 +73,12 @@ export const mutations = {
 
   [types.SHEET_SET_HASH] (state, hash) {
     state.codeHash = hash
+  },
+
+  [types.SHEET_SET_META] (state, meta) {
+    state.title = meta.title
+    state.description = meta.description
+    state.isPublic = meta.isPublic
   }
 }
 
@@ -119,9 +125,14 @@ export const actions = {
   },
 
   async loadFromNebulas ({ dispatch, commit }, slug) {
-    const sheet = await blockchain.getSheet(slug)
-    const { rootHash } = sheet
-console.log({sheet})
+    const {
+      rootHash,
+      title,
+      description,
+      isPublic
+    } = await blockchain.getSheet(slug)
+
+    commit(types.SHEET_SET_META, { title, description, isPublic })
     commit(types.SHEET_SET_ROOT_IPFS_HASH, rootHash)
 
     const opts = await ipfs.getContent(`${rootHash}/config.json`, { parse: true })
@@ -136,8 +147,9 @@ console.log({sheet})
     })
   },
 
-  async saveOnNebulas ({ state, getters, dispatch }, slug) {
+  async saveOnNebulas ({ state, getters, dispatch, commit }, slug) {
     dispatch('saveLocal', slug)
+    commit(types.SHEET_SET_SAVING, true)
 
     const { latestHash } = getters
     const data = {
@@ -148,7 +160,9 @@ console.log({sheet})
       distHash: latestHash.dist
     }
 
-    return blockchain.saveSheet(slug, data)
+    const saved = await blockchain.saveSheet(slug, data)
+    commit(types.SHEET_SET_SAVING, false)
+    return saved
   },
 
   generateHTML ({ rootState }, conf) {
