@@ -19,14 +19,28 @@
       </div>
     </transition>
 
-    <div class="wrapper">
-      <sheet-grid v-if="!loading" :username="$route.params.username" />
+    <div v-if="!loading" class="wrapper">
+      <sheet-grid
+        v-if="userSheets.length"
+        :username="$route.params.username"
+      />
+
+      <div class="col col--center" v-else>
+        <nav-btn
+          v-if="ownProfile"
+          :shadow="true"
+          :href="`/${loggedUser.username}/${slug()}`"
+        >Create your first project!</nav-btn>
+
+        <span class="empty-msg" v-else>{{ emptyMsg }}.</span>
+      </div>
     </div>
   </section>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import shortid from 'shortid'
 
 import AppAvatar from '@/components/ui/AppAvatar'
 import SheetGrid from '@/components/SheetGrid'
@@ -43,9 +57,13 @@ export default {
 
   middleware: 'check-extension',
 
-  data: () => ({ loading: true }),
+  data () {
+    const words = ['Dust', 'Nada', 'Empty', 'Nothing yet']
+    const emptyMsg = words[Math.floor(Math.random() * words.length)]
+    return { loading: true, emptyMsg }
+  },
   computed: {
-    ...mapState('profile', ['userProfile', 'totalUserSheets']),
+    ...mapState('profile', ['userProfile', 'totalUserSheets', 'userSheets']),
     ...mapState('homepage', ['loggedUser']),
     ownProfile () {
       return this.loggedUser &&
@@ -53,7 +71,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('profile', ['getProfile', 'getUserSheets'])
+    ...mapActions('profile', ['getProfile', 'getUserSheets']),
+    slug: () => shortid.generate()
   },
   async mounted () {
     const { username } = this.$route.params
@@ -80,6 +99,12 @@ div.loading {
 .name {
   margin-top: 1rem;
   font-weight: 400;
+}
+
+.empty-msg {
+  color: var(--color-text-lighter);
+  font-size: 1.5rem;
+  margin-top: 4rem;
 }
 
 .link {
