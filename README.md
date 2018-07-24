@@ -38,13 +38,13 @@ $ yarn start
 - ~~Create home and profile pages~~
 - ~~Show compiler errors~~
 - ~~File upload / file sync to project ipfs cid~~
-- Create profile edit and settings page
-- Fix favicon not showing on editor
+- ~~Create profile edit and settings page~~
+- ~~Fix favicon not showing on editor~~
 - Re-run script on live reload when changing html
 - Fix `undefined` message when adding a external library
-- Comments and comment likes
 
 ### Next version
+- Comments and comment likes
 - Save settings on blockchain
 - Create and deploy smart contracts from editor
 - Show message if the remote version is newer than the local one
