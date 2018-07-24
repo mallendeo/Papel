@@ -18,7 +18,9 @@
   }
 
   &--ai-center { align-items: center; }
+  &--ai-end { align-items: flex-end; }
   &--jc-center { justify-content: center; }
+  &--jc-between { justify-content: space-between; }
 }
 
 .abs-center {

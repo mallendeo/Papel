@@ -165,6 +165,11 @@ export const actions = {
     return saved
   },
 
+  async removeSheet ({ commit }, slug) {
+    commit(types.SHEET_SET_SAVING, true)
+    return blockchain.saveSheet(slug, { isRemoved: true })
+  },
+
   generateHTML ({ rootState }, conf) {
     const { editors, compiled } = rootState.editor
 

@@ -32,7 +32,7 @@
       v-model="description"
     />
 
-    <div class="row footer">
+    <div class="row row--jc-between row--ai-end">
       <a
         v-if="rootIpfsHash"
         class="link"
@@ -47,6 +47,10 @@
         :disabled="isSaving"
       >Save</action-btn>
     </div>
+
+    <button class="remove row row--ai-center" @click="onRemove">
+      <i title="Remove" class="material-icons">delete</i>
+    </button>
   </section>
 </template>
 
@@ -76,11 +80,20 @@ export default {
   methods: {
     ...mapActions('sheet', [
       'saveIpfs',
+      'removeSheet',
       'saveOnNebulas'
     ]),
 
     toggleVisibility () {
       this.isPublic = !this.isPublic
+    },
+
+    async onRemove () {
+      const remove = confirm(`Are you sure you want to remove ${this.slug}?`)
+      if (remove) {
+        await this.removeSheet(this.slug)
+        this.$router.push('/')
+      }
     },
 
     async onSave () {
@@ -119,14 +132,16 @@ export default {
   margin-bottom: 1rem;
 }
 
-.footer {
-  align-items: center;
-  justify-content: space-between;
+.align-right { align-self: flex-end; }
+.link { color: var(--color-text); }
+.remove {
+  border: none;
+  color: var(--color-text-lighter);
+  align-self: flex-start;
+  margin: auto 0 -.35rem -.5rem;
+  i { font-size: 1rem; }
 }
 
-.link {
-  color: var(--color-text);
-}
 
 .input-wrapper {
   margin-bottom: .5rem;
@@ -137,6 +152,7 @@ button.action-btn {
   border: none;
   --color-accent: var(--color-editor-accent);
   margin-top: 1rem;
+  margin-left: auto;
 }
 
 button {
