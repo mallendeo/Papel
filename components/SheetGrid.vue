@@ -39,11 +39,19 @@
           </a>
 
           <div class="col">
-            <a class="title" :href="`/${getUsername(sheet)}/${sheet.slug}`">
+            <a
+              class="title"
+              :title="sheet.title"
+              :href="`/${getUsername(sheet)}/${sheet.slug}`"
+            >
               {{ sheet.title || `A project by ${getUsername(sheet)}` }}
             </a>
 
-            <a class="username" v-if="showAuthor" :href="`/${getUsername(sheet)}`">
+            <a
+              class="username"
+              v-if="showAuthor"
+              :href="`/${getUsername(sheet)}`"
+            >
               {{ sheet.author.name || sheet.author.username }}
             </a>
           </div>
@@ -183,9 +191,9 @@ export default {
     opacity: 1;
   }
 
-  &__title{
+  &__title {
     font-size: 1.25rem;
-    line-height: 1rem;
+    line-height: 1.25rem;
   }
 
   &__description {
