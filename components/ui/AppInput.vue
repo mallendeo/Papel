@@ -1,20 +1,35 @@
 <template>
   <div class="input-wrapper">
     <div
-      :class="{ shake, error: showErrorMsg }"
+      :class="{
+        shake,
+        error: showErrorMsg,
+        'input-group--textarea': textarea
+      }"
       @animationend="shake = false"
       class="input-group"
     >
       <input
+        v-if="!textarea"
         :type="type"
         :placeholder="placeholder"
-        class="input"
         :value="value"
         :disabled="disabled"
-        @change="event => $emit('change', event.target.value)"
-        @input="event => $emit('input', event.target.value)"
+        :pattern="pattern"
+        class="input"
+        @input="onInput"
       >
-      <label>{{ placeholder }}</label>
+      <textarea
+        v-else
+        :placeholder="placeholder"
+        :value="value"
+        :disabled="disabled"
+        :pattern="pattern"
+        class="input textarea"
+        @input="onInput"
+      ></textarea>
+
+      <label v-if="floatPlaceholder">{{ placeholder }}</label>
 
       <button
         @click="$emit('btnclick')"
@@ -39,7 +54,10 @@ export default {
   props: {
     type: { default: 'text' },
     value: {},
+    pattern: {},
+    textarea: { type: Boolean, default: false },
     disabled: { type: Boolean },
+    floatPlaceholder: { type: Boolean, default: false },
     placeholder: { type: String },
     button: { type: String },
     errorMsg: { type: String },
@@ -59,6 +77,10 @@ export default {
       this.shake = shake
 
       setTimeout(() => (this.showErrorMsg = false), this.msgDuration)
+    },
+
+    onInput (event) {
+      this.$emit('input', event.target.value)
     }
   }
 }
@@ -74,7 +96,7 @@ export default {
   transform: translateY(-.5rem);
 }
 
-input:placeholder-shown + label {
+.input:placeholder-shown + label {
   opacity: 0;
   transform: translateY(1rem);
 }
@@ -82,7 +104,7 @@ input:placeholder-shown + label {
 label {
   position: absolute;
   top: 0;
-  font-size: var(--font-size-small);
+  font-size: .8rem;
   opacity: 1;
   z-index: -1;
   color: var(--color-text);
@@ -104,6 +126,13 @@ label {
   background: var(--color-darker);
   display: flex;
   border-radius: .4rem;
+}
+
+.input-group--textarea,
+.textarea {
+  height: auto;
+  min-height: 2.5rem;
+  max-height: 15rem;
 }
 
 .input-wrapper {
