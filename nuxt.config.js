@@ -1,7 +1,7 @@
 const {
   USE_MAINNET,
   CONTRACT_DEV = 'n1pUi7bZQeXEWcP4rbC1SXnZPcLdaiFZGmj',
-  CONTRACT_PROD = 'n22ECqWegRdzs7siyNDZqWFLUXRb9Wvrcgp'
+  CONTRACT_PROD = 'n1y6zyNJb9iHkjdk3jbhL1iPKkDvigSbSYE'
 } = process.env
 
 module.exports = {
