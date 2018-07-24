@@ -17,6 +17,7 @@
         :disabled="disabled"
         :pattern="pattern"
         class="input"
+        :class="{ 'input--rounded': !button }"
         @input="onInput"
       >
       <textarea
@@ -26,6 +27,7 @@
         :disabled="disabled"
         :pattern="pattern"
         class="input textarea"
+        :class="{ 'input--rounded': !button }"
         @input="onInput"
       ></textarea>
 
@@ -147,22 +149,6 @@ label {
   animation: shake .5s linear both;
 }
 
-[data-theme=light] {
-  .input-group {
-    background: var(--color-bg);
-    border: 1px solid var(--color-accent);
-    &.error {
-      border-color: var(--color-error);
-    }
-  }
-
-  .input, .input-btn {
-    &:focus { background: var(--color-lighter); }
-  }
-
-  .input-btn:hover { background: var(--color-lighter); }
-}
-
 .input, .input-btn {
   color: var(--color-text, white);
   outline: none;
@@ -180,6 +166,10 @@ label {
   &::placeholder {
     color: var(--color-text-lighter);
   }
+
+  &--rounded {
+    border-radius: .4rem;
+  }
 }
 
 .input-btn {
@@ -196,5 +186,21 @@ label {
     background: transparent;
     cursor: not-allowed;
   }
+}
+
+[data-theme=light] {
+  .input-group {
+    background: var(--color-bg);
+    border: 1px solid var(--color-accent);
+    &.error {
+      border-color: var(--color-error);
+    }
+  }
+
+  .input, .input-btn {
+    &:focus { background: var(--color-light); }
+  }
+
+  .input-btn:hover { background: var(--color-lighter); }
 }
 </style>

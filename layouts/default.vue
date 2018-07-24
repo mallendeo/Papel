@@ -36,7 +36,7 @@
       <nav-btn
         :shadow="true"
         v-if="loaded && !loggedUser"
-        :to="`/getting-started#steps`"
+        :href="`/getting-started#steps`"
       >
         Create User
       </nav-btn>
