@@ -47,12 +47,7 @@
         </nav-btn>
 
         <a :href="`/${loggedUser.username}/`" class="profile-btn">
-          <img
-            class="avatar"
-            :src="loggedUser.avatar
-              ? `${ipfsUrl}/${loggedUser.avatar}`
-              : require('~/assets/icons/user.svg')"
-          >
+          <app-avatar :hash="loggedUser.avatar" />
         </a>
       </template>
     </div>
@@ -72,6 +67,7 @@ import shortid from 'shortid'
 
 import { IPFS_URL } from '@/lib/ipfs'
 
+import AppAvatar from '@/components/ui/AppAvatar'
 import PapelLogo from '@/components/icons/PapelLogo'
 import NavBtn from '@/components/ui/NavBtn'
 import IconToggle from '@/components/ui/IconToggle'
@@ -81,6 +77,7 @@ import OkIcon from '@/components/icons/OkIcon'
 
 export default {
   components: {
+    AppAvatar,
     PapelLogo,
     NavBtn,
     IconToggle,
@@ -141,8 +138,7 @@ export default {
 }
 
 .avatar {
-  width: 2rem;
-  height: 2rem;
+  --size: 2rem;
   margin-left: 2rem;
 }
 

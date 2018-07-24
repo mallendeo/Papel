@@ -27,7 +27,8 @@ export const mutations = {
   },
 
   [types.SET_LOGGED_USER] (state, user) {
-    state.loggedUser = user
+    const data = { name: '', bio: '', avatar: '' }
+    state.loggedUser = { ...data, ...user }
   }
 }
 
@@ -36,7 +37,6 @@ export const actions = {
     type = state.sheetsType,
     page = state.page
   } = {}) {
-    console.log({ type, page })
     const response = await blockchain.listSheets(type, page)
     commit(types.HOME_SET_SHEETS, response)
     return response

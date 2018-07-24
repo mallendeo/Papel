@@ -3,12 +3,8 @@
     <loading-indicator v-if="loading" />
     <transition name="fade">
       <div v-if="!loading" class="col profile">
-        <img
-          class="avatar"
-          :src="userProfile.avatar
-            ? `${ipfsUrl}/${userProfile.avatar}`
-            : require('~/assets/icons/user.svg')"
-        >
+        <app-avatar :style="{ '--size': '5rem' }" :hash="userProfile.avatar" />
+
         <h2 class="name">{{ userProfile.name }}</h2>
         <span class="username">@{{ userProfile.username }}</span>
         <p class="bio">{{ userProfile.bio }}</p>
@@ -24,10 +20,7 @@
     </transition>
 
     <div class="wrapper">
-      <sheet-grid
-        v-if="!loading"
-        :username="$route.params.username"
-      />
+      <sheet-grid v-if="!loading" :username="$route.params.username" />
     </div>
   </section>
 </template>
@@ -35,12 +28,14 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 
+import AppAvatar from '@/components/ui/AppAvatar'
 import SheetGrid from '@/components/SheetGrid'
 import LoadingIndicator from '@/components/ui/LoadingIndicator'
 import NavBtn from '@/components/ui/NavBtn'
 
 export default {
   components: {
+    AppAvatar,
     NavBtn,
     LoadingIndicator,
     SheetGrid
@@ -97,12 +92,7 @@ div.loading {
 }
 
 .username { opacity: .5; }
-.bio { margin-top: 1rem; }
-
-.avatar {
-  width: 5rem;
-  height: 5rem;
-}
+.bio { margin: 1rem auto; }
 
 .grid {
   margin-top: 2rem;

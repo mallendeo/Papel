@@ -30,19 +30,12 @@
       <div class="actions">
         <div class="link">
           <a v-if="showAuthor" :href="`/${getUsername(sheet)}`">
-            <img
-              class="avatar"
-              :src="sheet.author.avatar
-                ? `${ipfsUrl}/${sheet.author.avatar}`
-                : require('~/assets/icons/user.svg')"
+            <app-avatar
+              :style="{ '--size': '2rem' }"
+              :hash="sheet.author.avatar"
               :alt="`User @${getUsername(sheet)}`"
-            >
-            <img
-              v-if="sheet.author.isAdmin"
-              class="avatar__addon"
-              src="~/assets/icons/crown.svg"
-              alt="Crown"
-            >
+              :admin="sheet.author.isAdmin"
+            />
           </a>
 
           <div class="col">
@@ -86,11 +79,13 @@
 import { mapState, mapActions } from 'vuex'
 import { IPFS_URL } from '../lib/ipfs'
 
+import AppAvatar from './ui/AppAvatar'
 import LoadingIndicator from './ui/LoadingIndicator'
 import NavBtn from './ui/NavBtn'
 
 export default {
   components: {
+    AppAvatar,
     LoadingIndicator,
     NavBtn
   },
@@ -197,20 +192,6 @@ export default {
     font-weight: 400;
     margin-top: .5rem;
     color: var(--color-text-light);
-  }
-}
-
-.avatar {
-  width: 1.75rem;
-  height: 1.75rem;
-  align-self: center;
-  border-radius: 50%;
-
-  &__addon {
-    width: 1rem;
-    position: absolute;
-    left: .9rem;
-    bottom: 0;
   }
 }
 

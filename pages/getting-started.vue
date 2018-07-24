@@ -26,7 +26,10 @@
 
         <h2 class="hero__subtitle">A Code Playground on <br>the Blockchain.</h2>
 
-        <action-btn @click.native="scrollTo('#steps')">Start Coding!</action-btn>
+        <action-btn
+          class="call-to-action"
+          @click.native="scrollTo('#steps')"
+        >Start Coding!</action-btn>
 
         <div class="p-wrapper">
           <p v-if="!extInstalled" class="hero__description">
@@ -134,6 +137,10 @@ export default {
 
 .p-wrapper {
   min-height: 5rem;
+}
+
+.call-to-action {
+  align-self: flex-start;
 }
 
 .subtitle {

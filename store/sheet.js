@@ -9,7 +9,7 @@ import * as db from '../lib/db'
 import { generateHTML } from '../lib/helpers'
 
 export const state = () => ({
-  title: 'A Papel Project',
+  title: '',
   description: '',
   currTxHash: null,
   isSaving: false,
@@ -119,8 +119,9 @@ export const actions = {
   },
 
   async loadFromNebulas ({ dispatch, commit }, slug) {
-    const { rootHash } = await blockchain.getSheet(slug)
-
+    const sheet = await blockchain.getSheet(slug)
+    const { rootHash } = sheet
+console.log({sheet})
     commit(types.SHEET_SET_ROOT_IPFS_HASH, rootHash)
 
     const opts = await ipfs.getContent(`${rootHash}/config.json`, { parse: true })

@@ -1,12 +1,9 @@
 <template>
-  <section
-    @dragenter.stop.prevent="isOver = true"
-    @dragleave.stop.prevent="isOver = false"
-    @dragover.stop.prevent
-    @drop.stop.prevent="onDrop"
-    @drag.stop.prevent
-    @dragstart.stop.prevent
-    @dragend.stop.prevent
+  <drop-zone
+    @dragenter="isOver = true"
+    @dragleave="isOver = false"
+    @uploading="uploading = true"
+    @uploaded="onUploaded"
     :class="{ filedrop: isOver }"
     class="col section"
   >
@@ -49,18 +46,19 @@
     </ul>
 
     <i class="material-icons bg-icon abs-center">folder</i>
-  </section>
+  </drop-zone>
 </template>
 
 <script>
-import * as ipfs from '@/lib/ipfs'
+import { IPFS_URL } from '@/lib/ipfs'
 import * as blockchain from '@/lib/blockchain'
-import { asyncFileReader } from '@/lib/helpers'
 
+import DropZone from '@/components/DropZone'
 import LoadingIndicator from '@/components/ui/LoadingIndicator'
 
 export default {
   components: {
+    DropZone,
     LoadingIndicator
   },
 
@@ -69,7 +67,7 @@ export default {
     files: [],
     loading: true,
     uploading: false,
-    ipfsUrl: ipfs.IPFS_URL
+    ipfsUrl: IPFS_URL
   }),
 
   mounted () {
@@ -81,10 +79,6 @@ export default {
       this.loading = true
       this.files = await blockchain.getFiles().catch(console.error)
       this.loading = false
-    },
-
-    onDragLeave () {
-      this.isOver = false
     },
 
     onCopy () {
@@ -100,25 +94,7 @@ export default {
       this.files = this.files.filter(f => f.id !== file.id)
     },
 
-    async onDrop (event) {
-      const { files } = event.dataTransfer
-      const data = await asyncFileReader(files)
-      this.uploading = true
-
-      const savedIpfs = await ipfs.saveFiles(
-        [...files].map((file, index) => ({
-          path: file.name,
-          content: data[index]
-        }))
-      )
-
-      const savedFiles = [...files].map((file, index) => ({
-        name: file.name,
-        type: file.type,
-        size: savedIpfs[index].size,
-        hash: savedIpfs[index].hash
-      }))
-
+    async onUploaded (savedFiles) {
       try {
         await blockchain.saveFiles(savedFiles)
         this.$notify({
