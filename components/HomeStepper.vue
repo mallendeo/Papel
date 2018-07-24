@@ -227,7 +227,7 @@ export default {
     },
 
     install () {
-      this.$router.push('getting-started#steps')
+      this.$router.push('/getting-started#steps')
       window.open(this.extLink, '_blank')
 
       // FIXME: Inline installs can only be initiated for
