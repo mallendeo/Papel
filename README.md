@@ -6,6 +6,8 @@ Papel is a frontend code playground built on top of [Nebulas](https://nebulas.io
 
 https://papel.app
 
+Contract address (mainnet): [n1y6zyNJb9iHkjdk3jbhL1iPKkDvigSbSYE](https://explorer.nebulas.io/#/address/n1y6zyNJb9iHkjdk3jbhL1iPKkDvigSbSYE)
+
 ## Build Setup
 
 ``` bash
