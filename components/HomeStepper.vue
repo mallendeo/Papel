@@ -2,33 +2,63 @@
   <div class="stepper">
     <ul class="steps-num">
       <li class="num active">1</li>
-      <li class="line" :class="{ active: step > 1 }"></li>
-      <li class="num" :class="{ active: step > 1 }">2</li>
-      <li class="line" :class="{ active: step > 2 }"></li>
-      <li class="num" :class="{ active: step > 2 }">3</li>
+      <li
+        class="line"
+        :class="{ active: step > 1 }"
+      ></li>
+      <li
+        class="num"
+        :class="{ active: step > 1 }"
+      >2</li>
+      <li
+        class="line"
+        :class="{ active: step > 2 }"
+      ></li>
+      <li
+        class="num"
+        :class="{ active: step > 2 }"
+      >3</li>
     </ul>
 
     <div class="steps">
-      <div class="transition step" :class="{ current: step === 1 }">
+      <div
+        class="transition step"
+        :class="{ current: step === 1 }"
+      >
         <nebulas-logo class="icon" />
         <span class="description">Install the Nebulas wallet extension.</span>
-        <action-btn v-if="step === 1" @click.native="install">
-          <img src="~/assets/icons/chrome.svg" alt="Google Chrome">
+        <action-btn
+          v-if="step === 1"
+          @click.native="install"
+        >
+          <img
+            src="~/assets/icons/chrome.svg"
+            alt="Google Chrome"
+          >
           Install
         </action-btn>
       </div>
 
-      <div class="transition step" :class="{ current: step === 2 }">
+      <div
+        class="transition step"
+        :class="{ current: step === 2 }"
+      >
         <wallet-icon class="icon" />
         <span class="description">Create a wallet.</span>
-        <small :class="{ hide: step !== 2 }" class="transition hint">
+        <small
+          :class="{ hide: step !== 2 }"
+          class="transition hint"
+        >
           <loading-indicator
             class="transition"
             :class="{ hide: !nasTransfer }"
             :style="{ '--size': '1.25rem' }"
           />
 
-          <transition mode="out-in" name="fade">
+          <transition
+            mode="out-in"
+            name="fade"
+          >
             <span v-if="!addr">Create your wallet with the Nebulas extension on the upper-right corner.</span>
             <span v-if="addr && nasTransfer">
               We are now transferring you some tokens.
@@ -38,11 +68,20 @@
         </small>
       </div>
 
-      <div class="transition step" :class="{ current: step === 3 }">
+      <div
+        class="transition step"
+        :class="{ current: step === 3 }"
+      >
         <user-icon class="icon" />
 
-        <transition name="fade" mode="out-in">
-          <span :key="user && user.username" class="description">
+        <transition
+          name="fade"
+          mode="out-in"
+        >
+          <span
+            :key="user && user.username"
+            class="description"
+          >
             {{ user ? `Hi ${user.username}!` : 'Choose a username.' }}
           </span>
         </transition>
@@ -109,7 +148,7 @@ export default {
 
   data () {
     return {
-      step: 1,
+      step: 3,
       extLink: process.env.extLink,
       addr: null,
       fetching: false,
@@ -119,7 +158,7 @@ export default {
       username: '',
       user: null,
       iframeWin: null,
-      isExtInstalled: typeof window.NasExtWallet !== 'undefined'
+      isExtInstalled: true
     }
   },
 
@@ -262,7 +301,7 @@ export default {
   flex-direction: column;
   align-items: center;
   padding-top: 4rem;
-  opacity: .5;
+  opacity: 0.5;
   pointer-events: none;
 
   &.current {
@@ -300,9 +339,9 @@ export default {
   align-items: center;
   margin-top: 1.5rem;
 
-  font-size: .9rem;
+  font-size: 0.9rem;
   text-align: center;
-  opacity: .7;
+  opacity: 0.7;
 
   .loading {
     margin-bottom: 2rem;
@@ -313,13 +352,13 @@ export default {
 .video {
   height: 18rem;
   transform: translate3d(0, 0, 0);
-  border-radius: .25rem;
+  border-radius: 0.25rem;
 }
 
 .action-btn {
   margin: 3rem auto 0 auto;
   min-width: 8rem;
-  opacity: .5;
+  opacity: 0.5;
   outline: none;
 
   img {
@@ -341,13 +380,13 @@ export default {
   font-weight: bold;
 
   li.active {
-    transition: all .4s ease;
+    transition: all 0.4s ease;
     color: white;
 
     &.num {
       background: var(--color-accent);
       box-shadow: none;
-      transition-delay: .2s;
+      transition-delay: 0.2s;
     }
   }
 
@@ -359,12 +398,12 @@ export default {
     text-align: center;
     line-height: 2rem;
     border-radius: 50%;
-    background: rgba(0,0,0,.1);
+    background: rgba(0, 0, 0, 0.1);
   }
 
   .line {
     flex: 1;
-    background: rgba(0,0,0,.1);
+    background: rgba(0, 0, 0, 0.1);
     height: $b-size;
     position: relative;
 
@@ -375,7 +414,7 @@ export default {
       top: 0;
       height: 100%;
       width: 0%;
-      transition: all .4s ease;
+      transition: all 0.4s ease;
       background: var(--color-accent);
     }
 
@@ -386,13 +425,14 @@ export default {
 }
 
 .hidden {
-  width: 0; height: 0;
+  width: 0;
+  height: 0;
   border: none;
   position: absolute;
 }
 
 .transition {
-  transition: opacity .4s ease;
+  transition: opacity 0.4s ease;
 }
 
 .hide {
@@ -402,6 +442,6 @@ export default {
 
 .home-btn {
   margin-top: 1rem;
-  animation: fade-in .4s .4s ease both;
+  animation: fade-in 0.4s 0.4s ease both;
 }
 </style>
