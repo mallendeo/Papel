@@ -9,13 +9,19 @@
   >
     <div class="row header">
       <h2 class="title">Files</h2>
-      <p class="hint" v-if="!loading">Drag and drop one or more files to upload.</p>
+      <p
+        class="hint"
+        v-if="!loading"
+      >Drag and drop one or more files to upload.</p>
     </div>
 
     <loading-indicator v-if="loading" />
 
     <transition name="fade">
-      <div v-show="isOver || uploading" class="dropzone">
+      <div
+        v-show="isOver || uploading"
+        class="dropzone"
+      >
         <div class="col col--center dropzone__inner">
           <h4 v-if="!uploading">Drop to upload!</h4>
           <h4 v-if="uploading">
@@ -25,7 +31,10 @@
       </div>
     </transition>
 
-    <ul class="col list" v-if="!loading && files.length">
+    <ul
+      class="col list"
+      v-if="!loading && files.length"
+    >
       <li
         class="row list__item"
         v-for="file of files"
@@ -77,8 +86,12 @@ export default {
   methods: {
     async loadFiles () {
       this.loading = true
-      this.files = await blockchain.getFiles().catch(console.error)
-      this.loading = false
+      try {
+        this.files = await blockchain.getFiles()
+        this.loading = false
+      } catch (err) {
+        console.error(err)
+      }
     },
 
     onCopy () {
@@ -119,36 +132,48 @@ export default {
   height: 100%;
   position: relative;
 
-  &.filedrop * { pointer-events: none; }
+  &.filedrop * {
+    pointer-events: none;
+  }
 }
 
 .bg-icon {
   font-size: 4rem;
-  width: 4rem; height: 4rem;
-  opacity: .1;
+  width: 4rem;
+  height: 4rem;
+  opacity: 0.1;
 }
 
-.header { align-items: center; }
-.title { margin-right: 1rem; }
-.filename { margin-right: auto; }
+.header {
+  align-items: center;
+}
+.title {
+  margin-right: 1rem;
+}
+.filename {
+  margin-right: auto;
+}
 .hint {
-  opacity: .5;
-  font-size: .75rem;
+  opacity: 0.5;
+  font-size: 0.75rem;
 }
 
 .dropzone {
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: var(--color-editor-dark);
   z-index: 9;
   padding: 2rem;
 
   &__inner {
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%;
     margin: auto;
     border: 1px dashed var(--color-editor-accent);
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     text-align: center;
   }
 }
@@ -161,23 +186,27 @@ export default {
   overflow: auto;
 
   &__item {
-    font-size: .9rem;
+    font-size: 0.9rem;
     color: var(--color-text-light);
     position: relative;
     flex-shrink: 0;
-    padding: .25rem 1rem;
-    border-radius: .25rem;
+    padding: 0.25rem 1rem;
+    border-radius: 0.25rem;
     cursor: pointer;
 
-    button { opacity: 0; }
+    button {
+      opacity: 0;
+    }
 
     &:hover {
       background: var(--color-editor-light);
-      button { opacity: 1; }
+      button {
+        opacity: 1;
+      }
     }
 
     .material-icons {
-      font-size: .9rem;
+      font-size: 0.9rem;
       color: var(--color-text-light);
     }
   }
