@@ -37,6 +37,26 @@
       />
 
       <nav-btn
+        class="dev-btn"
+        href="#"
+        :shadow="true"
+        v-if="!demoData"
+        @click.prevent="loadDemoData"
+      >
+        🐞 Load Demo Data
+      </nav-btn>
+
+      <nav-btn
+        class="dev-btn"
+        href="#"
+        :shadow="true"
+        v-if="demoData"
+        @click.prevent="removeDemoData"
+      >
+        🐞 Remove Data
+      </nav-btn>
+
+      <nav-btn
         :shadow="true"
         v-if="loaded && !loggedUser"
         :href="`/getting-started#steps`"
@@ -83,6 +103,7 @@ import IconToggle from '@/components/ui/IconToggle'
 
 import ConfettiIcon from '@/components/icons/ConfettiIcon'
 import OkIcon from '@/components/icons/OkIcon'
+import demoData from '../assets/demo-papel.json'
 
 export default {
   components: {
@@ -97,6 +118,7 @@ export default {
   data: () => ({
     ipfsUrl: IPFS_URL,
     loaded: false,
+    demoData: localStorage.getItem('demoData'),
     lists: [
       { id: 'picks', label: 'Picks', icon: 'ok-icon', href: '/picks' },
       // { id: 'popular', label: 'Popular', icon: 'flame-icon', href: '/popular' },
@@ -116,7 +138,26 @@ export default {
   methods: {
     ...mapActions('homepage', ['getLoggedUser']),
     ...mapActions('ui', ['toggleTheme']),
-    slug: () => shortid.generate()
+    slug: () => shortid.generate(),
+    loadDemoData: () => {
+      demoData.forEach(({ key, val }) => {
+        const dec = typeof val === 'string' ? val : JSON.stringify(val)
+        localStorage.setItem(key, dec)
+      })
+
+      this.demoData = true
+      localStorage.setItem('demoData', '1')
+
+      location.reload()
+    },
+
+    removeDemoData () {
+      const rm = confirm('This will remove all data on localstorage, are you sure?')
+      if (rm) {
+        localStorage.clear()
+        location.reload()
+      }
+    }
   },
 
   computed: {
@@ -204,5 +245,11 @@ export default {
 
 .toggle {
   margin-right: 2rem;
+}
+
+.dev-btn {
+  height: 36px;
+  font-size: 0.3rem !important;
+  margin-right: 1rem;
 }
 </style>
