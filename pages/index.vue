@@ -5,8 +5,6 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
-
 import SheetGrid from '@/components/SheetGrid'
 
 export default {

@@ -263,6 +263,7 @@ export default {
       await this.saveProfile({ username })
       this.user = { username }
       this.showInput = false
+      localStorage.setItem('app_init', '1')
     },
 
     install () {

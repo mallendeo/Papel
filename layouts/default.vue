@@ -1,7 +1,10 @@
 <template>
   <section>
     <div class="header">
-      <a href="/" class="logo-wrapper">
+      <a
+        href="/"
+        class="logo-wrapper"
+      >
         <papel-logo class="logo" />
         <h1>Papel</h1>
       </a>
@@ -42,18 +45,24 @@
       </nav-btn>
 
       <template v-if="loggedUser">
-        <nav-btn :shadow="true" :href="`/${loggedUser.username}/${slug()}`">
+        <nav-btn
+          :shadow="true"
+          :href="`/${loggedUser.username}/${slug()}`"
+        >
           Create Project
         </nav-btn>
 
-        <a :href="`/${loggedUser.username}/`" class="profile-btn">
+        <a
+          :href="`/${loggedUser.username}/`"
+          class="profile-btn"
+        >
           <app-avatar :hash="loggedUser.avatar" />
         </a>
       </template>
     </div>
 
     <!-- Content -->
-    <nuxt/>
+    <nuxt />
 
     <div class="footer">
 
@@ -96,8 +105,12 @@ export default {
   }),
 
   async mounted () {
-    await this.getLoggedUser().catch(console.error)
-    this.loaded = true
+    try {
+      await this.getLoggedUser()
+      this.loaded = true
+    } catch (err) {
+      console.error(err)
+    }
   },
 
   methods: {
@@ -130,7 +143,7 @@ export default {
 
 <style lang="scss" scoped>
 .header {
-  padding: .8rem 2rem;
+  padding: 0.8rem 2rem;
   height: 4rem;
   display: flex;
   align-items: center;
@@ -152,7 +165,7 @@ export default {
   }
 
   + h1 {
-    margin-left: .75rem;
+    margin-left: 0.75rem;
     font-family: 'Raleway', sans-serif;
     font-size: 1.25rem;
     color: var(--color-text);
@@ -173,15 +186,15 @@ export default {
     a {
       text-decoration: none;
       color: var(--color-text-light);
-      padding: 0 .25rem;
-      padding-bottom: .5rem;
+      padding: 0 0.25rem;
+      padding-bottom: 0.5rem;
     }
   }
 }
 
 .tab-icon {
-  width: .75rem;
-  margin-right: .25rem;
+  width: 0.75rem;
+  margin-right: 0.25rem;
 }
 
 .active a {
