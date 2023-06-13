@@ -36,7 +36,7 @@
       <a
         v-if="rootIpfsHash"
         class="link"
-        :href="`https://ipfs.infura.io/ipfs/${rootIpfsHash}/dist`"
+        :href="`https://infura-ipfs.io/ipfs/${rootIpfsHash}/dist`"
         target="_blank"
       >Full page preview</a>
 

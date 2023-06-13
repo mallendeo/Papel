@@ -98,14 +98,14 @@
               <option
                 :value="version"
                 :key="`${result.name}-${version}`"
-                v-for="{ version } of result.assets"
+                v-for="{ version } of [{ version: result.version }]"
               >{{ version }}</option>
             </select>
             <select data-file :value="result.filename">
               <option
-                :value="file"
-                :key="`${result.name}-${file}`"
-                v-for="file of getFiles(result.assets, result.version)"
+                :value="file || ''"
+                :key="`${result.name}-${file || ''}`"
+                v-for="file of getFiles(result.name, result.version)"
               >{{ file }}</option>
             </select>
 
@@ -133,6 +133,8 @@ import AppBtnSelect from '../ui/AppBtnSelect'
 const CancelToken = axios.CancelToken
 let source // CancelToken.source()
 
+const API_URL = 'https://api.cdnjs.com/libraries'
+
 export default {
   components: {
     draggable,
@@ -140,7 +142,7 @@ export default {
   },
   props: {
     delay: { type: Number, default: 500 },
-    limit: { type: Number, default: 20 }
+    limit: { type: Number, default: 5 }
   },
   data () {
     return {
@@ -153,7 +155,8 @@ export default {
       },
       showInputBtn: false,
       isLoading: false,
-      search: ''
+      search: '',
+      libInfo: {}
     }
   },
   mounted () {
@@ -181,6 +184,13 @@ export default {
     }
   },
   methods: {
+    async fetchInfo (lib) {
+      const { data } = await axios(`${API_URL}/${lib.name}?fields=assets`)
+      this.libInfo = { ...this.libInfo, [lib.name]: data.assets }
+    },
+    getVersions (name) {
+      return this.libInfo[name] || []
+    },
     ...mapActions('editor', ['setLibs']),
 
     onChange (val) {
@@ -200,10 +210,9 @@ export default {
         clearTimeout(this.timeout)
       }
 
-      const extra = '&fields=assets,filename,version'
+      const extra = '&fields=filename,version'
 
       this.timeout = setTimeout(async () => {
-        const API_URL = 'https://api.cdnjs.com/libraries'
         try {
           if (source) source.cancel()
           source = CancelToken.source()
@@ -212,7 +221,7 @@ export default {
             cancelToken: source.token
           })
 
-          this.results = data.results
+          this.results = data.results.slice(0, this.limit)
         } catch (err) {
           if (!axios.isCancel(err)) {
             this.$notify({
@@ -223,6 +232,9 @@ export default {
           }
         } finally {
           this.isLoading = false
+          for (const result of this.results) {
+            await this.fetchInfo(result)
+          }
         }
       }, this.delay)
     },
@@ -301,25 +313,28 @@ export default {
       return url => this.allLibs.indexOf(url) > -1
     },
 
-    getFiles (assets, version) {
-      const found = assets.find(a => a.version === version)
-      return found ? found.files : []
+    getFiles (libName, version) {
+      if (!this.libInfo[libName]) return ['']
+      const info = this.libInfo[libName].find(lib => lib.version === version)
+      return info ? info.files : []
     }
   },
   computed: {
     filtered () {
-      return this.results
-        .slice(0, this.limit)
-        .map(lib => ({
-            ...lib,
-            assets: lib.assets.map(asset => ({
-              ...asset,
-              files: asset.files.filter(file => {
-                return file.endsWith('js') || file.endsWith('css')
-              })
-            }))
-          })
-        )
+      return this.results.map(lib => ({ ...lib, assets: [lib] }))
+      // DEPRECATED: https://github.com/cdnjs/cdnjs/issues/14140
+      // return this.results
+      //   .slice(0, this.limit)
+      //   .map(lib => ({
+      //       ...lib,
+      //       assets: lib.assets.map(asset => ({
+      //         ...asset,
+      //         files: asset.files.filter(file => {
+      //           return file.endsWith('js') || file.endsWith('css')
+      //         })
+      //       }))
+      //     })
+      //   )
     },
     allLibs () {
       return [...this.libs.js, ...this.libs.css]
