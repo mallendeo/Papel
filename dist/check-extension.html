@@ -1,0 +1,7 @@
+<script>
+window.addEventListener('load', () => {
+  if (typeof window.NasExtWallet !== 'undefined') {
+    window.postMessage({ type: 'extensionloaded' }, '*')
+  }
+}, false)
+</script>
