@@ -17,6 +17,15 @@
       />
     </header>
 
+    <div class="notice">
+      <strong>Notice:</strong>
+      <p>
+        Papel <strong>no longer uses the Nebulas blockchain</strong> since the project is dead.
+        <br>
+        Everything you do <strong>will be saved locally in your browser</strong>.
+      </p>
+    </div>
+
     <div class="hero">
       <div class="hero__left col">
         <div class="brand">
@@ -32,7 +41,7 @@
         >Start Coding!</action-btn>
 
         <div class="p-wrapper">
-          <p v-if="!extInstalled" class="hero__description">
+          <p v-if="!extInstalled" class="hero__description blur">
             You'll need the
             <a @click.prevent="scrollTo('#steps')" href="#steps">web extension for Nebulas</a> to use the platform.
           </p>
@@ -130,6 +139,23 @@ export default {
 
 <style lang="scss" scoped>
 @import 'assets/scss/themes';
+
+.blur {
+  text-decoration: line-through;
+}
+
+.notice {
+  width: 100%;
+  border-radius: .5rem;
+  padding: .5rem 1rem;
+  top: 2rem;
+  position: relative;
+  display: flex;
+  gap: .5rem;
+  line-height: 1.4;
+  background: rgb(248, 157, 45);
+  color: rgb(33, 18, 0);
+}
 
 .action-btn {
   font-size: 1rem;
